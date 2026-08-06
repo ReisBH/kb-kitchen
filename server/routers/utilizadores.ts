@@ -3,7 +3,8 @@ import { eq, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { roleProcedure, protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { users, utilizadoresAutorizados } from "../../drizzle/schema";
+import { users, utilizadoresAutorizados, credenciaisLocais } from "../../drizzle/schema";
+import bcrypt from "bcryptjs";
 
 // Head Chef and Admin can manage users
 const userManagerProcedure = roleProcedure(["head_chef"]);
@@ -116,4 +117,51 @@ export const utilizadoresRouter = router({
     const [u] = await db.select().from(users).where(eq(users.id, ctx.user.id)).limit(1);
     return u ?? null;
   }),
+
+  // Create or reset local credentials for a user
+  definirCredencialLocal: userManagerProcedure
+    .input(z.object({
+      userId: z.number(),
+      username: z.string().min(3).max(64).regex(/^[a-zA-Z0-9_.-]+$/, "Username só pode conter letras, números, _, . e -"),
+      password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+      deveAlterarSenha: z.boolean().default(true),
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      const hash = await bcrypt.hash(input.password, 12);
+      await db.insert(credenciaisLocais).values({
+        userId: input.userId,
+        username: input.username.trim().toLowerCase(),
+        passwordHash: hash,
+        deveAlterarSenha: input.deveAlterarSenha,
+      } as any).onDuplicateKeyUpdate({
+        set: { passwordHash: hash, deveAlterarSenha: input.deveAlterarSenha, ativo: true },
+      });
+      return { success: true };
+    }),
+
+  // List local credentials (admin/head_chef only)
+  listarCredenciais: userManagerProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) return [];
+    return db.select({
+      id: credenciaisLocais.id,
+      userId: credenciaisLocais.userId,
+      username: credenciaisLocais.username,
+      ativo: credenciaisLocais.ativo,
+      deveAlterarSenha: credenciaisLocais.deveAlterarSenha,
+      createdAt: credenciaisLocais.createdAt,
+    }).from(credenciaisLocais).orderBy(desc(credenciaisLocais.createdAt));
+  }),
+
+  // Toggle active state of a local credential
+  toggleCredencialAtivo: userManagerProcedure
+    .input(z.object({ id: z.number(), ativo: z.boolean() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      await db.update(credenciaisLocais).set({ ativo: input.ativo }).where(eq(credenciaisLocais.id, input.id));
+      return { success: true };
+    }),
 });

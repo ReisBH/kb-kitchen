@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
-import { UserCog, Plus, Trash2, ToggleLeft, ToggleRight, Shield, ChefHat, Users } from "lucide-react";
+import { UserCog, Plus, Trash2, ToggleLeft, ToggleRight, Shield, ChefHat, Users, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +49,19 @@ export default function Utilizadores() {
   const rolesDisponiveis = (isAdmin
     ? ["admin", "head_chef", "sub_chefe", "cozinheiro"]
     : ["head_chef", "sub_chefe", "cozinheiro"]) as AppRole[];
+
+  const [credDialogUserId, setCredDialogUserId] = useState<number | null>(null);
+  const [credUsername, setCredUsername] = useState("");
+  const [credPassword, setCredPassword] = useState("");
+  const [credDeveAlterar, setCredDeveAlterar] = useState(true);
+
+  const definirCredencial = trpc.utilizadores.definirCredencialLocal.useMutation({
+    onSuccess: () => {
+      toast.success("Credencial local criada/actualizada.");
+      setCredDialogUserId(null); setCredUsername(""); setCredPassword(""); setCredDeveAlterar(true);
+    },
+    onError: (e) => toast.error(e.message),
+  });
 
   const { data: autorizados, isLoading } = trpc.utilizadores.listarAutorizados.useQuery();
   const { data: utilizadores } = trpc.utilizadores.listarUtilizadores.useQuery();
@@ -192,6 +205,17 @@ export default function Utilizadores() {
                             title="Remover"
                           >
                             <Trash2 className="w-4 h-4" />
+                         </button>
+                          <button
+                            onClick={() => {
+                              setCredDialogUserId(u.id);
+                              setCredUsername((u.nome ?? "").toLowerCase().replace(/\s+/g, ".").replace(/[^a-z0-9._-]/g, ""));
+                              setCredPassword(""); setCredDeveAlterar(true);
+                            }}
+                            className="text-muted-foreground hover:text-gold transition-colors"
+                            title="Definir credencial local (utilizador/senha)"
+                          >
+                            <KeyRound className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -244,6 +268,44 @@ export default function Utilizadores() {
       )}
 
       {/* Add user dialog */}
+      <Dialog open={credDialogUserId !== null} onOpenChange={open => { if (!open) setCredDialogUserId(null); }}>
+        <DialogContent className="bg-card border-border max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl text-gold flex items-center gap-2"><KeyRound className="w-5 h-5" /> Credencial Local</DialogTitle>
+            <DialogDescription className="text-muted-foreground text-sm">
+              Define ou redefine o username e senha para login independente do Manus OAuth.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label>Username *</Label>
+              <Input value={credUsername} onChange={e => setCredUsername(e.target.value)} placeholder="ex: diego.hc" className="bg-input border-border font-mono" />
+              <p className="text-xs text-muted-foreground">Apenas letras, números, ponto, hífen e underscore.</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Senha *</Label>
+              <Input type="password" value={credPassword} onChange={e => setCredPassword(e.target.value)} placeholder="Mínimo 8 caracteres" className="bg-input border-border" />
+            </div>
+            <div className="flex items-center gap-2">
+              <input type="checkbox" id="deveAlterar" checked={credDeveAlterar} onChange={e => setCredDeveAlterar(e.target.checked)} className="w-4 h-4 accent-yellow-500" />
+              <Label htmlFor="deveAlterar" className="text-sm cursor-pointer">Obrigar a alterar senha no primeiro login</Label>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" onClick={() => setCredDialogUserId(null)} className="flex-1 border-border">Cancelar</Button>
+              <Button
+                onClick={() => {
+                  if (!credUsername || !credPassword) { toast.error("Preenche todos os campos."); return; }
+                  definirCredencial.mutate({ userId: credDialogUserId!, username: credUsername, password: credPassword, deveAlterarSenha: credDeveAlterar });
+                }}
+                disabled={definirCredencial.isPending}
+                className="flex-1 bg-primary text-primary-foreground"
+              >
+                {definirCredencial.isPending ? "A guardar…" : "Guardar Credencial"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
         <DialogContent className="bg-card border-border max-w-md">
           <DialogHeader>

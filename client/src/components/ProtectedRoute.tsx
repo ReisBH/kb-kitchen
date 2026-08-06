@@ -1,8 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { startLogin } from "@/const";
 import { canAccess } from "@shared/permissions";
 import type { AppRole } from "@shared/permissions";
-import { useLocation } from "wouter";
+import { useLocation, Redirect } from "wouter";
 import { Loader2 } from "lucide-react";
 import AcessoNegado from "@/pages/AcessoNegado";
 
@@ -23,13 +22,7 @@ export default function ProtectedRoute({ component: Component, path }: Protected
   }
 
   if (!isAuthenticated) {
-    // Redirect to login
-    startLogin();
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-gold" />
-      </div>
-    );
+    return <Redirect to="/login" />;
   }
 
   const role = (user?.role ?? "user") as AppRole;
@@ -39,4 +32,3 @@ export default function ProtectedRoute({ component: Component, path }: Protected
 
   return <Component />;
 }
-

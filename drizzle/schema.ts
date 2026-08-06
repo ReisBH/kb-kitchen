@@ -36,6 +36,21 @@ export const utilizadoresAutorizados = mysqlTable("utilizadores_autorizados", {
 export type UtilizadorAutorizado = typeof utilizadoresAutorizados.$inferSelect;
 export type InsertUtilizadorAutorizado = typeof utilizadoresAutorizados.$inferInsert;
 
+// ─── CREDENCIAIS LOCAIS ───────────────────────────────────────────────────────
+// Username/password authentication independent of Manus OAuth
+export const credenciaisLocais = mysqlTable("credenciais_locais", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  username: varchar("username", { length: 64 }).notNull().unique(),
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
+  ativo: boolean("ativo").default(true).notNull(),
+  deveAlterarSenha: boolean("deveAlterarSenha").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type CredencialLocal = typeof credenciaisLocais.$inferSelect;
+export type InsertCredencialLocal = typeof credenciaisLocais.$inferInsert;
+
 // ─── FORNECEDORES ─────────────────────────────────────────────────────────────
 export const fornecedores = mysqlTable("fornecedores", {
   id: int("id").autoincrement().primaryKey(),

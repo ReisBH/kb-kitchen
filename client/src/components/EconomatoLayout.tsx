@@ -55,31 +55,12 @@ export default function EconomatoLayout({ children }: { children: React.ReactNod
   }
 
   if (!isAuthenticated) {
-    // Show login prompt instead of inline form
+    // Redirect to the dedicated dual-login page
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.18_0.012_280)_0%,oklch(0.10_0.006_280)_70%)] pointer-events-none" />
-        <div className="relative z-10 w-full max-w-md text-center space-y-8 px-6">
-          <div>
-            <h1 className="font-display text-5xl text-gold tracking-wide mb-2">Economato</h1>
-            <p className="text-muted-foreground text-sm tracking-widest uppercase">Gestão de Stock e Fichas Técnicas</p>
-            <div className="mt-4 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
-          </div>
-          <div className="bg-card border border-border rounded-2xl p-8 shadow-2xl space-y-5">
-            <div className="space-y-1">
-              <h2 className="text-xl font-semibold">Bem-vindo</h2>
-              <p className="text-sm text-muted-foreground">Faz login com a tua conta Manus para aceder ao sistema.</p>
-            </div>
-            <Button onClick={() => startLogin()} className="w-full bg-primary text-primary-foreground h-11 text-base font-medium gap-3">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                <polyline points="10 17 15 12 10 7" />
-                <line x1="15" y1="12" x2="3" y2="12" />
-              </svg>
-              Entrar com Manus
-            </Button>
-            <p className="text-xs text-muted-foreground">Não tens acesso? Contacta o administrador.</p>
-          </div>
+        <div className="text-center space-y-3">
+          <div className="text-4xl font-display text-gold">Economato</div>
+          <div className="text-muted-foreground text-sm">A redirecionar para o login…</div>
         </div>
       </div>
     );

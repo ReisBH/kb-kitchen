@@ -62,6 +62,11 @@
 - [x] Testes unitários: cálculo de rendimento de proteínas
 
 ## Pendente / Melhorias Futuras
+- [x] Auth local: tabela credenciais_locais (username, passwordHash, userId, ativo)
+- [x] Auth local: endpoint POST /api/auth/local/login com bcrypt + JWT
+- [x] Auth local: endpoint POST /api/auth/local/change-password
+- [x] Auth local: página de login com dois separadores (Manus OAuth | Utilizador/Senha)
+- [x] Auth local: gestão de credenciais locais na página de Utilizadores (criar/redefinir senha)
 - [x] RBAC: Estender schema com 4 roles (admin, head_chef, sub_chefe, cozinheiro) e tabela utilizadores_autorizados
 - [x] RBAC: Mapa de permissões por role e proteção de procedures no backend
 - [x] RBAC: Página de login dedicada com ecrã de boas-vindas
