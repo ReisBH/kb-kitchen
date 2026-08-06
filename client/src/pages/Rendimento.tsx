@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { FlaskConical, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ function fmt(n: number | string | null | undefined, d = 2) {
 
 type FormValues = {
   artigoId: string;
+  artigoLimpoId: string;
   pesoBruto: string;
   pesoLimpo: string;
   precoKgBruto: string;
@@ -28,7 +29,7 @@ export default function Rendimento() {
   const CATEGORIAS_PROTEINA = ["Peixe", "Carnes e Aves"];
   const proteinas = artigos?.filter(a => CATEGORIAS_PROTEINA.includes(a.categoria ?? ""));
   const { data: testes, isLoading } = trpc.rendimento.listar.useQuery();
-  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<FormValues>();
+  const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm<FormValues>();
 
   const registar = trpc.rendimento.registar.useMutation({
     onSuccess: (d) => {
@@ -58,9 +59,26 @@ export default function Rendimento() {
 
   const podePrevisualizar = pesoBruto > 0 && pesoLimpo > 0 && precoKg > 0;
 
+  // Auto-suggest the clean article when the raw protein is selected
+  const artigoIdWatch = watch("artigoId");
+  useEffect(() => {
+    if (!artigoIdWatch || !artigos) return;
+    const bruto = artigos.find(a => a.id === parseInt(artigoIdWatch));
+    if (!bruto) return;
+    const nomeBruto = bruto.nome.toLowerCase().replace(/\s*(inteiro|inteira|bruto|bruta|fresco|fresca)\s*/g, "").trim();
+    const candidatos = artigos.filter(a => {
+      const n = a.nome.toLowerCase();
+      return n.includes(nomeBruto) && (n.includes("limpo") || n.includes("limpa") || n.includes("limpas"));
+    });
+    if (candidatos.length === 1) {
+      setValue("artigoLimpoId", String(candidatos[0].id));
+    }
+  }, [artigoIdWatch, artigos]);
+
   function onSubmit(d: FormValues) {
     registar.mutate({
       artigoId: parseInt(d.artigoId),
+      artigoLimpoId: d.artigoLimpoId ? parseInt(d.artigoLimpoId) : undefined,
       pesoBruto: parseFloat(d.pesoBruto),
       pesoLimpo: parseFloat(d.pesoLimpo),
       precoKgBruto: parseFloat(d.precoKgBruto),
@@ -115,6 +133,31 @@ export default function Rendimento() {
                 {errors.artigoId && (
                   <p className="text-xs text-danger mt-1">{errors.artigoId.message}</p>
                 )}
+              </div>
+
+              {/* Artigo limpo (destino da transformação) */}
+              <div>
+                <label className="text-xs text-muted-foreground mb-1.5 block">
+                  Artigo limpo (destino no stock) <span className="text-danger">*</span>
+                </label>
+                <select
+                  {...register("artigoLimpoId", { required: "Selecciona o artigo limpo de destino" })}
+                  className="w-full h-9 rounded-md bg-input border border-border text-sm px-3 focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value="">— seleccionar artigo limpo —</option>
+                  {artigos?.filter(a => {
+                    const n = a.nome.toLowerCase();
+                    return n.includes("limpo") || n.includes("limpa") || n.includes("limpas") || n.includes("filete");
+                  }).map(a => (
+                    <option key={a.id} value={a.id}>{a.nome}</option>
+                  ))}
+                </select>
+                {errors.artigoLimpoId && (
+                  <p className="text-xs text-danger mt-1">{errors.artigoLimpoId.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground mt-1">
+                  O stock deste artigo será incrementado com o peso limpo registado.
+                </p>
               </div>
 
               {/* Os 3 campos obrigatórios */}
