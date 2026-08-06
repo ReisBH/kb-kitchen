@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +25,7 @@ function stockStatus(stock: number, minimo: number, ponto: number, maximo: numbe
 }
 
 function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
-  const { register, handleSubmit, reset } = useForm<any>();
+  const { register, handleSubmit, reset, control } = useForm<any>({ defaultValues: { unidadeBase: "g" } });
   const utils = trpc.useUtils();
   const criar = trpc.artigos.criar.useMutation({
     onSuccess: () => {
@@ -50,7 +51,23 @@ function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
         </div>
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">Unidade base *</label>
-          <Input {...register("unidadeBase", { required: true })} placeholder="g / ml / un" className="bg-input border-border" />
+          <Controller
+            name="unidadeBase"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="bg-input border-border h-9">
+                  <SelectValue placeholder="Unidade" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  <SelectItem value="g">g — gramas (sólidos)</SelectItem>
+                  <SelectItem value="ml">ml — mililitros (líquidos)</SelectItem>
+                  <SelectItem value="un">un — unidades</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">Unidade de compra</label>
@@ -166,6 +183,7 @@ export default function Ingredientes() {
                 <th className="text-left px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Categoria</th>
                 <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Stock Actual</th>
                 <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Mínimo</th>
+                <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Unid.</th>
                 <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Custo Médio</th>
                 <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Valor em Stock</th>
                 <th className="text-left px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Fornecedor</th>
@@ -190,8 +208,18 @@ export default function Ingredientes() {
                     <td className="px-4 py-3 text-right text-muted-foreground font-mono">
                       {fmt(parseFloat(a.stockMinimo ?? "0"), 2)} {a.unidadeBase}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono">
-                    {fmt(parseFloat(a.custoMedioPonderado ?? "0"), 6)} €/{a.unidadeBase}
+                    <td className="px-4 py-3 text-center">
+                      <span className={`text-xs font-mono px-1.5 py-0.5 rounded border ${a.unidadeBase === "ml" ? "border-info/40 text-info bg-info/10" : a.unidadeBase === "un" ? "border-muted-foreground/30 text-muted-foreground" : "border-success/40 text-success bg-success/10"}`}>
+                        {a.unidadeBase}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono text-xs">
+                      {(() => {
+                        const cmp = parseFloat(a.custoMedioPonderado ?? "0");
+                        if (a.unidadeBase === "g") return `${fmt(cmp * 1000, 2)} €/kg`;
+                        if (a.unidadeBase === "ml") return `${fmt(cmp * 1000, 2)} €/l`;
+                        return `${fmt(cmp, 4)} €/un`;
+                      })()}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-gold">
                       {fmt(valorStock)} €

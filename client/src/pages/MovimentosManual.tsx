@@ -298,8 +298,8 @@ export default function MovimentosManual() {
                 {/* Column headers */}
                 <div className={`grid gap-2 px-4 py-2 bg-secondary/20 text-xs text-muted-foreground uppercase tracking-wide ${modo === "entrada" ? "grid-cols-[1fr_100px_120px_1fr]" : "grid-cols-[1fr_100px_1fr]"}`}>
                   <span>Ingrediente</span>
-                  <span className="text-right">Qtd ({modo === "entrada" ? "unid. base" : "unid. base"})</span>
-                  {modo === "entrada" && <span className="text-right">Preço (€/kg ou €/l)</span>}
+                  <span className="text-right">Quantidade</span>
+                  {modo === "entrada" && <span className="text-right">Preço compra</span>}
                   <span>Motivo / Ref.</span>
                 </div>
 
@@ -336,7 +336,7 @@ export default function MovimentosManual() {
                           ? setEntrada(a.id, "quantidade", e.target.value)
                           : setSaida(a.id, "quantidade", e.target.value)
                         }
-                        placeholder="0"
+                        placeholder={`0 ${a.unidadeBase}`}
                         className="h-8 text-right bg-input border-border text-sm tabular-nums"
                       />
 
@@ -348,7 +348,7 @@ export default function MovimentosManual() {
                           step="any"
                           value={entrada?.custo ?? ""}
                           onChange={e => setEntrada(a.id, "custo", e.target.value)}
-                          placeholder={`€/${a.unidadeBase === "g" ? "kg" : a.unidadeBase === "ml" ? "l" : a.unidadeBase}`}
+                          placeholder={a.unidadeBase === "g" ? "€/kg" : a.unidadeBase === "ml" ? "€/l" : "€/un"}
                           className="h-8 text-right bg-input border-border text-sm tabular-nums"
                         />
                       )}
