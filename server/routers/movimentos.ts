@@ -87,5 +87,26 @@ export const movimentosRouter = router({
       });
       return result;
     }),
-});
 
+  registarSaidaManual: protectedProcedure
+    .input(z.object({
+      artigoId: z.number(),
+      quantidade: z.number().positive(),
+      motivo: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      const [artigo] = await db.select().from(artigos).where(eq(artigos.id, input.artigoId)).limit(1);
+      if (!artigo) throw new Error("Artigo não encontrado");
+      const result = await registarMovimento({
+        artigoId: input.artigoId,
+        tipo: "quebra",
+        quantidade: -input.quantidade,
+        custoUnitario: parseFloat(artigo.custoMedioPonderado ?? "0"),
+        motivo: input.motivo ?? "Saída manual",
+        utilizadorId: ctx.user?.id,
+      });
+      return result;
+    }),
+});

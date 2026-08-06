@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard, Package, Users, FlaskConical, ChefHat, BookOpen,
-  ShoppingCart, ClipboardList, TrendingDown, Bell, FileImage, Receipt,
+  ShoppingCart, ClipboardList, TrendingDown, Bell, FileImage, Receipt, ArrowLeftRight,
   Menu, X, LogOut, ChevronRight
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -18,6 +18,7 @@ const navItems = [
   { href: "/receitas", label: "Receitas Base", icon: ChefHat },
   { href: "/fichas", label: "Fichas Técnicas", icon: BookOpen },
   { href: "/vendas", label: "Registo de Vendas", icon: ShoppingCart },
+  { href: "/movimentos-manual", label: "Entradas / Saídas", icon: ArrowLeftRight },
   { href: "/movimentos", label: "Livro de Movimentos", icon: ClipboardList },
   { href: "/inventario", label: "Inventário", icon: TrendingDown },
   { href: "/alertas", label: "Alertas e Encomendas", icon: Bell },
@@ -159,4 +160,3 @@ export default function EconomatoLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
-

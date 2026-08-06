@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { eq, and, like } from "drizzle-orm";
+import { eq, and, like, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { documentosOcr, aliasesFornecedor, mapaPos, artigos, fichasTecnicas, fornecedores } from "../../drizzle/schema";
+import { documentosOcr, aliasesFornecedor, mapaPos, artigos, fichasTecnicas, fornecedores, vendas, vendaLinhas } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
 import { registarMovimento } from "../engine/stock";
-import { calcularCustoFicha } from "../engine/explosao";
+import { calcularCustoFicha, executarExplosaoVenda } from "../engine/explosao";
 
 export const ocrRouter = router({
   processarFatura: protectedProcedure
@@ -244,6 +244,61 @@ export const ocrRouter = router({
       await db.insert(mapaPos).values(input as any).onDuplicateKeyUpdate({ set: { fichaId: input.fichaId } });
       return { success: true };
     }),
+
+  confirmarFechoCaixa: protectedProcedure
+    .input(z.object({
+      docId: z.number(),
+      linhas: z.array(z.object({
+        nomeItem: z.string(),
+        fichaId: z.number(),
+        quantidade: z.number().positive(),
+        valorTotal: z.number().nonnegative(),
+      })),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      const [rv] = await db.insert(vendas).values({
+        data: new Date(),
+        origem: "ocr_fecho_caixa",
+        utilizadorId: ctx.user?.id,
+      } as any);
+      const vendaId = (rv as any).insertId as number;
+      let custoTotal = 0;
+      let totalReceita = 0;
+      const stockNegativo: string[] = [];
+      for (const linha of input.linhas) {
+        const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
+        if (!ficha) continue;
+        const { stockNegativo: sn } = await executarExplosaoVenda({
+          fichaId: linha.fichaId,
+          doses: linha.quantidade,
+          vendaId,
+          utilizadorId: ctx.user?.id,
+          comportamento: ficha.explodir_receitas ?? "auto",
+        });
+        stockNegativo.push(...sn);
+        const custoFicha = await calcularCustoFicha(linha.fichaId);
+        custoTotal += custoFicha * linha.quantidade;
+        totalReceita += linha.valorTotal;
+        await db.insert(vendaLinhas).values({
+          vendaId,
+          fichaId: linha.fichaId,
+          quantidade: linha.quantidade.toFixed(3),
+          precoUnitario: (linha.valorTotal / linha.quantidade).toFixed(2),
+          custoUnitario: custoFicha.toFixed(4),
+        } as any);
+      }
+      const foodCostPct = totalReceita > 0 ? (custoTotal / totalReceita) * 100 : 0;
+      await db.update(vendas).set({
+        custoTotal: custoTotal.toFixed(4),
+        totalReceita: totalReceita.toFixed(2),
+        foodCostPct: foodCostPct.toFixed(3),
+        processada: true,
+      }).where(eq(vendas.id, vendaId));
+      await db.update(documentosOcr).set({ estado: "confirmado" }).where(eq(documentosOcr.id, input.docId));
+      return { vendaId, custoTotal, totalReceita, foodCostPct, stockNegativo };
+    }),
 });
 
 async function emparelharArtigo(descricao: string, fornecedorId?: number): Promise<{ id: number; nome: string } | null> {
@@ -281,4 +336,3 @@ async function emparelharFicha(nomePos: string): Promise<{ id: number; nome: str
   const [f] = await db.select().from(fichasTecnicas).where(like(fichasTecnicas.nome, `%${nomePos}%`)).limit(1);
   return f ? { id: f.id, nome: f.nome } : null;
 }
-

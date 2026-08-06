@@ -20,6 +20,7 @@ import Movimentos from "./pages/Movimentos";
 import Alertas from "./pages/Alertas";
 import OcrFaturas from "./pages/OcrFaturas";
 import OcrFechoCaixa from "./pages/OcrFechoCaixa";
+import MovimentosManual from "./pages/MovimentosManual";
 
 function AppRoutes() {
   return (
@@ -40,6 +41,7 @@ function AppRoutes() {
         <Route path="/alertas" component={Alertas} />
         <Route path="/ocr/faturas" component={OcrFaturas} />
         <Route path="/ocr/fecho-caixa" component={OcrFechoCaixa} />
+        <Route path="/movimentos-manual" component={MovimentosManual} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

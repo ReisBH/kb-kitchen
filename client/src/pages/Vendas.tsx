@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
-import { Plus, ShoppingCart, Trash2 } from "lucide-react";
+import { ShoppingCart, RotateCcw, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -12,94 +12,204 @@ function fmt(n: number | string, d = 2) {
   return parseFloat(String(n)).toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 
-type Linha = { fichaId: number; fichaNome: string; quantidade: number; precoUnitario?: number };
-
 export default function Vendas() {
-  const [linhas, setLinhas] = useState<Linha[]>([]);
-  const [fichaId, setFichaId] = useState("");
-  const [quantidade, setQuantidade] = useState("1");
+  const [quantidades, setQuantidades] = useState<Record<number, string>>({});
+  const [confirmado, setConfirmado] = useState(false);
   const utils = trpc.useUtils();
-  const { data: fichas } = trpc.fichas.listar.useQuery();
+  const { data: fichas, isLoading } = trpc.fichas.listar.useQuery();
   const { data: vendas } = trpc.fichas.listarVendas.useQuery();
+
   const registar = trpc.fichas.registarVenda.useMutation({
     onSuccess: (d) => {
-      toast.success(`Venda registada — Food Cost: ${fmt(d.foodCostPct, 1)}%${d.stockNegativo.length > 0 ? ` ⚠️ Stock negativo: ${d.stockNegativo.join(", ")}` : ""}`);
-      setLinhas([]);
+      toast.success(
+        `Venda registada — Food Cost: ${fmt(d.foodCostPct, 1)}%` +
+        (d.stockNegativo.length > 0 ? ` ⚠️ Stock negativo: ${d.stockNegativo.join(", ")}` : "")
+      );
+      setQuantidades({});
+      setConfirmado(false);
       utils.fichas.listarVendas.invalidate();
       utils.dashboard.resumo.invalidate();
+      utils.artigos.listar.invalidate();
     },
     onError: (e) => toast.error(e.message),
   });
 
-  function adicionarLinha() {
-    const ficha = fichas?.find(f => f.id === parseInt(fichaId));
-    if (!ficha) return;
-    setLinhas(prev => [...prev, { fichaId: ficha.id, fichaNome: ficha.nome, quantidade: parseFloat(quantidade) || 1 }]);
-    setFichaId(""); setQuantidade("1");
+  // Group fichas by section
+  const fichasPorSeccao = useMemo(() => {
+    if (!fichas) return {};
+    return fichas.reduce((acc, f) => {
+      const sec = f.secaoMenu ?? "Outros";
+      if (!acc[sec]) acc[sec] = [];
+      acc[sec].push(f);
+      return acc;
+    }, {} as Record<string, typeof fichas>);
+  }, [fichas]);
+
+  const linhasComQuantidade = useMemo(() =>
+    Object.entries(quantidades)
+      .filter(([, v]) => parseFloat(v) > 0)
+      .map(([id, v]) => ({ fichaId: parseInt(id), quantidade: parseFloat(v) })),
+    [quantidades]
+  );
+
+  const totalDoses = linhasComQuantidade.reduce((s, l) => s + l.quantidade, 0);
+
+  function limpar() {
+    setQuantidades({});
+    setConfirmado(false);
+  }
+
+  function submeter() {
+    if (linhasComQuantidade.length === 0) {
+      toast.error("Preenche pelo menos uma quantidade.");
+      return;
+    }
+    registar.mutate({ linhas: linhasComQuantidade });
   }
 
   return (
     <div className="space-y-6 animate-in">
-      <div>
-        <h1 className="font-display text-3xl text-gold">Registo de Vendas</h1>
-        <p className="text-muted-foreground text-sm mt-0.5">Entrada manual de vendas — desencadeia a explosão de stock</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl text-gold">Registo de Vendas</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">Preenche as quantidades vendidas e confirma em bloco</p>
+        </div>
+        {totalDoses > 0 && (
+          <div className="flex items-center gap-3 shrink-0">
+            <Button variant="outline" onClick={limpar} className="border-border gap-2">
+              <RotateCcw className="w-4 h-4" /> Limpar
+            </Button>
+            <Button onClick={submeter} disabled={registar.isPending} className="bg-primary text-primary-foreground gap-2">
+              {registar.isPending
+                ? <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> A processar…</>
+                : <><CheckCircle className="w-4 h-4" /> Confirmar {totalDoses} dose(s)</>}
+            </Button>
+          </div>
+        )}
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-card border-border">
-          <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground uppercase tracking-wide">Nova Venda</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Select value={fichaId} onValueChange={setFichaId}>
-                <SelectTrigger className="flex-1 bg-input border-border"><SelectValue placeholder="Seleccionar ficha técnica…" /></SelectTrigger>
-                <SelectContent className="bg-popover border-border">
-                  {fichas?.map(f => <SelectItem key={f.id} value={String(f.id)}>{f.nome}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              <Input value={quantidade} onChange={e => setQuantidade(e.target.value)} type="number" min="0.5" step="0.5"
-                className="w-20 bg-input border-border text-center" placeholder="Qtd" />
-              <Button onClick={adicionarLinha} disabled={!fichaId} className="bg-secondary text-foreground border border-border">
-                <Plus className="w-4 h-4" />
-              </Button>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Left: dish list */}
+        <div className="xl:col-span-2 space-y-4">
+          {isLoading && (
+            <div className="space-y-3">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-12 rounded-lg bg-secondary/30 animate-pulse" />
+              ))}
             </div>
-            {linhas.length > 0 && (
-              <div className="space-y-2">
-                {linhas.map((l, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b border-border">
-                    <div><p className="text-sm font-medium">{l.fichaNome}</p><p className="text-xs text-muted-foreground">{l.quantidade} dose(s)</p></div>
-                    <button onClick={() => setLinhas(prev => prev.filter((_, j) => j !== i))} className="text-muted-foreground hover:text-danger">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-                <Button className="w-full bg-primary text-primary-foreground mt-2" disabled={registar.isPending}
-                  onClick={() => registar.mutate({ linhas: linhas.map(l => ({ fichaId: l.fichaId, quantidade: l.quantidade })) })}>
-                  {registar.isPending ? "A processar…" : "Registar Venda e Dar Quebra de Stock"}
-                </Button>
-              </div>
-            )}
-            {linhas.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-4">Adiciona fichas técnicas para registar a venda.</p>
-            )}
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground uppercase tracking-wide">Vendas Recentes</CardTitle></CardHeader>
-          <CardContent>
-            {(vendas?.length ?? 0) === 0 ? <p className="text-sm text-muted-foreground">Ainda não há vendas registadas.</p> : (
-              <div className="space-y-2">
-                {vendas!.slice(0, 10).map(v => (
-                  <div key={v.id} className="flex items-center justify-between py-1.5 border-b border-border last:border-0 text-sm">
-                    <span className="text-muted-foreground">{format(new Date(v.data), "dd/MM/yyyy")}</span>
-                    <div className="text-right tabular-nums">
-                      <span className="text-gold">{fmt(parseFloat(v.totalReceita ?? "0"))} €</span>
-                      <span className="text-muted-foreground text-xs ml-2">FC: {fmt(parseFloat(v.foodCostPct ?? "0"), 1)}%</span>
+          )}
+          {!isLoading && fichas?.length === 0 && (
+            <Card className="bg-card border-border">
+              <CardContent className="p-8 text-center text-muted-foreground text-sm">
+                Ainda não há fichas técnicas activas. Cria fichas técnicas primeiro.
+              </CardContent>
+            </Card>
+          )}
+          {Object.entries(fichasPorSeccao).map(([seccao, lista]) => (
+            <Card key={seccao} className="bg-card border-border">
+              <CardHeader className="pb-2 pt-4 px-4">
+                <CardTitle className="text-xs text-muted-foreground uppercase tracking-widest">{seccao}</CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 space-y-1">
+                {lista.map(f => {
+                  const qty = quantidades[f.id] ?? "";
+                  const qtyNum = parseFloat(qty) || 0;
+                  return (
+                    <div key={f.id} className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-colors ${qtyNum > 0 ? "bg-primary/10 border border-primary/30" : "hover:bg-secondary/30"}`}>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{f.nome}</p>
+                        <p className="text-xs text-muted-foreground tabular-nums">
+                          {f.custoCalculado > 0 ? `${fmt(f.custoCalculado, 4)} €/dose` : "sem custo definido"}
+                          {f.precoVenda && parseFloat(f.precoVenda) > 0 && (
+                            <span className="ml-2 text-gold">{fmt(parseFloat(f.precoVenda))} €</span>
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => setQuantidades(prev => ({ ...prev, [f.id]: String(Math.max(0, (parseFloat(prev[f.id] ?? "0") || 0) - 1) || "") }))}
+                          className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-gold transition-colors text-lg leading-none"
+                        >−</button>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="1"
+                          value={qty}
+                          onChange={e => setQuantidades(prev => ({ ...prev, [f.id]: e.target.value }))}
+                          className="w-16 h-8 text-center bg-input border-border tabular-nums text-sm"
+                          placeholder="0"
+                        />
+                        <button
+                          onClick={() => setQuantidades(prev => ({ ...prev, [f.id]: String((parseFloat(prev[f.id] ?? "0") || 0) + 1) }))}
+                          className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-gold transition-colors text-lg leading-none"
+                        >+</button>
+                      </div>
                     </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Right: summary + recent sales */}
+        <div className="space-y-4">
+          {/* Summary of current selection */}
+          <Card className="bg-card border-border sticky top-4">
+            <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground uppercase tracking-wide">Resumo da Venda</CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+              {linhasComQuantidade.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2">Preenche as quantidades na lista ao lado.</p>
+              ) : (
+                <>
+                  {linhasComQuantidade.map(l => {
+                    const ficha = fichas?.find(f => f.id === l.fichaId);
+                    return (
+                      <div key={l.fichaId} className="flex justify-between text-sm py-1 border-b border-border last:border-0">
+                        <span className="truncate mr-2">{ficha?.nome}</span>
+                        <span className="text-gold tabular-nums shrink-0">{l.quantidade}×</span>
+                      </div>
+                    );
+                  })}
+                  <div className="pt-2 flex justify-between text-sm font-semibold">
+                    <span>Total doses</span>
+                    <span className="text-gold">{totalDoses}</span>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  <Button onClick={submeter} disabled={registar.isPending} className="w-full bg-primary text-primary-foreground mt-2 gap-2">
+                    {registar.isPending
+                      ? <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> A processar…</>
+                      : <><ShoppingCart className="w-4 h-4" /> Confirmar Venda</>}
+                  </Button>
+                  <Button variant="outline" onClick={limpar} className="w-full border-border gap-2">
+                    <RotateCcw className="w-4 h-4" /> Limpar
+                  </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recent sales */}
+          <Card className="bg-card border-border">
+            <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground uppercase tracking-wide">Vendas Recentes</CardTitle></CardHeader>
+            <CardContent>
+              {(vendas?.length ?? 0) === 0 ? (
+                <p className="text-sm text-muted-foreground">Ainda não há vendas registadas.</p>
+              ) : (
+                <div className="space-y-1">
+                  {vendas!.slice(0, 10).map(v => (
+                    <div key={v.id} className="flex items-center justify-between py-1.5 border-b border-border last:border-0 text-sm">
+                      <span className="text-muted-foreground text-xs">{format(new Date(v.data), "dd/MM HH:mm")}</span>
+                      <div className="text-right tabular-nums">
+                        <span className="text-gold">{fmt(parseFloat(v.totalReceita ?? "0"))} €</span>
+                        <span className="text-muted-foreground text-xs ml-2">FC: {fmt(parseFloat(v.foodCostPct ?? "0"), 1)}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

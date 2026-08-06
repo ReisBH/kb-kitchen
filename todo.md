@@ -67,3 +67,6 @@
 - [ ] Simulador de preço nas fichas técnicas
 - [ ] Comparador de proteínas lado a lado
 - [ ] Mapa POS configurável via UI
+- [x] Registo de Vendas em lote: lista todos os pratos com campo de quantidade, submissão única
+- [x] Entradas e saídas manuais de stock: formulário por ingrediente sem OCR
+- [x] OCR: ficha de revisão após leitura da foto antes de confirmar importação
