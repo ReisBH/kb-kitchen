@@ -4,35 +4,65 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import EconomatoLayout from "./components/EconomatoLayout";
+import Dashboard from "./pages/Dashboard";
+import Ingredientes from "./pages/Ingredientes";
+import IngredienteDetalhe from "./pages/IngredienteDetalhe";
+import Fornecedores from "./pages/Fornecedores";
+import Rendimento from "./pages/Rendimento";
+import ReceitasBase from "./pages/ReceitasBase";
+import ReceitaDetalhe from "./pages/ReceitaDetalhe";
+import FichasTecnicas from "./pages/FichasTecnicas";
+import FichaDetalhe from "./pages/FichaDetalhe";
+import Vendas from "./pages/Vendas";
+import Inventario from "./pages/Inventario";
+import Movimentos from "./pages/Movimentos";
+import Alertas from "./pages/Alertas";
+import OcrFaturas from "./pages/OcrFaturas";
+import OcrFechoCaixa from "./pages/OcrFechoCaixa";
 
-function Router() {
-  // make sure to consider if you need authentication for certain routes
+function AppRoutes() {
   return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
+    <EconomatoLayout>
+      <Switch>
+        <Route path="/" component={Dashboard} />
+        <Route path="/ingredientes" component={Ingredientes} />
+        <Route path="/ingredientes/:id" component={IngredienteDetalhe} />
+        <Route path="/fornecedores" component={Fornecedores} />
+        <Route path="/rendimento" component={Rendimento} />
+        <Route path="/receitas" component={ReceitasBase} />
+        <Route path="/receitas/:id" component={ReceitaDetalhe} />
+        <Route path="/fichas" component={FichasTecnicas} />
+        <Route path="/fichas/:id" component={FichaDetalhe} />
+        <Route path="/vendas" component={Vendas} />
+        <Route path="/inventario" component={Inventario} />
+        <Route path="/movimentos" component={Movimentos} />
+        <Route path="/alertas" component={Alertas} />
+        <Route path="/ocr/faturas" component={OcrFaturas} />
+        <Route path="/ocr/fecho-caixa" component={OcrFechoCaixa} />
+        <Route path="/404" component={NotFound} />
+        <Route component={NotFound} />
+      </Switch>
+    </EconomatoLayout>
   );
 }
-
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
-          <Toaster />
-          <Router />
+          <Toaster
+            theme="dark"
+            toastOptions={{
+              style: {
+                background: "oklch(0.14 0.008 280)",
+                border: "1px solid oklch(0.22 0.010 280)",
+                color: "oklch(0.92 0.008 80)",
+              },
+            }}
+          />
+          <AppRoutes />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
