@@ -1,4 +1,16 @@
 import { trpc } from "@/lib/trpc";
+// Suppress the benign "ResizeObserver loop completed" notification from recharts.
+// This fires when the observer callback causes a layout change in the same frame —
+// it is harmless and does not affect functionality.
+if (typeof window !== "undefined") {
+  window.addEventListener("error", (e) => {
+    if (e?.message?.includes("ResizeObserver loop")) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+    }
+  }, true);
+}
+
 import { COOKIE_NAME, UNAUTHED_ERR_MSG } from '@shared/const';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";

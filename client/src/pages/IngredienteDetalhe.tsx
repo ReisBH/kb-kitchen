@@ -62,7 +62,7 @@ export default function IngredienteDetalhe() {
           {historico.length === 0 ? (
             <p className="text-sm text-muted-foreground">Ainda não há entradas de compra registadas.</p>
           ) : (
-            <ResponsiveContainer width="100%" height={220}>
+            <ResponsiveContainer width="100%" height={220} minWidth={0}>
               <LineChart data={historico}>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.22 0.010 280)" />
                 <XAxis dataKey="data" tick={{ fontSize: 10, fill: "oklch(0.55 0.008 80)" }} />
@@ -80,4 +80,3 @@ export default function IngredienteDetalhe() {
     </div>
   );
 }
-
