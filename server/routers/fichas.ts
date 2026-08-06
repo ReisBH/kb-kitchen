@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
@@ -14,7 +14,7 @@ export const fichasRouter = router({
       if (!db) return [];
       const q = db.select().from(fichasTecnicas);
       const rows = input?.apenasAtivas !== false
-        ? await q.where(eq(fichasTecnicas.ativo, true)).orderBy(fichasTecnicas.nome)
+        ? await q.where(sql`${fichasTecnicas.ativo} = 1`).orderBy(fichasTecnicas.nome)
         : await q.orderBy(fichasTecnicas.nome);
       // Calcular custo de cada ficha
       const result = [];
@@ -215,4 +215,3 @@ export const fichasRouter = router({
       return db.select().from(vendas).orderBy(vendas.data).limit(input?.limite ?? 30);
     }),
 });
-
