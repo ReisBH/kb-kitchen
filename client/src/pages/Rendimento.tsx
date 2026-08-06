@@ -24,6 +24,9 @@ export default function Rendimento() {
   const [showForm, setShowForm] = useState(true);
   const utils = trpc.useUtils();
   const { data: artigos } = trpc.artigos.listar.useQuery({ tipo: "ingrediente" });
+  // Filtrar apenas proteínas animais: categorias "Peixe" e "Carnes e Aves"
+  const CATEGORIAS_PROTEINA = ["Peixe", "Carnes e Aves"];
+  const proteinas = artigos?.filter(a => CATEGORIAS_PROTEINA.includes(a.categoria ?? ""));
   const { data: testes, isLoading } = trpc.rendimento.listar.useQuery();
   const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<FormValues>();
 
@@ -105,7 +108,7 @@ export default function Rendimento() {
                   className="w-full h-9 rounded-md bg-input border border-border text-sm px-3 focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   <option value="">— seleccionar proteína —</option>
-                  {artigos?.map(a => (
+                  {proteinas?.map(a => (
                     <option key={a.id} value={a.id}>{a.nome}</option>
                   ))}
                 </select>
