@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
-import { Plus, ClipboardCheck, Lock } from "lucide-react";
+import { Plus, Lock, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -29,9 +30,34 @@ export default function Inventario() {
     onError: (e) => toast.error(e.message),
   });
   const fechar = trpc.inventario.fechar.useMutation({
-    onSuccess: () => { toast.success("Inventário fechado. Ajustes de stock aplicados."); utils.inventario.listar.invalidate(); setActiveId(null); },
+    onSuccess: () => { toast.success("Inventário fechado. Ajustes de stock aplicados."); utils.inventario.listar.invalidate(); setActiveId(null); setShowDesviosDialog(false); },
     onError: (e) => toast.error(e.message),
   });
+  const [showDesviosDialog, setShowDesviosDialog] = useState(false);
+  const [desviosPendentes, setDesviosPendentes] = useState<any[]>([]);
+
+  const { refetch: verificarDesvios } = trpc.inventario.verificarDesvios.useQuery(
+    { inventarioId: activeId! },
+    { enabled: false }
+  );
+
+  async function handleFechar() {
+    if (!activeId) return;
+    const linhasPendentes = Object.entries(contagens).map(([artigoId, v]) => ({
+      artigoId: parseInt(artigoId),
+      stockReal: parseFloat(v) || 0,
+    }));
+    if (linhasPendentes.length > 0) {
+      await registar.mutateAsync({ inventarioId: activeId, linhas: linhasPendentes });
+    }
+    const result = await verificarDesvios();
+    if (result.data?.temDesviosSignificativos) {
+      setDesviosPendentes(result.data.desvios);
+      setShowDesviosDialog(true);
+    } else {
+      fechar.mutate({ inventarioId: activeId });
+    }
+  }
 
   return (
     <div className="space-y-6 animate-in">
@@ -54,7 +80,7 @@ export default function Inventario() {
                 onClick={() => registar.mutate({ inventarioId: activeId, linhas: Object.entries(contagens).map(([artigoId, v]) => ({ artigoId: parseInt(artigoId), stockReal: parseFloat(v) || 0 })) })}>
                 Guardar Contagens
               </Button>
-              <Button size="sm" className="bg-danger text-white gap-1" onClick={() => fechar.mutate({ inventarioId: activeId })} disabled={fechar.isPending}>
+              <Button size="sm" className="bg-danger text-white gap-1" onClick={handleFechar} disabled={fechar.isPending || registar.isPending}>
                 <Lock className="w-3 h-3" /> Fechar Inventário
               </Button>
             </div>
@@ -98,7 +124,72 @@ export default function Inventario() {
           )}
         </CardContent>
       </Card>
+
+      {/* Desvios >5% warning dialog */}
+      <AlertDialog open={showDesviosDialog} onOpenChange={setShowDesviosDialog}>
+        <AlertDialogContent className="bg-card border-border max-w-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-xl text-warning flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" /> Desvios Significativos Detectados
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p className="text-muted-foreground text-sm">
+                  Os seguintes artigos apresentam desvios superiores a <strong className="text-warning">5%</strong> face ao stock teórico.
+                  Confirma se pretendes fechar o inventário e aplicar estes ajustes de stock.
+                </p>
+                <div className="max-h-64 overflow-y-auto rounded border border-border">
+                  <table className="w-full text-xs tabular-nums">
+                    <thead>
+                      <tr className="bg-secondary/50 border-b border-border">
+                        <th className="text-left px-3 py-2 text-muted-foreground uppercase tracking-wide">Artigo</th>
+                        <th className="text-right px-3 py-2 text-muted-foreground uppercase tracking-wide">Teórico</th>
+                        <th className="text-right px-3 py-2 text-muted-foreground uppercase tracking-wide">Real</th>
+                        <th className="text-right px-3 py-2 text-muted-foreground uppercase tracking-wide">Desvio</th>
+                        <th className="text-right px-3 py-2 text-muted-foreground uppercase tracking-wide">%</th>
+                        <th className="text-right px-3 py-2 text-muted-foreground uppercase tracking-wide">Valor €</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {desviosPendentes.map((d: any) => (
+                        <tr key={d.artigoId} className="border-b border-border last:border-0">
+                          <td className="px-3 py-2 font-medium">{d.artigoNome}</td>
+                          <td className="px-3 py-2 text-right text-muted-foreground">{fmt(d.stockTeorico, 1)} {d.artigoUnidade}</td>
+                          <td className="px-3 py-2 text-right">{fmt(d.stockReal, 1)} {d.artigoUnidade}</td>
+                          <td className={`px-3 py-2 text-right font-mono \${d.desvioQtd < 0 ? "text-danger" : "text-success"}`}>
+                            {d.desvioQtd > 0 ? "+" : ""}{fmt(d.desvioQtd, 1)} {d.artigoUnidade}
+                          </td>
+                          <td className={`px-3 py-2 text-right font-mono font-semibold \${Math.abs(d.desvioPct) > 20 ? "text-danger" : "text-warning"}`}>
+                            {d.desvioPct > 0 ? "+" : ""}{fmt(d.desvioPct, 1)}%
+                          </td>
+                          <td className={`px-3 py-2 text-right font-mono \${d.desvioValor < 0 ? "text-danger" : "text-success"}`}>
+                            {d.desvioValor > 0 ? "+" : ""}{fmt(d.desvioValor, 2)} €
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Total de artigos com desvio &gt;5%: <strong className="text-warning">{desviosPendentes.length}</strong>
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-border">Rever Contagens</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-danger text-white hover:bg-danger/90"
+              onClick={() => {
+                setShowDesviosDialog(false);
+                if (activeId) fechar.mutate({ inventarioId: activeId });
+              }}
+            >
+              Confirmar e Fechar Inventário
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
-

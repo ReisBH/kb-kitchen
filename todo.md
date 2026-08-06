@@ -82,3 +82,5 @@
 - [x] Registo de Vendas em lote: lista todos os pratos com campo de quantidade, submissão única
 - [x] Entradas e saídas manuais de stock: formulário por ingrediente sem OCR
 - [x] OCR: ficha de revisão após leitura da foto antes de confirmar importação
+- [x] Livro de Movimentos: edição e exclusão de movimentos (Admin e Head Chef)
+- [x] Inventário: alerta de desvios >5% antes de guardar, com lista de desvios destacados

@@ -131,5 +131,43 @@ export const inventarioRouter = router({
         .where(eq(inventarios.id, input.inventarioId));
       return { success: true };
     }),
-});
 
+  // ─── Verificar desvios antes de fechar (retorna desvios >5%) ─────────────────
+  verificarDesvios: protectedProcedure
+    .input(z.object({ inventarioId: z.number() }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) return { desvios: [], temDesviosSignificativos: false };
+      const linhas = await db.select({
+        linha: inventarioLinhas,
+        artigoNome: artigos.nome,
+        artigoUnidade: artigos.unidadeBase,
+      }).from(inventarioLinhas)
+        .leftJoin(artigos, eq(inventarioLinhas.artigoId, artigos.id))
+        .where(and(
+          eq(inventarioLinhas.inventarioId, input.inventarioId),
+          sql`${inventarioLinhas.stockReal} IS NOT NULL`
+        ));
+      const desviosSignificativos = linhas
+        .filter(l => {
+          const pct = Math.abs(parseFloat(l.linha.desvioPct ?? "0"));
+          const qtd = Math.abs(parseFloat(l.linha.desvioQtd ?? "0"));
+          return pct > 5 && qtd > 0.001;
+        })
+        .map(l => ({
+          artigoId: l.linha.artigoId,
+          artigoNome: l.artigoNome ?? "—",
+          artigoUnidade: l.artigoUnidade ?? "g",
+          stockTeorico: parseFloat(l.linha.stockTeorico ?? "0"),
+          stockReal: parseFloat(l.linha.stockReal ?? "0"),
+          desvioQtd: parseFloat(l.linha.desvioQtd ?? "0"),
+          desvioPct: parseFloat(l.linha.desvioPct ?? "0"),
+          desvioValor: parseFloat(l.linha.desvioValor ?? "0"),
+        }))
+        .sort((a, b) => Math.abs(b.desvioPct) - Math.abs(a.desvioPct));
+      return {
+        desvios: desviosSignificativos,
+        temDesviosSignificativos: desviosSignificativos.length > 0,
+      };
+    }),
+});

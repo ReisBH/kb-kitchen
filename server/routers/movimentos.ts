@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { eq, and, desc, gte, lte, sql } from "drizzle-orm";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, roleProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { movimentos, artigos } from "../../drizzle/schema";
 import { registarMovimento } from "../engine/stock";
@@ -108,5 +108,45 @@ export const movimentosRouter = router({
         utilizadorId: ctx.user?.id,
       });
       return result;
+    }),
+
+  // ─── Editar movimento (Admin e Head Chef) ────────────────────────────────────
+  editar: roleProcedure(["head_chef"])
+    .input(z.object({
+      id: z.number(),
+      quantidade: z.number().optional(),
+      custoUnitario: z.number().nonnegative().optional(),
+      motivo: z.string().optional(),
+      tipo: z.enum([
+        "entrada_compra", "producao_consumo", "producao_entrada",
+        "venda_consumo", "quebra", "transformacao_saida",
+        "transformacao_entrada", "ajuste_inventario",
+      ]).optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      const [mov] = await db.select().from(movimentos).where(eq(movimentos.id, input.id)).limit(1);
+      if (!mov) throw new Error("Movimento não encontrado");
+      const updates: Record<string, unknown> = {};
+      if (input.quantidade !== undefined) updates.quantidade = input.quantidade.toFixed(3);
+      if (input.custoUnitario !== undefined) updates.custoUnitario = input.custoUnitario.toFixed(6);
+      if (input.motivo !== undefined) updates.motivo = input.motivo;
+      if (input.tipo !== undefined) updates.tipo = input.tipo;
+      if (Object.keys(updates).length === 0) return { success: true };
+      await db.update(movimentos).set(updates as any).where(eq(movimentos.id, input.id));
+      return { success: true };
+    }),
+
+  // ─── Eliminar movimento (Admin e Head Chef) ───────────────────────────────────
+  eliminar: roleProcedure(["head_chef"])
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      const [mov] = await db.select().from(movimentos).where(eq(movimentos.id, input.id)).limit(1);
+      if (!mov) throw new Error("Movimento não encontrado");
+      await db.delete(movimentos).where(eq(movimentos.id, input.id));
+      return { success: true };
     }),
 });
