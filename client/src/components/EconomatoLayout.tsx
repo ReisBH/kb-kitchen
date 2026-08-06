@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard, Package, Users, FlaskConical, ChefHat, BookOpen,
@@ -33,7 +33,14 @@ export default function EconomatoLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated, loading, logout } = useAuth();
+  const [, navigate] = useLocation();
   const role = (user?.role ?? "user") as AppRole;
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate("/login");
+    }
+  }, [loading, isAuthenticated, navigate]);
 
   // Filter nav items by role
   const navItems = ALL_NAV_ITEMS.filter(item => {
@@ -55,12 +62,11 @@ export default function EconomatoLayout({ children }: { children: React.ReactNod
   }
 
   if (!isAuthenticated) {
-    // Redirect to the dedicated dual-login page
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-3">
           <div className="text-4xl font-display text-gold">Economato</div>
-          <div className="text-muted-foreground text-sm">A redirecionar para o login…</div>
+          <div className="text-muted-foreground text-sm">A redirecionar…</div>
         </div>
       </div>
     );

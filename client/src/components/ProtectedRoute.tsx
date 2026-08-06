@@ -1,7 +1,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { canAccess } from "@shared/permissions";
 import type { AppRole } from "@shared/permissions";
-import { useLocation, Redirect } from "wouter";
+import { useLocation } from "wouter";
+import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import AcessoNegado from "@/pages/AcessoNegado";
 
@@ -12,6 +13,13 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ component: Component, path }: ProtectedRouteProps) {
   const { user, loading, isAuthenticated } = useAuth();
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate("/login");
+    }
+  }, [loading, isAuthenticated, navigate]);
 
   if (loading) {
     return (
@@ -22,7 +30,12 @@ export default function ProtectedRoute({ component: Component, path }: Protected
   }
 
   if (!isAuthenticated) {
-    return <Redirect to="/login" />;
+    // Show spinner while the useEffect redirect fires
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gold" />
+      </div>
+    );
   }
 
   const role = (user?.role ?? "user") as AppRole;
@@ -32,3 +45,4 @@ export default function ProtectedRoute({ component: Component, path }: Protected
 
   return <Component />;
 }
+
