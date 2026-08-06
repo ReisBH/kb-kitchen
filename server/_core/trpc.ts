@@ -2,21 +2,22 @@ import { NOT_ADMIN_ERR_MSG, UNAUTHED_ERR_MSG } from '@shared/const';
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import type { TrpcContext } from "./context";
+import type { AppRole } from "../../shared/permissions";
 
 const t = initTRPC.context<TrpcContext>().create({
   transformer: superjson,
 });
-
 export const router = t.router;
 export const publicProcedure = t.procedure;
-
 const requireUser = t.middleware(async opts => {
   const { ctx, next } = opts;
-
   if (!ctx.user) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
   }
-
+  // Block deactivated users
+  if ((ctx.user as any).ativo === false) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Conta desactivada. Contacta o administrador." });
+  }
   return next({
     ctx: {
       ...ctx,
@@ -24,17 +25,13 @@ const requireUser = t.middleware(async opts => {
     },
   });
 });
-
 export const protectedProcedure = t.procedure.use(requireUser);
-
 export const adminProcedure = t.procedure.use(
   t.middleware(async opts => {
     const { ctx, next } = opts;
-
     if (!ctx.user || ctx.user.role !== 'admin') {
       throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
     }
-
     return next({
       ctx: {
         ...ctx,
@@ -43,3 +40,20 @@ export const adminProcedure = t.procedure.use(
     });
   }),
 );
+
+// Role-gated procedure factory
+export function roleProcedure(allowedRoles: AppRole[]) {
+  return t.procedure.use(
+    t.middleware(async opts => {
+      const { ctx, next } = opts;
+      if (!ctx.user) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+      }
+      const role = ctx.user.role as AppRole;
+      if (role !== "admin" && !allowedRoles.includes(role)) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Não tens permissão para executar esta operação." });
+      }
+      return next({ ctx: { ...ctx, user: ctx.user } });
+    }),
+  );
+}

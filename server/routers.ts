@@ -13,6 +13,7 @@ import { alertasRouter } from "./routers/alertas";
 import { ocrRouter } from "./routers/ocr";
 import { dashboardRouter } from "./routers/dashboard";
 import { uploadRouter } from "./routers/upload";
+import { utilizadoresRouter } from "./routers/utilizadores";
 
 export const appRouter = router({
   system: systemRouter,
@@ -35,7 +36,7 @@ export const appRouter = router({
   ocr: ocrRouter,
   dashboard: dashboardRouter,
   upload: uploadRouter,
+  utilizadores: utilizadoresRouter,
 });
 
 export type AppRouter = typeof appRouter;
-

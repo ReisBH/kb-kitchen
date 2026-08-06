@@ -5,6 +5,9 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import EconomatoLayout from "./components/EconomatoLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+import AcessoNegado from "./pages/AcessoNegado";
 import Dashboard from "./pages/Dashboard";
 import Ingredientes from "./pages/Ingredientes";
 import IngredienteDetalhe from "./pages/IngredienteDetalhe";
@@ -21,31 +24,42 @@ import Alertas from "./pages/Alertas";
 import OcrFaturas from "./pages/OcrFaturas";
 import OcrFechoCaixa from "./pages/OcrFechoCaixa";
 import MovimentosManual from "./pages/MovimentosManual";
+import Utilizadores from "./pages/Utilizadores";
+
+// Helper: wrap a component in EconomatoLayout + ProtectedRoute
+function P({ path, component }: { path: string; component: React.ComponentType }) {
+  return <EconomatoLayout><ProtectedRoute path={path} component={component} /></EconomatoLayout>;
+}
 
 function AppRoutes() {
   return (
-    <EconomatoLayout>
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/ingredientes" component={Ingredientes} />
-        <Route path="/ingredientes/:id" component={IngredienteDetalhe} />
-        <Route path="/fornecedores" component={Fornecedores} />
-        <Route path="/rendimento" component={Rendimento} />
-        <Route path="/receitas" component={ReceitasBase} />
-        <Route path="/receitas/:id" component={ReceitaDetalhe} />
-        <Route path="/fichas" component={FichasTecnicas} />
-        <Route path="/fichas/:id" component={FichaDetalhe} />
-        <Route path="/vendas" component={Vendas} />
-        <Route path="/inventario" component={Inventario} />
-        <Route path="/movimentos" component={Movimentos} />
-        <Route path="/alertas" component={Alertas} />
-        <Route path="/ocr/faturas" component={OcrFaturas} />
-        <Route path="/ocr/fecho-caixa" component={OcrFechoCaixa} />
-        <Route path="/movimentos-manual" component={MovimentosManual} />
-        <Route path="/404" component={NotFound} />
-        <Route component={NotFound} />
-      </Switch>
-    </EconomatoLayout>
+    <Switch>
+      {/* Public routes */}
+      <Route path="/login" component={Login} />
+      <Route path="/acesso-negado" component={AcessoNegado} />
+
+      {/* Protected routes — each enforces role via ProtectedRoute */}
+      <Route path="/">{() => <P path="/" component={Dashboard} />}</Route>
+      <Route path="/ingredientes">{() => <P path="/ingredientes" component={Ingredientes} />}</Route>
+      <Route path="/ingredientes/:id">{() => <P path="/ingredientes/:id" component={IngredienteDetalhe} />}</Route>
+      <Route path="/fornecedores">{() => <P path="/fornecedores" component={Fornecedores} />}</Route>
+      <Route path="/rendimento">{() => <P path="/rendimento" component={Rendimento} />}</Route>
+      <Route path="/receitas">{() => <P path="/receitas" component={ReceitasBase} />}</Route>
+      <Route path="/receitas/:id">{() => <P path="/receitas/:id" component={ReceitaDetalhe} />}</Route>
+      <Route path="/fichas">{() => <P path="/fichas" component={FichasTecnicas} />}</Route>
+      <Route path="/fichas/:id">{() => <P path="/fichas/:id" component={FichaDetalhe} />}</Route>
+      <Route path="/vendas">{() => <P path="/vendas" component={Vendas} />}</Route>
+      <Route path="/movimentos-manual">{() => <P path="/movimentos-manual" component={MovimentosManual} />}</Route>
+      <Route path="/movimentos">{() => <P path="/movimentos" component={Movimentos} />}</Route>
+      <Route path="/inventario">{() => <P path="/inventario" component={Inventario} />}</Route>
+      <Route path="/alertas">{() => <P path="/alertas" component={Alertas} />}</Route>
+      <Route path="/ocr/faturas">{() => <P path="/ocr/faturas" component={OcrFaturas} />}</Route>
+      <Route path="/ocr/fecho-caixa">{() => <P path="/ocr/fecho-caixa" component={OcrFechoCaixa} />}</Route>
+      <Route path="/utilizadores">{() => <P path="/utilizadores" component={Utilizadores} />}</Route>
+
+      <Route path="/404" component={NotFound} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 

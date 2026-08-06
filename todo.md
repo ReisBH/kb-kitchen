@@ -62,6 +62,13 @@
 - [x] Testes unitários: cálculo de rendimento de proteínas
 
 ## Pendente / Melhorias Futuras
+- [x] RBAC: Estender schema com 4 roles (admin, head_chef, sub_chefe, cozinheiro) e tabela utilizadores_autorizados
+- [x] RBAC: Mapa de permissões por role e proteção de procedures no backend
+- [x] RBAC: Página de login dedicada com ecrã de boas-vindas
+- [x] RBAC: Proteção de rotas no frontend por role
+- [x] RBAC: Sidebar filtrada por permissões do role activo
+- [x] RBAC: Página de gestão de utilizadores (Admin) — listar, convidar, desactivar
+- [x] RBAC: Página de acesso negado
 - [ ] Formulário de criação de receitas base com componentes
 - [ ] Formulário de criação de fichas técnicas com componentes
 - [ ] Simulador de preço nas fichas técnicas

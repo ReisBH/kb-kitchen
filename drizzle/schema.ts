@@ -10,13 +10,31 @@ export const users = mysqlTable("users", {
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: mysqlEnum("role", ["admin", "head_chef", "sub_chefe", "cozinheiro", "user"]).default("user").notNull(),
+  ativo: boolean("ativo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+
+// ─── UTILIZADORES AUTORIZADOS ─────────────────────────────────────────────────
+// Convites: o admin adiciona o openId/email e o role antes do utilizador fazer login
+export const utilizadoresAutorizados = mysqlTable("utilizadores_autorizados", {
+  id: int("id").autoincrement().primaryKey(),
+  openId: varchar("openId", { length: 64 }).unique(),
+  email: varchar("email", { length: 320 }),
+  nome: varchar("nome", { length: 255 }),
+  role: mysqlEnum("role", ["admin", "head_chef", "sub_chefe", "cozinheiro"]).notNull(),
+  ativo: boolean("ativo").default(true).notNull(),
+  notas: text("notas"),
+  criadoPor: int("criadoPor"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type UtilizadorAutorizado = typeof utilizadoresAutorizados.$inferSelect;
+export type InsertUtilizadorAutorizado = typeof utilizadoresAutorizados.$inferInsert;
 
 // ─── FORNECEDORES ─────────────────────────────────────────────────────────────
 export const fornecedores = mysqlTable("fornecedores", {
