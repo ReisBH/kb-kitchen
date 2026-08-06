@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { fmtQtd } from "@/lib/fmtQtd";
 
 function fmt(n: number | string | null | undefined, d = 4) {
   if (n == null) return "—";
@@ -54,7 +55,7 @@ export default function ReceitaDetalhe() {
                     <span className={`w-1.5 h-1.5 rounded-full ${c.tipoComponente === "receita_base" ? "bg-info" : "bg-muted-foreground"}`} />
                     <span>{c.nomeComponente}</span>
                   </div>
-                  <span className="text-muted-foreground tabular-nums">{fmt(parseFloat(c.quantidade), 3)} {c.unidade}</span>
+                  <span className="text-muted-foreground tabular-nums">{fmtQtd(c.quantidade, c.unidade)}</span>
                 </div>
               ))}
             </div>
@@ -64,4 +65,3 @@ export default function ReceitaDetalhe() {
     </div>
   );
 }
-

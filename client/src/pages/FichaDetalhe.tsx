@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { fmtQtd } from "@/lib/fmtQtd";
 
 function fmt(n: number | string | null | undefined, d = 2) {
   if (n == null) return "—";
@@ -18,7 +19,7 @@ function ArvoreNo({ no, depth = 0 }: { no: any; depth?: number }) {
         <div className="flex items-center gap-2">
           <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${no.tipo === "receita_base" ? "bg-info" : no.tipo === "proteina_limpa" ? "bg-warning" : "bg-muted-foreground"}`} />
           <span className={depth === 0 ? "font-medium" : "text-muted-foreground"}>{no.nome}</span>
-          <span className="text-xs text-muted-foreground tabular-nums">{fmt(no.quantidade, 3)} {no.unidade}</span>
+          <span className="text-xs text-muted-foreground tabular-nums">{fmtQtd(no.quantidade, no.unidade)}</span>
         </div>
         <span className="text-gold tabular-nums font-mono text-xs">{fmt(no.custoTotal, 4)} €</span>
       </div>
@@ -85,4 +86,3 @@ export default function FichaDetalhe() {
     </div>
   );
 }
-
