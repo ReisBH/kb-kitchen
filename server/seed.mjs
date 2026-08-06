@@ -81,10 +81,10 @@ for (const [id, nome, tipo, cat, unBase, unCompra, fator, dens, sMin, sMax, pEnc
 
 // ─── ARTIGOS — PROTEÍNAS LIMPAS ───────────────────────────────────────────────
 await conn.execute(`INSERT IGNORE INTO artigos (id, nome, tipo, categoria, unidadeBase, custoMedioPonderado, artigoBrutoId, ativo) VALUES
-  (50, 'Bacalhau limpo', 'proteina_limpa', 'Peixe', 'g', 15.83, 5, 1),
-  (51, 'Salmão limpo', 'proteina_limpa', 'Peixe', 'g', 16.00, 6, 1),
-  (52, 'Lulas limpas', 'proteina_limpa', 'Peixe', 'g', 11.25, 7, 1),
-  (53, 'Frango limpo', 'proteina_limpa', 'Carnes e Aves', 'g', 4.20, 1, 1)`);
+  (50, 'Bacalhau limpo', 'proteina_limpa', 'Peixe', 'g', 0.01583, 5, 1),
+  (51, 'Salmão limpo', 'proteina_limpa', 'Peixe', 'g', 0.01600, 6, 1),
+  (52, 'Lulas limpas', 'proteina_limpa', 'Peixe', 'g', 0.01125, 7, 1),
+  (53, 'Frango limpo', 'proteina_limpa', 'Carnes e Aves', 'g', 0.00420, 1, 1)`);
 
 // ─── ARTIGOS — RECEITAS BASE ──────────────────────────────────────────────────
 await conn.execute(`INSERT IGNORE INTO artigos (id, nome, tipo, categoria, unidadeBase, rendimentoEsperado, validadeProducaoDias, tempoPrepMin, custoMedioPonderado, ativo) VALUES
@@ -189,7 +189,7 @@ const stockInicial = [
   [33, 5000, 1.10], [34, 8000, 0.65], [35, 4000, 0.80], [36, 3000, 0.40],
   [37, 3000, 2.50], [38, 3000, 2.20], [39, 2000, 1.50], [40, 2000, 3.20],
   [41, 3000, 1.80], [42, 40, 0.35], [43, 40, 0.25], [44, 600, 5.50], [45, 800, 4.00],
-  [50, 2000, 15.83], [51, 1500, 16.00], [52, 1200, 11.25], [53, 1800, 4.20],
+  [50, 2000, 0.01583], [51, 1500, 0.01600], [52, 1200, 0.01125], [53, 1800, 0.00420],
   [60, 1600, 0.0035], [61, 4000, 0.0012], [62, 300, 0.0023], [63, 1200, 0.0018],
   [64, 800, 0.0045], [65, 600, 0.0060], [66, 1000, 0.0028], [67, 2000, 0.0022],
 ];
