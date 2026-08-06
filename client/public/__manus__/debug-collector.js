@@ -399,6 +399,8 @@
   });
 
   window.addEventListener("error", function (event) {
+    // Skip the benign ResizeObserver notification — it is not a real error
+    if (event.message && event.message.indexOf("ResizeObserver loop") !== -1) return;
     store.consoleLogs.push({
       timestamp: Date.now(),
       level: "ERROR",
