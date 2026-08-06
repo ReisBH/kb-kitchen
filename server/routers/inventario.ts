@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { eq, and, sql } from "drizzle-orm";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, router, roleProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { inventarios, inventarioLinhas, artigos } from "../../drizzle/schema";
 import { calcularStock, calcularStockMultiplos, registarMovimento } from "../engine/stock";
@@ -170,4 +170,47 @@ export const inventarioRouter = router({
         temDesviosSignificativos: desviosSignificativos.length > 0,
       };
     }),
+
+  // ─── Editar inventário (Admin e Head Chef) ────────────────────────────────────
+  editar: roleProcedure(["head_chef"]).input(z.object({
+    id: z.number(),
+    nome: z.string().optional(),
+    zona: z.string().optional(),
+  })).mutation(async ({ input }) => {
+    const db = await getDb();
+    if (!db) throw new Error("Base de dados não disponível");
+    await db.update(inventarios).set({
+      ...(input.nome !== undefined ? { nome: input.nome } : {}),
+      ...(input.zona !== undefined ? { zona: input.zona } : {}),
+    }).where(eq(inventarios.id, input.id));
+    return { success: true };
+  }),
+
+  // ─── Eliminar inventário (Admin e Head Chef) ──────────────────────────────────
+  // Elimina o inventário e as suas linhas. Se fechado, reverte os ajustes de stock.
+  eliminar: roleProcedure(["head_chef"]).input(z.object({
+    id: z.number(),
+    reverterAjustes: z.boolean().default(false),
+  })).mutation(async ({ input, ctx }) => {
+    const db = await getDb();
+    if (!db) throw new Error("Base de dados não disponível");
+    // If reverterAjustes, delete the ajuste_inventario movements created by this inventory
+    if (input.reverterAjustes) {
+      const { movimentos } = await import("../../drizzle/schema");
+      await db.delete(movimentos).where(
+        sql`${movimentos.documentoId} = ${`inventario_${input.id}`} AND ${movimentos.tipo} = 'ajuste_inventario'`
+      );
+      // Recalculate stock for affected artigos
+      const linhas = await db.select({ artigoId: inventarioLinhas.artigoId })
+        .from(inventarioLinhas).where(eq(inventarioLinhas.inventarioId, input.id));
+      // After reverting movements, recalculate stock for affected artigos
+      for (const l of linhas) {
+        await calcularStock(l.artigoId);
+      }
+    }
+    // Delete lines then inventory
+    await db.delete(inventarioLinhas).where(eq(inventarioLinhas.inventarioId, input.id));
+    await db.delete(inventarios).where(eq(inventarios.id, input.id));
+    return { success: true };
+  }),
 });
