@@ -1,0 +1,1 @@
+ALTER TABLE `artigos` ADD `requerLimpeza` boolean DEFAULT false NOT NULL;

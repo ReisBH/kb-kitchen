@@ -95,6 +95,8 @@ export const artigos = mysqlTable("artigos", {
   perecivel: boolean("perecivel").default(false).notNull(),
   validadeDias: int("validadeDias"),
   ativo: boolean("ativo").default(true).notNull(),
+  // Para proteínas: indica se o produto chega inteiro e requer limpeza manual
+  requerLimpeza: boolean("requerLimpeza").default(false).notNull(),
   // Alergénios (bitmask dos 14 alergénios europeus)
   alergenios: int("alergenios").default(0),
   // Para proteínas limpas: referência ao artigo bruto

@@ -26,8 +26,8 @@ export default function Rendimento() {
   const utils = trpc.useUtils();
   const { data: artigos } = trpc.artigos.listar.useQuery({ tipo: "ingrediente" });
   // Filtrar apenas proteínas animais: categorias "Peixe" e "Carnes e Aves"
-  const CATEGORIAS_PROTEINA = ["Peixe", "Carnes e Aves"];
-  const proteinas = artigos?.filter(a => CATEGORIAS_PROTEINA.includes(a.categoria ?? ""));
+  const CATEGORIAS_PROTEINA = ["Peixe", "Carnes e Aves"]; // still used for artigo limpo filter
+  const proteinas = artigos?.filter(a => CATEGORIAS_PROTEINA.includes(a.categoria ?? "") && (a as any).requerLimpeza === true);
   const { data: testes, isLoading } = trpc.rendimento.listar.useQuery();
   const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm<FormValues>();
 

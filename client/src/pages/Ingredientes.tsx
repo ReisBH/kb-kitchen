@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,9 @@ function stockStatus(stock: number, minimo: number, ponto: number, maximo: numbe
 }
 
 function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
-  const { register, handleSubmit, reset, control } = useForm<any>({ defaultValues: { unidadeBase: "g" } });
+  const { register, handleSubmit, reset, control, watch } = useForm<any>({ defaultValues: { unidadeBase: "g", requerLimpeza: false } });
+  const categoriaWatch = watch("categoria") ?? "";
+  const isProteina = ["Peixe", "Carnes e Aves"].includes(categoriaWatch);
   const utils = trpc.useUtils();
   const criar = trpc.artigos.criar.useMutation({
     onSuccess: () => {
@@ -89,6 +92,26 @@ function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
           </select>
         </div>
       </div>
+      {isProteina && (
+        <div className="flex items-center gap-3 p-3 rounded-md bg-warning/5 border border-warning/20">
+          <Controller
+            name="requerLimpeza"
+            control={control}
+            render={({ field }) => (
+              <Checkbox
+                id="requerLimpeza"
+                checked={!!field.value}
+                onCheckedChange={field.onChange}
+                className="border-warning data-[state=checked]:bg-warning data-[state=checked]:border-warning"
+              />
+            )}
+          />
+          <label htmlFor="requerLimpeza" className="text-sm cursor-pointer">
+            <span className="font-medium">Requer limpeza manual</span>
+            <span className="text-xs text-muted-foreground block">Aparece na lista do Rendimento de Proteínas</span>
+          </label>
+        </div>
+      )}
       <Button type="submit" disabled={criar.isPending} className="w-full bg-primary text-primary-foreground">
         {criar.isPending ? "A criar…" : "Criar Artigo"}
       </Button>
