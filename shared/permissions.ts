@@ -26,10 +26,10 @@ export const ROUTE_PERMISSIONS: Record<string, AppRole[]> = {
   "/movimentos-manual": ["admin", "head_chef", "sub_chefe"],
   "/movimentos": ["admin", "head_chef", "sub_chefe"],
   "/inventario": ["admin", "head_chef", "sub_chefe"],
-  "/alertas": ["admin", "head_chef"],
+  "/alertas": ["admin", "head_chef", "sub_chefe"],
   "/ocr/faturas": ["admin", "head_chef"],
   "/ocr/fecho-caixa": ["admin", "head_chef", "sub_chefe"],
-  "/utilizadores": ["admin"],
+  "/utilizadores": ["admin", "head_chef"],
 };
 
 // ─── NAV ITEMS PERMISSIONS ────────────────────────────────────────────────────
@@ -44,10 +44,10 @@ export const NAV_PERMISSIONS: Record<string, AppRole[]> = {
   "/movimentos-manual": ["admin", "head_chef", "sub_chefe"],
   "/movimentos": ["admin", "head_chef", "sub_chefe"],
   "/inventario": ["admin", "head_chef", "sub_chefe"],
-  "/alertas": ["admin", "head_chef"],
+  "/alertas": ["admin", "head_chef", "sub_chefe"],
   "/ocr/faturas": ["admin", "head_chef"],
   "/ocr/fecho-caixa": ["admin", "head_chef", "sub_chefe"],
-  "/utilizadores": ["admin"],
+  "/utilizadores": ["admin", "head_chef"],
 };
 
 export function canAccess(role: AppRole | undefined | null, path: string): boolean {
@@ -57,4 +57,9 @@ export function canAccess(role: AppRole | undefined | null, path: string): boole
   if (!allowed) return false;
   return allowed.includes(role);
 }
-
+export const ROLE_DESCRIPTIONS: Record<string, string> = {
+  admin: "Acesso total — gestão de utilizadores, configurações, todos os módulos",
+  head_chef: "Acesso geral à plataforma — todos os módulos incluindo gestão de utilizadores (não pode alterar o perfil do Administrador)",
+  sub_chefe: "Acesso geral — incluindo alertas e encomendas; sem OCR de faturas e sem gestão de utilizadores",
+  cozinheiro: "Acesso limitado — Fichas Técnicas, Receitas Base e Rendimento de Proteínas",
+};

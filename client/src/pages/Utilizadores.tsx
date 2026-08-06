@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ROLE_LABELS } from "@shared/permissions";
 import type { AppRole } from "@shared/permissions";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 const ROLE_ICONS: Record<string, React.ReactNode> = {
   admin: <Shield className="w-3.5 h-3.5" />,
@@ -43,6 +44,11 @@ export default function Utilizadores() {
   const [novoRole, setNovoRole] = useState<string>("");
   const [novoNotas, setNovoNotas] = useState("");
   const utils = trpc.useUtils();
+  const { user: currentUser } = useAuth();
+  const isAdmin = currentUser?.role === "admin";
+  const rolesDisponiveis = (isAdmin
+    ? ["admin", "head_chef", "sub_chefe", "cozinheiro"]
+    : ["head_chef", "sub_chefe", "cozinheiro"]) as AppRole[];
 
   const { data: autorizados, isLoading } = trpc.utilizadores.listarAutorizados.useQuery();
   const { data: utilizadores } = trpc.utilizadores.listarUtilizadores.useQuery();
@@ -142,7 +148,7 @@ export default function Utilizadores() {
                   </tr>
                 </thead>
                 <tbody>
-                  {autorizados!.map(u => (
+                  {autorizados!.filter(u => isAdmin || u.role !== "admin").map(u => (
                     <tr key={u.id} className={`border-b border-border last:border-0 ${!u.ativo ? "opacity-50" : ""}`}>
                       <td className="px-4 py-3 font-medium">{u.nome}</td>
                       <td className="px-4 py-3 text-muted-foreground text-xs font-mono">
@@ -292,4 +298,3 @@ export default function Utilizadores() {
     </div>
   );
 }
-
