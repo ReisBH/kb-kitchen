@@ -54,7 +54,7 @@ export default function EconomatoLayout({ children }: { children: React.ReactNod
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-3">
-          <div className="text-4xl font-display text-gold">Economato</div>
+          <div className="text-4xl font-display text-gold">KB Kitchen</div>
           <div className="text-muted-foreground text-sm">A carregar…</div>
         </div>
       </div>
@@ -65,7 +65,7 @@ export default function EconomatoLayout({ children }: { children: React.ReactNod
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-3">
-          <div className="text-4xl font-display text-gold">Economato</div>
+          <div className="text-4xl font-display text-gold">KB Kitchen</div>
           <div className="text-muted-foreground text-sm">A redirecionar…</div>
         </div>
       </div>
@@ -86,8 +86,8 @@ export default function EconomatoLayout({ children }: { children: React.ReactNod
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-border">
           <div>
-            <h1 className="font-display text-2xl text-gold leading-none">Economato</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">Gestão de Stock</p>
+            <h1 className="font-display text-2xl text-gold leading-none">KB Kitchen</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">Gestão de Cozinha</p>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground hover:text-foreground">
             <X className="w-5 h-5" />
@@ -139,7 +139,7 @@ export default function EconomatoLayout({ children }: { children: React.ReactNod
           <button onClick={() => setSidebarOpen(true)} className="text-muted-foreground hover:text-foreground">
             <Menu className="w-5 h-5" />
           </button>
-          <span className="font-display text-xl text-gold">Economato</span>
+          <span className="font-display text-xl text-gold">KB Kitchen</span>
         </header>
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">

@@ -64,8 +64,8 @@ export default function Login() {
       <div className="relative z-10 w-full max-w-md">
         {/* Brand */}
         <div className="text-center mb-8">
-          <h1 className="font-display text-5xl text-gold tracking-wide mb-2">Economato</h1>
-          <p className="text-muted-foreground text-sm tracking-widest uppercase">Gestão de Stock e Fichas Técnicas</p>
+          <h1 className="font-display text-5xl text-gold tracking-wide mb-2">KB Kitchen</h1>
+          <p className="text-muted-foreground text-sm tracking-widest uppercase">Gestão de Cozinha e Fichas Técnicas</p>
           <div className="mt-4 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
         </div>
 
@@ -150,7 +150,7 @@ export default function Login() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6 opacity-50">
-          © {new Date().getFullYear()} Economato · Acesso restrito
+          © {new Date().getFullYear()} KB Kitchen · Acesso restrito
         </p>
       </div>
     </div>
@@ -192,7 +192,7 @@ function AlterarSenhaObrigatoria({ username, onSuccess }: { username: string; on
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.18_0.012_280)_0%,oklch(0.10_0.006_280)_70%)] pointer-events-none" />
       <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="font-display text-4xl text-gold mb-2">Economato</h1>
+          <h1 className="font-display text-4xl text-gold mb-2">KB Kitchen</h1>
           <div className="h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
         </div>
         <div className="bg-card border border-border rounded-2xl p-7 shadow-2xl space-y-5">
