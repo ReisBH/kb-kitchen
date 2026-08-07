@@ -177,10 +177,10 @@ export default function IngredienteDetalhe() {
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">Fornecedor</label>
-                <Select value={editData.fornecedorId ? String(editData.fornecedorId) : ""} onValueChange={v => setEditData(p => ({ ...p, fornecedorId: v ? parseInt(v) : null }))}>
+                <Select value={editData.fornecedorId ? String(editData.fornecedorId) : "__none__"} onValueChange={v => setEditData(p => ({ ...p, fornecedorId: v === "__none__" ? null : parseInt(v) }))}>
                   <SelectTrigger className="bg-input border-border h-9"><SelectValue placeholder="— sem fornecedor —" /></SelectTrigger>
                   <SelectContent className="bg-popover border-border">
-                    <SelectItem value="">— sem fornecedor —</SelectItem>
+                    <SelectItem value="__none__">— sem fornecedor —</SelectItem>
                     {fornecedores?.map((f: any) => <SelectItem key={f.id} value={String(f.id)}>{f.nome}</SelectItem>)}
                   </SelectContent>
                 </Select>
