@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { eq, and, sql, desc, like, or } from "drizzle-orm";
+import { eq, and, sql, desc, like, or, inArray } from "drizzle-orm";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { artigos, movimentos, fornecedores } from "../../drizzle/schema";
+import { artigos, movimentos, fornecedores, receitasBaseComponentes, fichasTecnicasComponentes } from "../../drizzle/schema";
 import { calcularStockMultiplos } from "../engine/stock";
 
 export const artigosRouter = router({
@@ -151,5 +151,40 @@ export const artigosRouter = router({
     const rows = await db.selectDistinct({ categoria: artigos.categoria }).from(artigos).where(sql`${artigos.categoria} IS NOT NULL`);
     return rows.map(r => r.categoria).filter(Boolean) as string[];
   }),
-});
 
+  // ─── Verificar uso em receitas/fichas (antes de eliminar) ─────────────────────
+  verificarUso: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) return { emUso: false, receitas: [], fichas: [] };
+      const emReceitas = await db.select({ receitaId: receitasBaseComponentes.receitaId })
+        .from(receitasBaseComponentes)
+        .where(eq(receitasBaseComponentes.componenteId, input.id));
+      const emFichas = await db.select({ fichaId: fichasTecnicasComponentes.fichaId })
+        .from(fichasTecnicasComponentes)
+        .where(eq(fichasTecnicasComponentes.componenteId, input.id));
+      const receitaIds = Array.from(new Set(emReceitas.map(r => r.receitaId)));
+      const fichaIds = Array.from(new Set(emFichas.map(f => f.fichaId)));
+      const receitaNomes: string[] = [];
+      const fichaNomes: string[] = [];
+      if (receitaIds.length > 0) {
+        const rows = await db.select({ nome: artigos.nome })
+          .from(artigos)
+          .where(inArray(artigos.id, receitaIds));
+        receitaNomes.push(...rows.map(r => r.nome ?? "—"));
+      }
+      if (fichaIds.length > 0) {
+        const { fichasTecnicas } = await import("../../drizzle/schema");
+        const rows = await db.select({ nome: fichasTecnicas.nome })
+          .from(fichasTecnicas)
+          .where(inArray(fichasTecnicas.id, fichaIds));
+        fichaNomes.push(...rows.map(f => f.nome ?? "—"));
+      }
+      return {
+        emUso: receitaNomes.length > 0 || fichaNomes.length > 0,
+        receitas: receitaNomes,
+        fichas: fichaNomes,
+      };
+    }),
+});
