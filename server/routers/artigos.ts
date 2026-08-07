@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { eq, and, sql, desc, like, or, inArray } from "drizzle-orm";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
@@ -86,6 +87,19 @@ export const artigosRouter = router({
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
+      // Check for duplicate name (case-insensitive)
+      const existing = await db.select({ id: artigos.id, nome: artigos.nome, ativo: artigos.ativo })
+        .from(artigos)
+        .where(sql`LOWER(${artigos.nome}) = LOWER(${input.nome})`)
+        .limit(1);
+      if (existing.length > 0) {
+        const e = existing[0]!;
+        const status = e.ativo ? "activo" : "inactivo";
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: `Já existe um artigo com o nome "${e.nome}" (${status}). Escolhe um nome diferente ou reactiva o artigo existente.`,
+        });
+      }
       const [r] = await db.insert(artigos).values({
         ...input,
         fatorConversao: input.fatorConversao.toFixed(6),
@@ -125,6 +139,19 @@ export const artigosRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
       const { id, ...data } = input;
+      // Check for duplicate name on rename (case-insensitive, exclude self)
+      if (data.nome) {
+        const dupCheck = await db.select({ id: artigos.id, nome: artigos.nome })
+          .from(artigos)
+          .where(and(sql`LOWER(${artigos.nome}) = LOWER(${data.nome})`, sql`${artigos.id} != ${id}`))
+          .limit(1);
+        if (dupCheck.length > 0) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: `Já existe outro artigo com o nome "${dupCheck[0]!.nome}". Escolhe um nome diferente.`,
+          });
+        }
+      }
       const updateData: Record<string, any> = { ...data };
       if (data.fatorConversao !== undefined) updateData.fatorConversao = data.fatorConversao.toFixed(6);
       if (data.stockMinimo !== undefined) updateData.stockMinimo = data.stockMinimo.toFixed(3);

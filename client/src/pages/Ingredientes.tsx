@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import { Plus, Search, Filter, AlertTriangle, TrendingDown, Package } from "lucide-react";
@@ -29,6 +29,11 @@ function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
   const { register, handleSubmit, reset, control, watch } = useForm<any>({ defaultValues: { unidadeBase: "g", requerLimpeza: false } });
   const categoriaWatch = watch("categoria") ?? "";
   const isProteina = ["Peixe", "Carnes e Aves"].includes(categoriaWatch);
+  const nomeWatch = watch("nome") ?? "";
+  const { data: todosArtigos } = trpc.artigos.listar.useQuery({ apenasAtivos: false });
+  const duplicado = nomeWatch.trim().length > 1
+    ? todosArtigos?.find(a => a.nome.toLowerCase() === nomeWatch.trim().toLowerCase())
+    : null;
   const utils = trpc.useUtils();
   const criar = trpc.artigos.criar.useMutation({
     onSuccess: () => {
@@ -46,7 +51,14 @@ function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
           <label className="text-xs text-muted-foreground mb-1 block">Nome *</label>
-          <Input {...register("nome", { required: true })} placeholder="ex: Tomate cherry" className="bg-input border-border" />
+          <Input {...register("nome", { required: true })} placeholder="ex: Tomate cherry" className={`bg-input border-border ${duplicado ? "border-warning ring-1 ring-warning/50" : ""}`} />
+          {duplicado && (
+            <p className="text-xs text-warning mt-1 flex items-center gap-1">
+              <span>⚠</span>
+              Já existe um artigo com este nome: <strong>"{duplicado.nome}"</strong> ({duplicado.ativo ? "activo" : "inactivo"}).
+              {!duplicado.ativo && " O artigo existente está inactivo — considera reactivá-lo em vez de criar um novo."}
+            </p>
+          )}
         </div>
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">Categoria</label>
@@ -112,7 +124,7 @@ function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
           </label>
         </div>
       )}
-      <Button type="submit" disabled={criar.isPending} className="w-full bg-primary text-primary-foreground">
+      <Button type="submit" disabled={criar.isPending || !!duplicado} className={`w-full bg-primary text-primary-foreground ${duplicado ? "opacity-50 cursor-not-allowed" : ""}`}>
         {criar.isPending ? "A criar…" : "Criar Artigo"}
       </Button>
     </form>
