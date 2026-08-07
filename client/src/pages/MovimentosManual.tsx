@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
-import { ArrowDown, ArrowUp, RotateCcw, CheckCircle, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowDown, ArrowUp, RotateCcw, CheckCircle, ChevronDown, ChevronRight, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +23,7 @@ type SaidaItem = {
   artigoId: number;
   quantidade: string;
   motivo: string;
+  isWaste: boolean;
 };
 
 function fmt(n: number | string, d = 2) {
@@ -98,10 +100,16 @@ export default function MovimentosManual() {
   function setSaida(artigoId: number, field: keyof SaidaItem, value: string) {
     setSaidas(prev => ({
       ...prev,
-      [artigoId]: { ...(prev[artigoId] ?? { artigoId, quantidade: "", motivo: "" }), [field]: value },
+      [artigoId]: { ...(prev[artigoId] ?? { artigoId, quantidade: "", motivo: "", isWaste: false }), [field]: value },
     }));
   }
 
+  function setWaste(artigoId: number, value: boolean) {
+    setSaidas(prev => ({
+      ...prev,
+      [artigoId]: { ...(prev[artigoId] ?? { artigoId, quantidade: "", motivo: "", isWaste: false }), isWaste: value },
+    }));
+  }
   function limpar() {
     setEntradas({});
     setSaidas({});
@@ -145,7 +153,7 @@ export default function MovimentosManual() {
         const qtd = parseFloat(linha.quantidade);
         if (isNaN(qtd) || qtd <= 0) { erros++; continue; }
         try {
-          await registarSaida.mutateAsync({ artigoId: linha.artigoId, quantidade: qtd, motivo: linha.motivo || undefined });
+          await registarSaida.mutateAsync({ artigoId: linha.artigoId, quantidade: qtd, motivo: linha.isWaste ? (linha.motivo || "Waste") : (linha.motivo || undefined), isWaste: linha.isWaste });
           ok++;
         } catch { erros++; }
       }
@@ -296,11 +304,12 @@ export default function MovimentosManual() {
             {!isCollapsed && (
               <div className="border-t border-border">
                 {/* Column headers */}
-                <div className={`grid gap-2 px-4 py-2 bg-secondary/20 text-xs text-muted-foreground uppercase tracking-wide ${modo === "entrada" ? "grid-cols-[1fr_100px_120px_1fr]" : "grid-cols-[1fr_100px_1fr]"}`}>
+                <div className={`grid gap-2 px-4 py-2 bg-secondary/20 text-xs text-muted-foreground uppercase tracking-wide ${modo === "entrada" ? "grid-cols-[1fr_100px_120px_1fr]" : "grid-cols-[1fr_100px_1fr_80px]"}`}>
                   <span>Ingrediente</span>
                   <span className="text-right">Quantidade</span>
                   {modo === "entrada" && <span className="text-right">Preço compra</span>}
                   <span>Motivo / Ref.</span>
+                  {modo === "saida" && <span className="text-center">Waste</span>}
                 </div>
 
                 {lista.map(a => {
@@ -313,7 +322,7 @@ export default function MovimentosManual() {
                   return (
                     <div
                       key={a.id}
-                      className={`grid gap-2 px-4 py-2.5 border-b border-border last:border-0 items-center transition-colors ${temValor ? "bg-primary/5" : "hover:bg-secondary/10"} ${modo === "entrada" ? "grid-cols-[1fr_100px_120px_1fr]" : "grid-cols-[1fr_100px_1fr]"}`}
+                      className={`grid gap-2 px-4 py-2.5 border-b border-border last:border-0 items-center transition-colors ${temValor ? (saida?.isWaste ? "bg-orange-500/5" : "bg-primary/5") : "hover:bg-secondary/10"} ${modo === "entrada" ? "grid-cols-[1fr_100px_120px_1fr]" : "grid-cols-[1fr_100px_1fr_80px]"}`}
                     >
                       {/* Name + stock */}
                       <div className="min-w-0">
@@ -360,9 +369,22 @@ export default function MovimentosManual() {
                           ? setEntrada(a.id, "motivo", e.target.value)
                           : setSaida(a.id, "motivo", e.target.value)
                         }
-                        placeholder="Motivo / referência…"
+                        placeholder={modo === "saida" && saida?.isWaste ? "Waste" : "Motivo / referência…"}
                         className="h-8 bg-input border-border text-sm"
                       />
+                      {/* Waste checkbox (saída only) */}
+                      {modo === "saida" && (
+                        <div className="flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => setWaste(a.id, !(saida?.isWaste ?? false))}
+                            title="Marcar como Waste"
+                            className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${saida?.isWaste ? "bg-orange-500/20 text-orange-400 border border-orange-500/40" : "text-muted-foreground hover:text-orange-400 border border-transparent hover:border-orange-500/30"}`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

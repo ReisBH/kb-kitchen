@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
-import { ShoppingCart, RotateCcw, CheckCircle } from "lucide-react";
+import { ShoppingCart, RotateCcw, CheckCircle, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,16 +16,24 @@ function fmt(n: number | string, d = 2) {
 export default function Vendas() {
   const [quantidades, setQuantidades] = useState<Record<number, string>>({});
   const [confirmado, setConfirmado] = useState(false);
+  const [isWaste, setIsWaste] = useState(false);
   const utils = trpc.useUtils();
   const { data: fichas, isLoading } = trpc.fichas.listar.useQuery();
   const { data: vendas } = trpc.fichas.listarVendas.useQuery();
 
   const registar = trpc.fichas.registarVenda.useMutation({
     onSuccess: (d) => {
-      toast.success(
-        `Venda registada — Food Cost: ${fmt(d.foodCostPct, 1)}%` +
-        (d.stockNegativo.length > 0 ? ` ⚠️ Stock negativo: ${d.stockNegativo.join(", ")}` : "")
-      );
+      if (d.isWaste) {
+        toast.success(
+          `Waste registado — stock deduzido como quebra.` +
+          (d.stockNegativo.length > 0 ? ` ⚠️ Stock negativo: ${d.stockNegativo.join(", ")}` : "")
+        );
+      } else {
+        toast.success(
+          `Venda registada — Food Cost: ${fmt(d.foodCostPct, 1)}%` +
+          (d.stockNegativo.length > 0 ? ` ⚠️ Stock negativo: ${d.stockNegativo.join(", ")}` : "")
+        );
+      }
       setQuantidades({});
       setConfirmado(false);
       utils.fichas.listarVendas.invalidate();
@@ -57,6 +66,7 @@ export default function Vendas() {
   function limpar() {
     setQuantidades({});
     setConfirmado(false);
+    setIsWaste(false);
   }
 
   function submeter() {
@@ -64,7 +74,7 @@ export default function Vendas() {
       toast.error("Preenche pelo menos uma quantidade.");
       return;
     }
-    registar.mutate({ linhas: linhasComQuantidade });
+    registar.mutate({ linhas: linhasComQuantidade, isWaste });
   }
 
   return (
@@ -175,10 +185,27 @@ export default function Vendas() {
                     <span>Total doses</span>
                     <span className="text-gold">{totalDoses}</span>
                   </div>
-                  <Button onClick={submeter} disabled={registar.isPending} className="w-full bg-primary text-primary-foreground mt-2 gap-2">
+                  {/* Waste toggle */}
+                  <div className={`flex items-center gap-3 p-3 rounded-md border mt-2 cursor-pointer transition-colors ${isWaste ? "border-orange-500/50 bg-orange-500/10" : "border-border bg-secondary/10"}`}
+                    onClick={() => setIsWaste(v => !v)}>
+                    <Checkbox
+                      id="waste-toggle"
+                      checked={isWaste}
+                      onCheckedChange={v => setIsWaste(!!v)}
+                      className="border-orange-500 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                    />
+                    <div>
+                      <label htmlFor="waste-toggle" className={`text-sm font-medium cursor-pointer ${isWaste ? "text-orange-400" : "text-foreground"}`}>
+                        Registar como Waste
+                      </label>
+                      <p className="text-xs text-muted-foreground">Deduz stock como quebra, sem impacto no faturamento</p>
+                    </div>
+                    {isWaste && <Trash2 className="w-4 h-4 text-orange-400 ml-auto shrink-0" />}
+                  </div>
+                  <Button onClick={submeter} disabled={registar.isPending} className={`w-full mt-2 gap-2 ${isWaste ? "bg-orange-500 hover:bg-orange-600 text-white" : "bg-primary text-primary-foreground"}`}>
                     {registar.isPending
                       ? <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> A processar…</>
-                      : <><ShoppingCart className="w-4 h-4" /> Confirmar Venda</>}
+                      : isWaste ? <><Trash2 className="w-4 h-4" /> Confirmar Waste</> : <><ShoppingCart className="w-4 h-4" /> Confirmar Venda</>}
                   </Button>
                   <Button variant="outline" onClick={limpar} className="w-full border-border gap-2">
                     <RotateCcw className="w-4 h-4" /> Limpar

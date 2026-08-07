@@ -93,6 +93,7 @@ export const movimentosRouter = router({
       artigoId: z.number(),
       quantidade: z.number().positive(),
       motivo: z.string().optional(),
+      isWaste: z.boolean().default(false),
     }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
@@ -104,7 +105,7 @@ export const movimentosRouter = router({
         tipo: "quebra",
         quantidade: -input.quantidade,
         custoUnitario: parseFloat(artigo.custoMedioPonderado ?? "0"),
-        motivo: input.motivo ?? "Saída manual",
+        motivo: input.isWaste ? (input.motivo || "Waste") : (input.motivo ?? "Saída manual"),
         utilizadorId: ctx.user?.id,
       });
       return result;

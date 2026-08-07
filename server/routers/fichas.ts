@@ -149,29 +149,48 @@ export const fichasRouter = router({
         fichaId: z.number(),
         quantidade: z.number().positive(),
         precoUnitario: z.number().optional(),
+        isWaste: z.boolean().default(false),
       })),
+      isWaste: z.boolean().default(false),
     }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
       const dataVenda = input.data ?? new Date();
+      const globalWaste = input.isWaste ?? false;
+      const stockNegativoGlobal: string[] = [];
 
-      // Criar registo de venda
+      // WASTE mode: explode stock as quebra, no venda record, no food cost impact
+      if (globalWaste) {
+        for (const linha of input.linhas) {
+          const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
+          if (!ficha) continue;
+          const { stockNegativo } = await executarExplosaoVenda({
+            fichaId: linha.fichaId,
+            doses: linha.quantidade,
+            vendaId: null,
+            utilizadorId: ctx.user?.id,
+            comportamento: ficha.explodir_receitas ?? "auto",
+            tipoOverride: "quebra",
+            motivo: "Waste",
+          });
+          stockNegativoGlobal.push(...stockNegativo);
+        }
+        return { vendaId: null as number | null, custoTotal: 0, totalReceita: 0, foodCostPct: 0, stockNegativo: stockNegativoGlobal, isWaste: true };
+      }
+
+      // NORMAL mode: create venda record and explode as venda_consumo
       const [rv] = await db.insert(vendas).values({
         data: dataVenda,
         origem: "manual",
         utilizadorId: ctx.user?.id,
       } as any);
       const vendaId = (rv as any).insertId as number;
-
       let custoTotal = 0;
       let totalReceita = 0;
-      const stockNegativoGlobal: string[] = [];
-
       for (const linha of input.linhas) {
         const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
         if (!ficha) continue;
-
         const { stockNegativo } = await executarExplosaoVenda({
           fichaId: linha.fichaId,
           doses: linha.quantidade,
@@ -180,13 +199,11 @@ export const fichasRouter = router({
           comportamento: ficha.explodir_receitas ?? "auto",
         });
         stockNegativoGlobal.push(...stockNegativo);
-
         const custoFicha = await calcularCustoFicha(linha.fichaId);
         const custoLinha = custoFicha * linha.quantidade;
         custoTotal += custoLinha;
         const precoLinha = (linha.precoUnitario ?? parseFloat(ficha.precoVenda ?? "0")) * linha.quantidade;
         totalReceita += precoLinha;
-
         await db.insert(vendaLinhas).values({
           vendaId,
           fichaId: linha.fichaId,
@@ -195,7 +212,6 @@ export const fichasRouter = router({
           custoUnitario: custoFicha.toFixed(4),
         } as any);
       }
-
       const foodCostPct = totalReceita > 0 ? (custoTotal / totalReceita) * 100 : 0;
       await db.update(vendas).set({
         custoTotal: custoTotal.toFixed(4),
@@ -203,8 +219,7 @@ export const fichasRouter = router({
         foodCostPct: foodCostPct.toFixed(3),
         processada: true,
       }).where(eq(vendas.id, vendaId));
-
-      return { vendaId, custoTotal, totalReceita, foodCostPct, stockNegativo: stockNegativoGlobal };
+      return { vendaId: vendaId as number | null, custoTotal, totalReceita, foodCostPct, stockNegativo: stockNegativoGlobal, isWaste: false };
     }),
 
   listarVendas: protectedProcedure

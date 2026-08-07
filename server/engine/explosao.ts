@@ -178,16 +178,20 @@ function calcularCustoNos(nos: NoExplosao[]): number {
 export async function executarExplosaoVenda(input: {
   fichaId: number;
   doses: number;
-  vendaId: number;
+  vendaId?: number | null;
   utilizadorId?: number;
   comportamento: "auto" | "sempre" | "nunca";
+  tipoOverride?: "venda_consumo" | "quebra";
+  motivo?: string;
 }): Promise<{ movimentos: number[]; stockNegativo: string[] }> {
   const db = await getDb();
   if (!db) throw new Error("Base de dados não disponível");
 
   const movimentosIds: number[] = [];
   const stockNegativo: string[] = [];
-  const documentoId = `venda_${input.vendaId}`;
+  const documentoId = input.vendaId ? `venda_${input.vendaId}` : `waste_${Date.now()}`;
+  const tipoMovimento = input.tipoOverride ?? "venda_consumo";
+  const motivoMovimento = input.motivo;
 
   async function processarNo(no: NoExplosao): Promise<void> {
     const [artigo] = await db!.select().from(artigos).where(eq(artigos.id, no.artigoId)).limit(1);
@@ -200,11 +204,12 @@ export async function executarExplosaoVenda(input: {
         // Consumir do stock do subproduto
         const { movimentoId } = await registarMovimento({
           artigoId: no.artigoId,
-          tipo: "venda_consumo",
+          tipo: tipoMovimento,
           quantidade: -no.quantidade,
           custoUnitario: no.custoUnitario,
           documentoId,
           documentoTipo: "venda",
+          motivo: motivoMovimento,
           utilizadorId: input.utilizadorId,
         });
         movimentosIds.push(movimentoId);
@@ -224,11 +229,12 @@ export async function executarExplosaoVenda(input: {
       const stockAtual = await calcularStock(no.artigoId);
       const { movimentoId } = await registarMovimento({
         artigoId: no.artigoId,
-        tipo: "venda_consumo",
+        tipo: tipoMovimento,
         quantidade: -no.quantidade,
         custoUnitario: no.custoUnitario,
         documentoId,
         documentoTipo: "venda",
+        motivo: motivoMovimento,
         utilizadorId: input.utilizadorId,
       });
       movimentosIds.push(movimentoId);
