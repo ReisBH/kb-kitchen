@@ -1,0 +1,1 @@
+ALTER TABLE `artigos` ADD `tipoEtiqueta` enum('prateleira','producao','ambas','nenhuma') DEFAULT 'ambas' NOT NULL;

@@ -78,6 +78,7 @@ export default function IngredienteDetalhe() {
       prazoEntregaDias: data.prazoEntregaDias ?? 1,
       perecivel: data.perecivel ?? false,
       requerLimpeza: (data as any).requerLimpeza ?? false,
+      tipoEtiqueta: (data as any).tipoEtiqueta ?? 'ambas',
     });
     setEditMode(true);
   }
@@ -203,6 +204,21 @@ export default function IngredienteDetalhe() {
                   </label>
                 </div>
               )}
+              {/* Tipo de etiqueta QR */}
+              <div>
+                <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Tipo de Etiqueta QR</label>
+                <select
+                  value={(editData as any).tipoEtiqueta ?? 'ambas'}
+                  onChange={e => setEditData((p: any) => ({ ...p, tipoEtiqueta: e.target.value }))}
+                  className="w-full rounded-lg px-3 py-2 text-sm"
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(212,175,55,0.3)', color: '#D4AF37' }}
+                >
+                  <option value="ambas">Ambas (prateleira + produção)</option>
+                  <option value="prateleira">Apenas prateleira (saída de stock)</option>
+                  <option value="producao">Apenas produção (lote)</option>
+                  <option value="nenhuma">Nenhuma</option>
+                </select>
+              </div>
             </div>
           </CardContent>
         </Card>

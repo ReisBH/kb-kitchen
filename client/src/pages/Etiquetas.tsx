@@ -20,31 +20,34 @@ function QrImg({ url, size = 120 }: { url: string; size?: number }) {
 
 // ── Print shelf labels ────────────────────────────────────────────────────────
 function imprimirEtiquetasPrateleira(artigos: any[], baseUrl: string) {
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
-  <title>Etiquetas de Prateleira — KB Kitchen</title>
-  <style>
-    @page { size: A4; margin: 10mm; }
-    body { margin: 0; font-family: Arial, sans-serif; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; }
-    .label { border: 1px solid #333; border-radius: 4mm; padding: 4mm; text-align: center; break-inside: avoid; }
-    .nome { font-size: 11pt; font-weight: bold; margin: 2mm 0 1mm; }
-    .codigo { font-size: 7pt; color: #666; }
-    .unidade { font-size: 8pt; color: #444; }
-    img { display: block; margin: 0 auto; }
-  </style></head><body>
-  <div class="grid">
-    ${artigos.map(a => `
-      <div class="label">
-        <img src="${baseUrl}/api/qr-img?url=${encodeURIComponent(`${window.location.origin}/s/${a.codigoCurto}`)}&size=100" width="100" height="100" />
-        <div class="nome">${a.nome}</div>
-        <div class="unidade">${a.unidadeBase}</div>
-        <div class="codigo">${a.codigoCurto}</div>
-      </div>
-    `).join('')}
-  </div>
-  </body></html>`;
+  const labels = artigos.map(a => {
+    const url = window.location.origin + '/s/' + a.codigoCurto;
+    const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=100x100&ecc=Q&data=' + encodeURIComponent(url);
+    return '<div class="label">' +
+      '<img src="' + qrSrc + '" width="100" height="100" />' +
+      '<div class="nome">' + a.nome + '</div>' +
+      '<div class="unidade">' + a.unidadeBase + '</div>' +
+      '<div class="codigo">' + a.codigoCurto + '</div>' +
+      '<div class="url">cozinha.manus.space/s/' + a.codigoCurto + '</div>' +
+      '</div>';
+  }).join('');
+  const html = '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+    '<title>Etiquetas de Prateleira — KB Kitchen</title>' +
+    '<style>' +
+    '@page { size: A4; margin: 10mm; }' +
+    'body { margin: 0; font-family: Arial, sans-serif; }' +
+    '.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; }' +
+    '.label { border: 1px solid #333; border-radius: 4mm; padding: 4mm; text-align: center; break-inside: avoid; }' +
+    '.nome { font-size: 11pt; font-weight: bold; margin: 2mm 0 1mm; }' +
+    '.codigo { font-size: 7pt; color: #666; font-family: monospace; }' +
+    '.unidade { font-size: 8pt; color: #444; }' +
+    '.url { font-size: 6pt; color: #999; margin-top: 1mm; }' +
+    'img { display: block; margin: 0 auto; }' +
+    '</style></head><body>' +
+    '<div class="grid">' + labels + '</div>' +
+    '</body></html>';
   const w = window.open('', '_blank');
-  if (w) { w.document.write(html); w.document.close(); w.print(); }
+  if (w) { w.document.write(html); w.document.close(); setTimeout(() => w.print(), 800); }
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
@@ -78,7 +81,10 @@ export default function Etiquetas() {
       await gerarCodigo.mutateAsync({ artigoId: id });
     }
     toast.success(`${semCodigo.length} códigos gerados`);
+    refetchArtigos();
   };
+
+  const { refetch: refetchArtigos } = trpc.artigos.listar.useQuery({ tipo: 'ingrediente' });
 
   const handleImprimir = () => {
     const selecionados = (artigos ?? []).filter(a => selected.has(a.id) && a.codigoCurto);

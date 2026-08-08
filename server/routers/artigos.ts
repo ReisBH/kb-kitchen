@@ -5,6 +5,7 @@ import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { artigos, movimentos, fornecedores, receitasBaseComponentes, fichasTecnicasComponentes } from "../../drizzle/schema";
 import { calcularStockMultiplos } from "../engine/stock";
+import { gerarCodigoCurtoSync } from "../utils/codigoCurto";
 
 export const artigosRouter = router({
   listar: protectedProcedure
@@ -109,7 +110,16 @@ export const artigosRouter = router({
         densidade: input.densidade?.toFixed(4),
         rendimentoEsperado: input.rendimentoEsperado?.toFixed(3),
       } as any);
-      return { id: (r as any).insertId };
+      const newId = (r as any).insertId;
+      // Auto-generate unique QR code for the new artigo
+      let codigoCurto = gerarCodigoCurtoSync(6);
+      for (let i = 0; i < 20; i++) {
+        const [ex] = await db.select({ id: artigos.id }).from(artigos).where(eq(artigos.codigoCurto, codigoCurto)).limit(1);
+        if (!ex) break;
+        codigoCurto = gerarCodigoCurtoSync(6);
+      }
+      await db.update(artigos).set({ codigoCurto } as any).where(eq(artigos.id, newId));
+      return { id: newId, codigoCurto };
     }),
 
   atualizar: protectedProcedure
@@ -134,6 +144,7 @@ export const artigosRouter = router({
       rendimentoEsperado: z.number().optional(),
       validadeProducaoDias: z.number().optional(),
       tempoPrepMin: z.number().optional(),
+      tipoEtiqueta: z.enum(["prateleira", "producao", "ambas", "nenhuma"]).optional(),
     }))
     .mutation(async ({ input }) => {
       const db = await getDb();

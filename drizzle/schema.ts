@@ -75,6 +75,8 @@ export const artigos = mysqlTable("artigos", {
   nome: varchar("nome", { length: 255 }).notNull(),
   // QR Code: código curto permanente (Crockford base32, 6 chars)
   codigoCurto: varchar("codigoCurto", { length: 8 }).unique(),
+  // Tipo de etiqueta QR: prateleira (saída de stock), producao (lote), ambas, nenhuma
+  tipoEtiqueta: mysqlEnum("tipoEtiqueta", ["prateleira", "producao", "ambas", "nenhuma"]).default("ambas").notNull(),
   tipo: mysqlEnum("tipo", ["ingrediente", "proteina_limpa", "receita_base"]).notNull(),
   categoria: varchar("categoria", { length: 100 }),
   // Unidade base em que o stock é contado (g, ml, un)
