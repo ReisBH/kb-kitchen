@@ -30,6 +30,7 @@ export const ROUTE_PERMISSIONS: Record<string, AppRole[]> = {
   "/ocr/faturas": ["admin", "head_chef"],
   "/ocr/fecho-caixa": ["admin", "head_chef", "sub_chefe"],
   "/utilizadores": ["admin", "head_chef"],
+  "/etiquetas": ["admin", "head_chef"],
 };
 
 // ─── NAV ITEMS PERMISSIONS ────────────────────────────────────────────────────
@@ -48,6 +49,7 @@ export const NAV_PERMISSIONS: Record<string, AppRole[]> = {
   "/ocr/faturas": ["admin", "head_chef"],
   "/ocr/fecho-caixa": ["admin", "head_chef", "sub_chefe"],
   "/utilizadores": ["admin", "head_chef"],
+  "/etiquetas": ["admin", "head_chef"],
 };
 
 export function canAccess(role: AppRole | undefined | null, path: string): boolean {

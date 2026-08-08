@@ -25,6 +25,9 @@ import OcrFaturas from "./pages/OcrFaturas";
 import OcrFechoCaixa from "./pages/OcrFechoCaixa";
 import MovimentosManual from "./pages/MovimentosManual";
 import Utilizadores from "./pages/Utilizadores";
+import QrSaida from "./pages/QrSaida";
+import QrLote from "./pages/QrLote";
+import Etiquetas from "./pages/Etiquetas";
 
 // Helper: wrap a component in EconomatoLayout + ProtectedRoute
 function P({ path, component }: { path: string; component: React.ComponentType }) {
@@ -56,6 +59,9 @@ function AppRoutes() {
       <Route path="/ocr/faturas">{() => <P path="/ocr/faturas" component={OcrFaturas} />}</Route>
       <Route path="/ocr/fecho-caixa">{() => <P path="/ocr/fecho-caixa" component={OcrFechoCaixa} />}</Route>
       <Route path="/utilizadores">{() => <P path="/utilizadores" component={Utilizadores} />}</Route>
+      <Route path="/s/:codigo" component={QrSaida} />
+      <Route path="/l/:codigo" component={QrLote} />
+      <Route path="/etiquetas">{() => <P path="/etiquetas" component={Etiquetas} />}</Route>
 
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

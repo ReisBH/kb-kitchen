@@ -36,6 +36,13 @@
       "when": 1786054831394,
       "tag": "0004_tiny_hercules",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1786208836262,
+      "tag": "0005_futuristic_tomorrow_man",
+      "breakpoints": true
     }
   ]
 }

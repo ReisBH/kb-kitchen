@@ -1,5 +1,5 @@
 import {
-  int, mysqlEnum, mysqlTable, text, timestamp, varchar,
+  int, mysqlEnum, mysqlTable, text, timestamp, varchar, date,
   decimal, boolean, index, uniqueIndex
 } from "drizzle-orm/mysql-core";
 
@@ -73,6 +73,8 @@ export type InsertFornecedor = typeof fornecedores.$inferInsert;
 export const artigos = mysqlTable("artigos", {
   id: int("id").autoincrement().primaryKey(),
   nome: varchar("nome", { length: 255 }).notNull(),
+  // QR Code: código curto permanente (Crockford base32, 6 chars)
+  codigoCurto: varchar("codigoCurto", { length: 8 }).unique(),
   tipo: mysqlEnum("tipo", ["ingrediente", "proteina_limpa", "receita_base"]).notNull(),
   categoria: varchar("categoria", { length: 100 }),
   // Unidade base em que o stock é contado (g, ml, un)
@@ -110,6 +112,7 @@ export const artigos = mysqlTable("artigos", {
 }, (t) => [
   index("artigos_tipo_idx").on(t.tipo),
   index("artigos_fornecedor_idx").on(t.fornecedorId),
+  index("artigos_codigo_curto_idx").on(t.codigoCurto),
 ]);
 export type Artigo = typeof artigos.$inferSelect;
 export type InsertArtigo = typeof artigos.$inferInsert;
@@ -141,6 +144,13 @@ export const movimentos = mysqlTable("movimentos", {
   // Motivo (obrigatório para quebras)
   motivo: text("motivo"),
   utilizadorId: int("utilizadorId"),
+  // Idempotency key (generated on mobile, prevents duplicate submissions)
+  idCliente: varchar("idCliente", { length: 64 }).unique(),
+  // Origin of the movement
+  origem: mysqlEnum("origem", ["manual", "qr", "fatura", "fecho_caixa", "inventario", "producao", "sistema"]).default("manual"),
+  // Anulado: if not null, this movement was cancelled by creating an inverse movement
+  anuladoEm: timestamp("anuladoEm"),
+  anuladoPorMovimentoId: int("anuladoPorMovimentoId"),
   dataMovimento: timestamp("dataMovimento").defaultNow().notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (t) => [
@@ -148,6 +158,7 @@ export const movimentos = mysqlTable("movimentos", {
   index("movimentos_tipo_idx").on(t.tipo),
   index("movimentos_data_idx").on(t.dataMovimento),
   index("movimentos_documento_idx").on(t.documentoId),
+  index("movimentos_idcliente_idx").on(t.idCliente),
 ]);
 export type Movimento = typeof movimentos.$inferSelect;
 export type InsertMovimento = typeof movimentos.$inferInsert;
@@ -382,3 +393,68 @@ export const mapaPos = mysqlTable("mapa_pos", {
 });
 export type MapaPos = typeof mapaPos.$inferSelect;
 export type InsertMapaPos = typeof mapaPos.$inferInsert;
+
+// ─── LOTES (Produção identificada individualmente) ────────────────────────────
+export const lotes = mysqlTable("lotes", {
+  id: int("id").autoincrement().primaryKey(),
+  codigoLote: varchar("codigoLote", { length: 10 }).notNull().unique(),
+  // Pode ser artigo (ingrediente/proteina_limpa/receita_base) ou ficha técnica
+  artigoId: int("artigoId"),
+  fichaId: int("fichaId"),
+  quantidadeProduzida: decimal("quantidadeProduzida", { precision: 12, scale: 3 }).notNull(),
+  quantidadeRestante: decimal("quantidadeRestante", { precision: 12, scale: 3 }).notNull(),
+  unidade: varchar("unidade", { length: 20 }).notNull(),
+  dataProducao: timestamp("dataProducao").defaultNow().notNull(),
+  dataValidade: date("dataValidade"),
+  metodoConservacao: mysqlEnum("metodoConservacao", ["vacuo", "refrigerado", "congelado", "ambiente"]).notNull(),
+  estado: mysqlEnum("estado", ["ativo", "esgotado", "expirado", "descartado"]).default("ativo").notNull(),
+  utilizadorId: int("utilizadorId"),
+  // For thawed products
+  descongelado: boolean("descongelado").default(false).notNull(),
+  // Rastreabilidade: JSON array of {artigoId, quantidade} used in production
+  ingredientesUsados: text("ingredientesUsados"),
+  // Link to the producao record if created from receita base
+  producaoId: int("producaoId"),
+  notas: text("notas"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (t) => [
+  index("lotes_artigo_idx").on(t.artigoId),
+  index("lotes_codigo_idx").on(t.codigoLote),
+  index("lotes_estado_idx").on(t.estado),
+  index("lotes_validade_idx").on(t.dataValidade),
+]);
+export type Lote = typeof lotes.$inferSelect;
+export type InsertLote = typeof lotes.$inferInsert;
+
+// ─── REGRAS DE VALIDADE ───────────────────────────────────────────────────────
+export const regrasValidade = mysqlTable("regras_validade", {
+  id: int("id").autoincrement().primaryKey(),
+  artigoId: int("artigoId"),
+  fichaId: int("fichaId"),
+  metodoConservacao: mysqlEnum("metodoConservacao", ["vacuo", "refrigerado", "congelado", "ambiente"]).notNull(),
+  diasValidade: int("diasValidade").notNull(),
+  // Only a gestor can shorten validity, never extend
+  criadoPor: int("criadoPor"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (t) => [
+  index("rv_artigo_idx").on(t.artigoId),
+]);
+export type RegraValidade = typeof regrasValidade.$inferSelect;
+export type InsertRegraValidade = typeof regrasValidade.$inferInsert;
+
+// ─── SESSÕES PIN (autenticação rápida para QR) ────────────────────────────────
+export const sessoesPinQr = mysqlTable("sessoes_pin_qr", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  tokenHash: varchar("tokenHash", { length: 255 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  revogadaEm: timestamp("revogadaEm"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (t) => [
+  index("spq_user_idx").on(t.userId),
+  index("spq_token_idx").on(t.tokenHash),
+]);
+export type SessaoPinQr = typeof sessoesPinQr.$inferSelect;
+export type InsertSessaoPinQr = typeof sessoesPinQr.$inferInsert;

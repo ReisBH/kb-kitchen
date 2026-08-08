@@ -14,6 +14,7 @@ import { ocrRouter } from "./routers/ocr";
 import { dashboardRouter } from "./routers/dashboard";
 import { uploadRouter } from "./routers/upload";
 import { utilizadoresRouter } from "./routers/utilizadores";
+import { qrRouter } from "./routers/qr";
 
 export const appRouter = router({
   system: systemRouter,
@@ -37,6 +38,7 @@ export const appRouter = router({
   dashboard: dashboardRouter,
   upload: uploadRouter,
   utilizadores: utilizadoresRouter,
+  qr: qrRouter,
 });
 
 export type AppRouter = typeof appRouter;
