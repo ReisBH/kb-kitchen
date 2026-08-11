@@ -84,3 +84,4 @@
 - [x] OCR: ficha de revisão após leitura da foto antes de confirmar importação
 - [x] Livro de Movimentos: edição e exclusão de movimentos (Admin e Head Chef)
 - [x] Inventário: alerta de desvios >5% antes de guardar, com lista de desvios destacados
+- [ ] Backup: criar repositório privado GitHub com código e export sanitizado da base de dados
