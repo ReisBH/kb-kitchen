@@ -16,17 +16,21 @@ export const fichasRouter = router({
       const rows = input?.apenasAtivas !== false
         ? await q.where(sql`${fichasTecnicas.ativo} = 1`).orderBy(fichasTecnicas.nome)
         : await q.orderBy(fichasTecnicas.nome);
-      // Calcular custo de cada ficha
+      // Limitar a concorrência permite carregar listas grandes sem executar 128 árvores de custo em série.
       const result = [];
-      for (const f of rows) {
-        try {
-          const custo = await calcularCustoFicha(f.id);
-          const preco = parseFloat(f.precoVenda ?? "0");
-          const foodCostPct = preco > 0 ? (custo / preco) * 100 : null;
-          result.push({ ...f, custoCalculado: custo, foodCostPct });
-        } catch {
-          result.push({ ...f, custoCalculado: 0, foodCostPct: null });
-        }
+      const tamanhoLote = 16;
+      for (let inicio = 0; inicio < rows.length; inicio += tamanhoLote) {
+        const lote = await Promise.all(rows.slice(inicio, inicio + tamanhoLote).map(async (f) => {
+          try {
+            const custo = await calcularCustoFicha(f.id);
+            const preco = parseFloat(f.precoVenda ?? "0");
+            const foodCostPct = preco > 0 ? (custo / preco) * 100 : null;
+            return { ...f, custoCalculado: custo, foodCostPct };
+          } catch {
+            return { ...f, custoCalculado: 0, foodCostPct: null };
+          }
+        }));
+        result.push(...lote);
       }
       return result;
     }),

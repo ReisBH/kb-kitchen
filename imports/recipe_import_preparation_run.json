@@ -1,0 +1,34 @@
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+{
+  "summary": {
+    "sourceBlocks": 360,
+    "classifiedRows": 360,
+    "recipesBaseToCreate": 105,
+    "technicalSheetsToCreate": 128,
+    "ingredientsForReview": [
+      {
+        "order": 25,
+        "sourceName": "Kurashikko Kintsugi"
+      }
+    ],
+    "excluded": 126,
+    "activeArticles": 639,
+    "totalComponents": 1107,
+    "directArticleMatches": 230,
+    "plannedRecipeMatches": 205,
+    "acceptedArticleAliases": 369,
+    "acceptedRecipeAliases": 55,
+    "safelyMatchedComponents": 638,
+    "excludedComponentsForSafety": 469,
+    "recipesWithoutSafeComponents": 19,
+    "sheetsWithoutSafeComponents": 16,
+    "unresolvedByStatus": {
+      "auto_referencia": 5,
+      "referencia_ficha_tecnica": 59,
+      "sem_correspondencia": 184
+    },
+    "unitConflicts": 223
+  },
+  "proposalPath": "/home/ubuntu/economato/imports/recipe_import_preparation.json",
+  "unresolvedPath": "/home/ubuntu/economato/imports/recipe_import_unresolved.md"
+}

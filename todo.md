@@ -85,3 +85,29 @@
 - [x] Livro de Movimentos: edição e exclusão de movimentos (Admin e Head Chef)
 - [x] Inventário: alerta de desvios >5% antes de guardar, com lista de desvios destacados
 - [x] Backup: criar repositório privado GitHub com código e export sanitizado da base de dados
+- [x] Importação: extrair fichas do Excel Produtos_20260814170412_, confirmar individualmente a classificação e importar os registos aprovados
+- [x] Importação: registar separadamente os itens classificados como Ingrediente para revisão posterior
+- [x] Importação: aplicar os nomes corrigidos pelo utilizador às fichas e receitas confirmadas
+- [x] Importação: excluir automaticamente todos os itens das famílias BAR e VINHOS do Excel
+- [x] Importação: validar as 360 decisões de classificação, exclusões e renomeações antes de escrever na base de dados
+- [x] Importação: resolver colisões de nomes e documentar/excluir componentes sem correspondência segura antes da criação dos registos
+- [x] Importação: importar apenas componentes com correspondência segura, sem criar ingredientes novos automaticamente
+- [x] Importação: manter e entregar o relatório das linhas de componentes excluídas por falta de correspondência segura
+- [x] Importação: criar receitas base sem rendimento esperado provisório e assinalar o preenchimento manual pendente
+- [x] Importação: excluir a criação da receita base "Wasabi Fresco" e manter o ingrediente existente inalterado
+- [x] Importação: remover a ficha criada a partir do item 23 e manter apenas a ficha técnica do item 294 — Tártaro Toro
+- [x] Importação: importar o item 294 com o nome final "Tártaro Toro", mantendo o item 293 como "Tartao Maguro Picante"
+- [x] Importação: criar receitas base e fichas técnicas aprovadas com os respetivos componentes
+- [x] Importação: verificar as contagens e os custos importados e executar testes de regressão
+- [x] Desempenho: garantir que a página de fichas técnicas apresenta prontamente os 128 registos importados sem aguardar cálculos sequenciais de custo
+- [x] Desempenho: validar autenticadamente a consulta da página /fichas e confirmar os 128 registos após a otimização em lotes
+- [x] Importação: validar explicitamente os custos calculados das receitas base e fichas técnicas importadas e guardar evidência
+- [x] Desempenho: validar visualmente a página /fichas em sessão autenticada com os 128 registos carregados
+- [x] Importação: validar explicitamente o estado de custo das 104 receitas base sem rendimento preenchido e guardar evidência
+- [x] Desempenho: guardar evidência verificável da renderização autenticada da página /fichas com 128 registos
+- [x] Desempenho: autenticar uma sessão real no browser e capturar prova verificável da página /fichas com os 128 registos carregados
+- [ ] Importação: guardar a versão publicada após a validação final
+- [x] Importação: auditar explicitamente no ficheiro de classificações todas as renomeações pedidas pelo utilizador e confirmar que ficaram registadas corretamente
+- [x] Importação: rever e documentar os casos especiais de exclusão e duplicação no ficheiro final de classificação antes da escrita na base de dados
+- [x] Importação: normalizar no ficheiro de classificações as exclusões BAR/VINHOS sem nota padronizada identificadas na auditoria
+- [x] Importação: registar uma marcação consistente para todos os casos especiais de duplicação e exclusão antes da escrita na base de dados

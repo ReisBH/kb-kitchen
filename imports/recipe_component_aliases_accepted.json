@@ -1,0 +1,2269 @@
+{
+  "generatedAt": "2026-08-19T17:25:51.102Z",
+  "accepted": {
+    "Arroz de Sushi Semi-elaborado": {
+      "referenceType": "planned_recipe",
+      "referenceId": 183,
+      "referenceName": "Shari",
+      "confidence": "high",
+      "rationale": "‘Arroz de Sushi Semi-elaborado’ describes prepared sushi rice (shari). Examples listed are sushi dishes, confirming intended use. Unit difference (un vs g) noted but identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Mirin": {
+      "referenceType": "article",
+      "referenceId": 395,
+      "referenceName": "Mirim",
+      "confidence": "high",
+      "rationale": "Active article 'Mirim' (id 395) is the same product as Mirin (spelling variant). Unit matches (ml) and usage in marinades aligns with examples; identity clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Cebola grossa": {
+      "referenceType": "article",
+      "referenceId": 29,
+      "referenceName": "Cebola",
+      "confidence": "high",
+      "rationale": "‘Cebola grossa’ denotes a size/variant of raw onion; matches the generic active article ‘Cebola’ (unit g). Not a prepared base like ‘Cebola Caramelizada’.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Shiragiku Su \"Mizkan\"": {
+      "referenceType": "article",
+      "referenceId": 443,
+      "referenceName": "Su shiragiku",
+      "confidence": "high",
+      "rationale": "Exact name match to active article 'Su shiragiku' (same product: Japanese vinegar brand Shiragiku/Mizkan). Unit ml present in both; product identity clear (not a prepared base).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Atum barriga - Ventresca": {
+      "referenceType": "article",
+      "referenceId": 237,
+      "referenceName": "Atum ventresca",
+      "confidence": "high",
+      "rationale": "Exact match: 'Atum barriga - Ventresca' corresponds to 'Atum ventresca' (same product—tuna belly/ventresca). Units match (g) and active article exists.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alga Kombu": {
+      "referenceType": "article",
+      "referenceId": 375,
+      "referenceName": "Kombu",
+      "confidence": "high",
+      "rationale": "'Alga Kombu' is the same product as KB article 'Kombu' (same Portuguese term for the kelp/seaweed); units include g which matches the article unit; clear identity.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alho seco": {
+      "referenceType": "article",
+      "referenceId": 10,
+      "referenceName": "Alho",
+      "confidence": "high",
+      "rationale": "'Alho seco' is the common Portuguese term for regular garlic bulbs and matches the KB article 'Alho' (unit g). Distinct from 'Alho em po' (powder) and 'Alho descascado' (peeled), so mapping is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Sal em flocos - Sal maldon": {
+      "referenceType": "article",
+      "referenceId": 427,
+      "referenceName": "Sal maldon",
+      "confidence": "high",
+      "rationale": "Exact match: source explicitly names 'Sal maldon' (sal em flocos = Maldon flaky salt); active article id 427 is 'Sal maldon' with unit g.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Cebolete": {
+      "referenceType": "article",
+      "referenceId": 31,
+      "referenceName": "Cebolinho",
+      "confidence": "high",
+      "rationale": "‘Cebolete’ is a direct variant/synonym of Portuguese 'Cebolinho' (chives/green onion). Active article 31 matches the same culinary product; units (g vs un) explainable (weight or per bunch) so identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alga Nori": {
+      "referenceType": "article",
+      "referenceId": 103,
+      "referenceName": "Nori fresca",
+      "confidence": "high",
+      "rationale": "\"Alga Nori\" is the Portuguese term for nori seaweed used to wrap maki/futomaki; examples (maki, futomaki, gunkan) indicate nori sheets, matching the active article \"Nori fresca\" (unit g).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Ovos do campo": {
+      "referenceType": "article",
+      "referenceId": 106,
+      "referenceName": "Ovos",
+      "confidence": "high",
+      "rationale": "‘Ovos do campo’ (free‑range eggs) refers to whole eggs; active article 'Ovos' (id 106) is the same culinary product and shares unit 'un'. No planned base recipe matches whole eggs.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Shichimi Togarashi": {
+      "referenceType": "article",
+      "referenceId": 453,
+      "referenceName": "Togarashi shichimi",
+      "confidence": "high",
+      "rationale": "Exact lexical match (Shichimi Togarashi ↔ Togarashi shichimi), same unit (g) and clearly the same Japanese seven-spice blend; no ambiguity.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Katsuobushi": {
+      "referenceType": "article",
+      "referenceId": 369,
+      "referenceName": "Katsobushi",
+      "confidence": "high",
+      "rationale": "'Katsuobushi' is the dried bonito flakes ingredient; active article 'Katsobushi' (id 369) is the same product (minor spelling variant). Unit (g) matches and examples indicate uses rather than a prepared base.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Sementes de sesamo brancas Tostadas": {
+      "referenceType": "article",
+      "referenceId": 432,
+      "referenceName": "Sésamo branco",
+      "confidence": "high",
+      "rationale": "Portuguese name 'Sementes de sésamo brancas' directly matches 'Sésamo branco' (unit g). Usage in sushi dishes and category 'Japoneses' fit; 'tostadas' (toasted) is a common form but does not change identity.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Manteiga s/sal": {
+      "referenceType": "article",
+      "referenceId": 92,
+      "referenceName": "Manteiga sem sal",
+      "confidence": "high",
+      "rationale": "Exact lexical match: 'Manteiga s/sal' = 'Manteiga sem sal' (unsalted butter). Active article id 92 matches product and unit (g).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Rabano branco": {
+      "referenceType": "article",
+      "referenceId": 52,
+      "referenceName": "Daikon",
+      "confidence": "high",
+      "rationale": "\"Rábano branco\" (white radish) corresponds to daikon; active article 'Daikon' (id 52) matches product, units include g so unit aligns.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Vazia galega": {
+      "referenceType": "article",
+      "referenceId": 310,
+      "referenceName": "Vazia",
+      "confidence": "high",
+      "rationale": "‘Vazia galega’ is a regional variant of ‘Vazia’ (same beef cut); unit matches (g); identity clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Nabo Daikon Oroshi": {
+      "referenceType": "planned_recipe",
+      "referenceId": 63,
+      "referenceName": "Daikon Oroshi Semi-elaborado",
+      "confidence": "high",
+      "rationale": "Exact lexical match to 'Daikon Oroshi' (grated daikon). 'Nabo' is Portuguese for radish/daikon; planned base 63 is the semi‑elaborado Daikon Oroshi. Occurrences support prepared product. Unit in Excel is 'un' vs recipe 'g' (packaging vs weight) but product identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Oleo de girassol": {
+      "referenceType": "article",
+      "referenceId": 404,
+      "referenceName": "Óleo girassol",
+      "confidence": "high",
+      "rationale": "Clear name match (Oleo de girassol ≈ Óleo girassol) with identical unit (ml) in active KB article.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Pao Bola rustica": {
+      "referenceType": "article",
+      "referenceId": 292,
+      "referenceName": "Pao bola rustico makro",
+      "confidence": "high",
+      "rationale": "Names match after normalizing Portuguese accents/casing ('Pao Bola rustica' ≈ 'Pao bola rustico makro'); unit is g (matches); likely same frozen bread product (supplier tag 'makro' doesn't change identity).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Sal refinado": {
+      "referenceType": "article",
+      "referenceId": 425,
+      "referenceName": "Sal fino",
+      "confidence": "high",
+      "rationale": "'Sal refinado' is a direct synonym of 'Sal fino' (refined/fine salt); units match (g) and no ambiguity with other salt variants.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Sumo de yuzu": {
+      "referenceType": "article",
+      "referenceId": 445,
+      "referenceName": "Sumo yuzu shibori",
+      "confidence": "high",
+      "rationale": "'Sumo de yuzu' (Portuguese for yuzu juice) matches the active article 'Sumo yuzu shibori' (yuzu juice); units match (ml). Other entries (e.g. 'Sumu yuzu' typo or yuzu-based semi-elaborados) are less direct.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Tamari": {
+      "referenceType": "article",
+      "referenceId": 450,
+      "referenceName": "Tamari Sekigahara",
+      "confidence": "high",
+      "rationale": "Active article 'Tamari Sekigahara' is the same product (tamari); unit ml matches and name is an exact match to the Excel component.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Vieira fresca": {
+      "referenceType": "article",
+      "referenceId": 283,
+      "referenceName": "Miolo vieira",
+      "confidence": "high",
+      "rationale": "Examples use 'Hotate' and 'Sashimi' (scallop adductor meat); 'Miolo vieira' is the scallop muscle (unit g) and matches the culinary product closely.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alcaparras frasco": {
+      "referenceType": "article",
+      "referenceId": 320,
+      "referenceName": "Alcaparras",
+      "confidence": "high",
+      "rationale": "Exact lexical match to Portuguese 'Alcaparras' (jar packaging noted in source as 'frasco' but product identity is the same); unit g matches and usage examples (salsa/tonnato) consistent.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alga Wakame": {
+      "referenceType": "article",
+      "referenceId": 462,
+      "referenceName": "Wakame",
+      "confidence": "high",
+      "rationale": "Exact match on product name (Alga Wakame → Wakame) with same unit (g). Examples include related preparations but core ingredient is wakame, so link to active article rather than a semi‑elaborado recipe.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Ananás": {
+      "referenceType": "article",
+      "referenceId": 17,
+      "referenceName": "Ananas/abacaxi",
+      "confidence": "high",
+      "rationale": "‘Ananás’ is Portuguese for pineapple and matches the active article 'Ananas/abacaxi' (id 17) with unit g. Example usages like 'Tsukemono Ananás' are prepared bases, but the Excel component is the raw fruit.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Ao Sasa folhasde bambu": {
+      "referenceType": "article",
+      "referenceId": 358,
+      "referenceName": "Folha bambu",
+      "confidence": "high",
+      "rationale": "Exact match on product (bamboo leaf / 'folhas de bambu') and units both 'un'; naming differences (Ao Sasa) appear to be brand/format, not a different product.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Caviar": {
+      "referenceType": "article",
+      "referenceId": 28,
+      "referenceName": "Caviar oscietra",
+      "confidence": "high",
+      "rationale": "Excel term 'Caviar' matches the active article 'Caviar oscietra' (same product in grams). Examples show typical caviar usage as topping, consistent with this ingredient.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Chalota banana (cebola)": {
+      "referenceType": "article",
+      "referenceId": 34,
+      "referenceName": "Chalota",
+      "confidence": "high",
+      "rationale": "Exact lexical match to active article 'Chalota' (shallot). Parenthetical '(cebola)' only clarifies type; 'banana' appears to be a variety. Units (g) match.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Enguia (anguilla anguilla)": {
+      "referenceType": "article",
+      "referenceId": 308,
+      "referenceName": "Unagi Kabayaki (enguia)",
+      "confidence": "high",
+      "rationale": "Excel examples (Unagi, Unadon, Temaki Unagi, Unagi Futomaki) indicate the prepared unagi product; active article 'Unagi Kabayaki (enguia)' exactly matches the culinary product and units (g).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Patê trufa branca": {
+      "referenceType": "article",
+      "referenceId": 411,
+      "referenceName": "Pasta trufa branca",
+      "confidence": "high",
+      "rationale": "Direct match: 'Patê trufa branca' is the same product as 'Pasta trufa branca' (Portuguese synonym), wording and species ('trufa branca') match and both use g units.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Sweet Miso - Miso Doce": {
+      "referenceType": "article",
+      "referenceId": 284,
+      "referenceName": "Miso doce",
+      "confidence": "high",
+      "rationale": "Exact Portuguese name match (\"Miso Doce\") to active article id 284; unit g matches Excel units; same culinary product (Sweet Miso).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Tomate de cacho": {
+      "referenceType": "article",
+      "referenceId": 140,
+      "referenceName": "Tomate rama",
+      "confidence": "high",
+      "rationale": "'Tomate de cacho' (on-the-vine/cluster tomato) is synonymous with 'Tomate rama'; units match (g) and examples indicate use of fresh tomato, so article 140 is the same product.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alga Alface do Mar 200g": {
+      "referenceType": "article",
+      "referenceId": 7,
+      "referenceName": "Alface do mar",
+      "confidence": "high",
+      "rationale": "Exact lexical match: Excel 'Alga Alface do Mar 200g' corresponds to active article 'Alface do mar' (id 7). '200g' looks like a pack size explaining Excel unit 'un' vs article unit 'g'; identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alga Esparguete do Mar 200g": {
+      "referenceType": "article",
+      "referenceId": 56,
+      "referenceName": "Esparguete do mar",
+      "confidence": "high",
+      "rationale": "Exact name match to 'Esparguete do mar' (sea spaghetti/seaweed). '200g' packaging in source aligns with article measured in grams — excel unit 'un' indicates a pack but product identity is indisputable.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alga alface do mar": {
+      "referenceType": "article",
+      "referenceId": 7,
+      "referenceName": "Alface do mar",
+      "confidence": "high",
+      "rationale": "Exact match to KB article 'Alface do mar' (Portuguese name for sea lettuce); unit 'g' matches and wording difference is minor.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Arroz Niigata Japones Koshihikari": {
+      "referenceType": "article",
+      "referenceId": 326,
+      "referenceName": "Arroz koshihikari",
+      "confidence": "high",
+      "rationale": "Excel name explicitly names Koshihikari rice (Niigata, Japonês) which matches active article 'Arroz koshihikari'; no indication it refers to a semi‑elaborado base recipe.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Cacau em pó": {
+      "referenceType": "article",
+      "referenceId": 163,
+      "referenceName": "Cacau en pó",
+      "confidence": "high",
+      "rationale": "Exact match to cocoa powder (Portuguese). Active article 'Cacau en pó' is same product despite minor typo; unit g matches; distinct from 'Nibs Cacau'.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Canela": {
+      "referenceType": "article",
+      "referenceId": 335,
+      "referenceName": "Canela pó",
+      "confidence": "high",
+      "rationale": "‘Canela’ in Portuguese commonly means cinnamon; context examples are pastry fillings (pastel de nata, mochi) and unit is g, matching the active article 'Canela pó' (id 335, ground cinnamon). 'Canela pau' (sticks) exists but contexts and unit indicate powdered form.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Folhas de Shiso Verde 20und.": {
+      "referenceType": "article",
+      "referenceId": 133,
+      "referenceName": "Shiso verde",
+      "confidence": "high",
+      "rationale": "Exact match on product name 'Shiso verde' and unit 'un'; '20und' indicates a pack of individual leaves (units). Distinct from 'Vaso Shiso verde' (potted) and 'Folha shiso' (unit g).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Laranja fruta": {
+      "referenceType": "article",
+      "referenceId": 76,
+      "referenceName": "Laranjas",
+      "confidence": "high",
+      "rationale": "Portuguese 'Laranja fruta' directly matches KB article 'Laranjas' (same culinary product). Units match (g). Example 'Sumo Laranja Semi-elaborado' is a prepared use but does not change that the component refers to whole orange.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Nata 35": {
+      "referenceType": "article",
+      "referenceId": 400,
+      "referenceName": "Nata 35% gorda",
+      "confidence": "high",
+      "rationale": "Direct match: 'Nata 35' corresponds to active article 'Nata 35% gorda'; same product and unit (ml), used in the provided semi-elaborado examples.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Oregano": {
+      "referenceType": "article",
+      "referenceId": 406,
+      "referenceName": "Orégãos",
+      "confidence": "high",
+      "rationale": "Direct lexical match (Oregano → Orégãos, accounting for language/accent); article unit = g matches Excel unit; not a prepared base.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Sal Fino Refinado": {
+      "referenceType": "article",
+      "referenceId": 425,
+      "referenceName": "Sal fino",
+      "confidence": "high",
+      "rationale": "'Sal Fino Refinado' matches existing article 'Sal fino' (same product/synonym). Unit in Excel is 'un' vs article 'g' (quantity unit mismatch noted) but identity is indisputable.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Assado de tira - Costela de Wagyu": {
+      "referenceType": "planned_recipe",
+      "referenceId": 86,
+      "referenceName": "Costillas de Wagyu Semi-elaborado",
+      "confidence": "high",
+      "rationale": "Source name specifies a prepared/roasted Wagyu short rib (Assado de tira / Costela de Wagyu); matches the planned base recipe 'Costillas de Wagyu Semi-elaborado' (language variant) and examples; units (g) are consistent.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Barriga de atum - Ventresca": {
+      "referenceType": "article",
+      "referenceId": 237,
+      "referenceName": "Atum ventresca",
+      "confidence": "high",
+      "rationale": "'Barriga de atum - Ventresca' is Portuguese for tuna belly (ventresca) and exactly matches active article 'Atum ventresca' (id 237); units (g) match and culinary context (sushi, usuzukuri) fits.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Cebolhino": {
+      "referenceType": "article",
+      "referenceId": 31,
+      "referenceName": "Cebolinho",
+      "confidence": "high",
+      "rationale": "Name matches KB article 'Cebolinho' (likely typo/variant 'Cebolhino'); same culinary product (chives). Unit mismatch (excel 'un' vs article 'g') noted but identity is indisputable.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Chili em flocos": {
+      "referenceType": "article",
+      "referenceId": 338,
+      "referenceName": "Chyli flakes",
+      "confidence": "high",
+      "rationale": "Portuguese 'Chili em flocos' corresponds to 'Chyli flakes' (spelling variant); same product (chili/chile flakes) and unit g.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Folha de louro": {
+      "referenceType": "article",
+      "referenceId": 389,
+      "referenceName": "Louro",
+      "confidence": "high",
+      "rationale": "Direct match: 'Folha de louro' is the Portuguese term for bay leaf and corresponds to KB article 'Louro' (same ingredient). Units match (g), identity indisputable.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Katakuriko Ammido de Batata": {
+      "referenceType": "article",
+      "referenceId": 368,
+      "referenceName": "Katakuri ko",
+      "confidence": "high",
+      "rationale": "‘Katakuriko’ and Portuguese 'amido de batata' both mean potato starch; exact match to KB article 'Katakuri ko'. Units (g) agree.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Layu Taberu \"Momoya\"": {
+      "referenceType": "article",
+      "referenceId": 376,
+      "referenceName": "Layu taberu",
+      "confidence": "high",
+      "rationale": "Excel name 'Layu Taberu \"Momoya\"' matches active article 'Layu taberu' (Momoya appears to be brand). Unit is g (matches). Examples indicate use as ingredient rather than a prepared base.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Maminha de Wagyu": {
+      "referenceType": "article",
+      "referenceId": 150,
+      "referenceName": "Wagyu / maminha",
+      "confidence": "high",
+      "rationale": "Exact match on product name and species (maminha = picanha/tri-tip region), unit g matches; active KB contains identical item ('Wagyu / maminha'), so link is appropriate.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Masa Folhada": {
+      "referenceType": "article",
+      "referenceId": 277,
+      "referenceName": "Massa folhada",
+      "confidence": "high",
+      "rationale": "Matches the same culinary product (puff/puff pastry). Spelling variant 'Masa' vs 'Massa' is a language/orthography difference; units (g) match.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Mostarda Dijon": {
+      "referenceType": "article",
+      "referenceId": 397,
+      "referenceName": "Mostrada dijon",
+      "confidence": "high",
+      "rationale": "Direct match to Dijon mustard in KB (minor typo: 'Mostrada dijon'); unit 'g' matches and is specific vs generic 'Mostarda staff'.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Ostra": {
+      "referenceType": "article",
+      "referenceId": 104,
+      "referenceName": "Ostras",
+      "confidence": "high",
+      "rationale": "Exact match: 'Ostra' singular corresponds to article 'Ostras' (Portuguese), units are grams (g) matching, examples ('Trio de Ostras', 'Sashimi Kabuki') indicate oysters.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Ovos codorniz": {
+      "referenceType": "article",
+      "referenceId": 107,
+      "referenceName": "Ovos cordoniz",
+      "confidence": "high",
+      "rationale": "Name matches the same product (Portuguese 'Ovos codorniz' vs article 'Ovos cordoniz' — minor typo), same unit 'un', clearly quail eggs; no planned base recipe for quail eggs.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Pimenta sancho": {
+      "referenceType": "article",
+      "referenceId": 429,
+      "referenceName": "Sancho",
+      "confidence": "high",
+      "rationale": "Excel name 'Pimenta sancho' directly matches KB article 'Sancho' (same spice; units g match; common synonym/spelling).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Soft Shell Crab 1kg": {
+      "referenceType": "article",
+      "referenceId": 303,
+      "referenceName": "Soft sheel crab",
+      "confidence": "high",
+      "rationale": "Name is the same product (spelling variant 'sheel' vs 'shell'), category and unit match (g); examples (Soft Shell Bao, Soft‑Shell Crab Futomaki) indicate same ingredient. 1kg is packaging detail.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Yuzu kosho": {
+      "referenceType": "article",
+      "referenceId": 465,
+      "referenceName": "yuzu kochu",
+      "confidence": "high",
+      "rationale": "Exact culinary match: 'Yuzu kosho' vs article 'yuzu kochu' is a likely spelling/romanization variant; units match (g) and examples are Japanese dishes where yuzu kosho is used.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "recheio pastel de nata": {
+      "referenceType": "planned_recipe",
+      "referenceId": 225,
+      "referenceName": "Recheio de Pastel de Nata",
+      "confidence": "high",
+      "rationale": "Exact name match to planned base recipe 'Recheio de Pastel de Nata' (unit g matches).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alface iceberg": {
+      "referenceType": "article",
+      "referenceId": 9,
+      "referenceName": "Alface icerberg",
+      "confidence": "high",
+      "rationale": "Direct match to KB article 'Alface icerberg' (minor spelling variation from 'iceberg'); unit 'g' matches and denotes the same culinary product (iceberg lettuce).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Alga Codium 200g": {
+      "referenceType": "article",
+      "referenceId": 8,
+      "referenceName": "Algo codium",
+      "confidence": "high",
+      "rationale": "Source 'Alga Codium 200g' clearly refers to species Codium; article name 'Algo codium' is a minor spelling variant/typo. Units (g) match; packaging size (200g) does not contradict.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Anchovas": {
+      "referenceType": "article",
+      "referenceId": 324,
+      "referenceName": "Anchova (peso liquido)",
+      "confidence": "high",
+      "rationale": "‘Anchovas’ (Portuguese plural) directly matches active article ‘Anchova (peso liquido)’ (unit g). Example ‘Salsa Tonnato Semi-elaborado’ is a use case but the Excel item refers to the raw anchovy ingredient, so link to the article.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Arroz Hitomebore Blend": {
+      "referenceType": "article",
+      "referenceId": 326,
+      "referenceName": "Arroz koshihikari",
+      "rationale": "Confirmação semântica: arroz cru de cultivar, não a receita base Shari.",
+      "unit": "g",
+      "confidence": "manual",
+      "source": "revisao_manual"
+    },
+    "Banana": {
+      "referenceType": "article",
+      "referenceId": 19,
+      "referenceName": "Bananas",
+      "confidence": "high",
+      "rationale": "Excel 'Banana' matches KB article 'Bananas' (singular/plural), same language and common synonym; both use grams, and example ('Sashimi de Frutas') implies fresh fruit usage.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Bochecha": {
+      "referenceType": "planned_recipe",
+      "referenceId": 211,
+      "referenceName": "Bochecha de Porco para Bao",
+      "confidence": "high",
+      "rationale": "Example exactly matches planned base recipe name; units (g) match and the Excel term likely refers to the prepared bao bochecha rather than generic raw cheeks.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Bochecha porco para Bao": {
+      "referenceType": "planned_recipe",
+      "referenceId": 211,
+      "referenceName": "Bochecha de Porco para Bao",
+      "confidence": "high",
+      "rationale": "Exact match to planned base recipe name 'Bochecha de Porco para Bao' (units g consistent).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Cabeças de peixe": {
+      "referenceType": "article",
+      "referenceId": 245,
+      "referenceName": "Cabeças peixe",
+      "confidence": "high",
+      "rationale": "Exact name match with active article 'Cabeças peixe' (Portuguese plural), same unit (g) and same commodity (fish heads).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Chocolate branco": {
+      "referenceType": "article",
+      "referenceId": 168,
+      "referenceName": "Chocolate branco Opalys 33%",
+      "confidence": "high",
+      "rationale": "Exact product match: Excel name 'Chocolate branco' corresponds to active article 'Chocolate branco Opalys 33%' (same culinary product, white chocolate). Units match (g). The planned recipe 'Cremoso de chocolate branco' uses white chocolate but the Excel component is the ingredient, not the prepared base, so link to ingredient article.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Couve Pack Shoi": {
+      "referenceType": "article",
+      "referenceId": 108,
+      "referenceName": "Pak choi",
+      "confidence": "high",
+      "rationale": "'Couve Pack Shoi' is a spelling variant of 'pak/pack choi' (bok choy). Active article id 108 'Pak choi' matches the culinary product and unit (g); example 'Yasai Nabe' supports this vegetable use.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Farinha de soja - Kinako": {
+      "referenceType": "article",
+      "referenceId": 373,
+      "referenceName": "Kinako",
+      "confidence": "high",
+      "rationale": "Exact name match to active article 'Kinako' (roasted soybean flour), same unit (g); clearly the same product as 'Farinha de soja - Kinako'.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Flor de manjericao": {
+      "referenceType": "article",
+      "referenceId": 61,
+      "referenceName": "Flor manjericao",
+      "confidence": "high",
+      "rationale": "Matches active article 'Flor manjericao' (Portuguese variant of 'Flor de manjericao'); identical product meaning and unit 'un'.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Fohlas de Shiso Verde 20unid": {
+      "referenceType": "article",
+      "referenceId": 133,
+      "referenceName": "Shiso verde",
+      "confidence": "high",
+      "rationale": "Source 'Fohlas de Shiso Verde 20unid' clearly refers to green shiso leaves; matches active article 'Shiso verde' (unit 'un'). '20unid' is packaging quantity, product identity is the same.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Frango do campo": {
+      "referenceType": "article",
+      "referenceId": 258,
+      "referenceName": "Frango campo Tori no shoga",
+      "confidence": "high",
+      "rationale": "Example 'Tori no Shoga' exactly matches active article name; 'Frango do campo' is a Portuguese variant of 'Frango campo'; units are the same (g).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Gari Shoga": {
+      "referenceType": "article",
+      "referenceId": 360,
+      "referenceName": "Gari shiro",
+      "confidence": "high",
+      "rationale": "‘Gari’ is pickled sushi ginger; unit matches (g) and example (Maki Vegetariano) implies sushi use. Closest active article is 'Gari shiro' (id 360).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Gyoza No Kawa": {
+      "referenceType": "article",
+      "referenceId": 277,
+      "referenceName": "Massa gyosa",
+      "confidence": "high",
+      "rationale": "'Gyoza No Kawa' literally means gyoza skin/wrapper and matches the active article 'Massa gyosa' (spelling/synonym variation). Unit shown as 'un' vs article 'g' but the product identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Hacho Miso": {
+      "referenceType": "article",
+      "referenceId": 266,
+      "referenceName": "Hatcho miso",
+      "confidence": "high",
+      "rationale": "Name matches a known active article ('Hatcho miso') with only a minor spelling variant; units (g) match and this is a specific miso variety, not a semi-elaborado.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Harina de arroz glutinoso": {
+      "referenceType": "article",
+      "referenceId": 175,
+      "referenceName": "Farinha de arroz glutinoso",
+      "confidence": "high",
+      "rationale": "Exact lexical match (Spanish 'Harina de arroz glutinoso' → Portuguese 'Farinha de arroz glutinoso') found in KB (id 175); unit (g) matches. Example 'Massa de mochi' indicates use of this flour but the Excel item refers to the ingredient itself, not the prepared base.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Ikura Premium 1kg": {
+      "referenceType": "article",
+      "referenceId": 267,
+      "referenceName": "Ikura",
+      "confidence": "high",
+      "rationale": "Excel 'Ikura Premium 1kg' clearly refers to ikura (salmon roe); KB article 267 is 'Ikura' (unit g). Packaging note (1kg) doesn't change identity; units compatible.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Kizami Wasabe": {
+      "referenceType": "article",
+      "referenceId": 270,
+      "referenceName": "Kizami wasabi",
+      "confidence": "high",
+      "rationale": "Direct lexical match to active article 'Kizami wasabi' (Excel has minor spelling 'Wasabe'); unit g matches and culinary use (wasabi for tataki) is consistent, so identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Lombo porco Iberico": {
+      "referenceType": "article",
+      "referenceId": 273,
+      "referenceName": "Lombo de porco ibérico",
+      "confidence": "high",
+      "rationale": "Direct match to active article 'Lombo de porco ibérico' (same product; differences only in minor punctuation/absence of 'de' and accents). Unit 'g' matches.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Manteiga de cacau": {
+      "referenceType": "article",
+      "referenceId": 193,
+      "referenceName": "Manteiga cacau",
+      "confidence": "high",
+      "rationale": "Clear match: 'Manteiga de cacau' equals 'Manteiga cacau' (cocoa butter). Units both g; it's an ingredient, not a prepared base.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Masago ovas de capelao": {
+      "referenceType": "article",
+      "referenceId": 281,
+      "referenceName": "Massago",
+      "confidence": "high",
+      "rationale": "'Masago ovas de capelao' = masago (capelin) roe; active article 'Massago' (id 281) is the same ingredient (unit g). 'Masago arare' is a variant, so 281 is the direct match.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Maça Grany Smith": {
+      "referenceType": "article",
+      "referenceId": 84,
+      "referenceName": "Maca verde",
+      "confidence": "high",
+      "rationale": "Excel name indicates Granny Smith apple (Maçã/Grany Smith) which matches 'Maca verde' (id 84). Unit mismatch (excel 'un' vs article 'g') noted but variety identity is unambiguous.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Mini folhas de mizuna": {
+      "referenceType": "article",
+      "referenceId": 100,
+      "referenceName": "Mizuna",
+      "confidence": "high",
+      "rationale": "Name contains species 'mizuna' (mini leaves of mizuna) matching active article 'Mizuna'; unit is g so product identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Molho Tonkatsu": {
+      "referenceType": "article",
+      "referenceId": 454,
+      "referenceName": "Tonkatsu",
+      "confidence": "high",
+      "rationale": "Direct match: 'Molho Tonkatsu' is the same product as KB article 'Tonkatsu'. Unit matches (ml). Example 'Katsudon' commonly uses tonkatsu sauce, so identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Molho de soja branco": {
+      "referenceType": "article",
+      "referenceId": 438,
+      "referenceName": "Soja branca",
+      "confidence": "high",
+      "rationale": "'Molho de soja branco' is Portuguese for white soy sauce and directly matches the active article 'Soja branca' (id 438); unit ml matches, so identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Nama Wasabi": {
+      "referenceType": "article",
+      "referenceId": 151,
+      "referenceName": "Wasabi fresco",
+      "confidence": "high",
+      "rationale": "‘Nama Wasabi’ (Japanese for fresh/raw wasabi) is the same product as active article 'Wasabi fresco' (both in g); clear translation/synonym match.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Nobashi Ebi 26/30": {
+      "referenceType": "article",
+      "referenceId": 288,
+      "referenceName": "Nobashi ebi",
+      "confidence": "high",
+      "rationale": "Exact product name present in KB ('Nobashi ebi') with matching unit (g); '26/30' is a common size/packaging spec and does not change identity.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Omelete Atsuyaki Tamago": {
+      "referenceType": "article",
+      "referenceId": 304,
+      "referenceName": "Tamago",
+      "confidence": "high",
+      "rationale": "‘Atsuyaki Tamago’ is the Japanese thick omelette (tamago); active article ‘Tamago’ (id 304) matches the same culinary product and units (g).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Pao Brioche hamburguer 60gr": {
+      "referenceType": "article",
+      "referenceId": 293,
+      "referenceName": "Pao brioche hamburguer",
+      "confidence": "high",
+      "rationale": "Exact name match to active article id 293. Excel name includes '60gr' and unit 'un' (per piece) while article unit is 'g' — unit mismatch noted but product identity is unmistakable.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Pimenta malagueta": {
+      "referenceType": "article",
+      "referenceId": 87,
+      "referenceName": "Malagueta vermelha",
+      "confidence": "high",
+      "rationale": "‘Pimenta malagueta’ is the Portuguese common name for malagueta pepper; matches active article 'Malagueta vermelha' (same species/culinary product) and units (g) align.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Pimentao Doce": {
+      "referenceType": "article",
+      "referenceId": 410,
+      "referenceName": "Paprika",
+      "confidence": "high",
+      "rationale": "'Pimentão doce' is the Portuguese term for sweet paprika (pimentón dulce); 'Paprika' article (id 410) matches product and unit (g).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Pimienta Negra": {
+      "referenceType": "article",
+      "referenceId": 416,
+      "referenceName": "Pimenta preta",
+      "confidence": "high",
+      "rationale": "'Pimienta Negra' is Spanish for black pepper, matching KB article 'Pimenta preta' (same product). Unit in Excel is 'un' vs article 'g' — unit mismatch noted but product identity is indisputable.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Purê de maracujá": {
+      "referenceType": "article",
+      "referenceId": 211,
+      "referenceName": "Pure maracujá",
+      "confidence": "high",
+      "rationale": "Names match (Purê de maracujá ≈ Pure maracujá) — same culinary product; minor accent/orthography difference. Unit mismatch (g vs ml) noted but identity is indisputable.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Raiz de Loto": {
+      "referenceType": "article",
+      "referenceId": 297,
+      "referenceName": "Raiz lotus",
+      "confidence": "high",
+      "rationale": "‘Raiz de Loto’ is the Portuguese name for lotus root; active article 'Raiz lotus' is the same ingredient (unit g matches) and fits culinary usage (e.g. chirashi).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Salsa Pastor Compra": {
+      "referenceType": "planned_recipe",
+      "referenceId": 36,
+      "referenceName": "Salsa Pastor Semi-elaborado",
+      "confidence": "high",
+      "rationale": "Name matches planned base recipe 'Salsa Pastor Semi-elaborado' (example provided). Unit mismatch (excel 'un' vs recipe 'g') noted but identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Semente de abobora": {
+      "referenceType": "article",
+      "referenceId": 430,
+      "referenceName": "Sementes de abobora",
+      "confidence": "high",
+      "rationale": "Direct match to active article 'Sementes de abobora' (accent/plural variation only); unit matches (g). Example is a prepared variant but the base item is pumpkin seeds.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Shinshu - Tokushiro": {
+      "referenceType": "planned_recipe",
+      "referenceId": 33,
+      "referenceName": "Miso Mix Semi-elaborado",
+      "confidence": "high",
+      "rationale": "Example provided exactly matches planned base recipe name 'Miso Mix Semi-elaborado' and units are both g, so identity is clear despite the vendor/brand source name.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Sushi-Su 18L Semi-elaborado": {
+      "referenceType": "planned_recipe",
+      "referenceId": 45,
+      "referenceName": "Sushi-Su Semi-elaborado",
+      "confidence": "high",
+      "rationale": "Excel name 'Sushi-Su 18L Semi-elaborado' matches planned base 'Sushi-Su Semi-elaborado' (18L is packaging). Unit mismatch (ml vs g) noted but product identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Vaso micro Rabanete": {
+      "referenceType": "article",
+      "referenceId": 146,
+      "referenceName": "Vaso rabanate",
+      "confidence": "high",
+      "rationale": "Matches ‘Vaso’ + ‘rabanate’ (variant of rabanete). Unit 'un' aligns; 'micro' likely size variant of same potted radish product.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Vaso micro amaranto": {
+      "referenceType": "article",
+      "referenceId": 14,
+      "referenceName": "Amaranto (vaso)",
+      "confidence": "high",
+      "rationale": "Name and meaning match: 'Vaso micro amaranto' denotes amaranth sold in a pot and corresponds to active article 'Amaranto (vaso)' (unit 'un' matches). The example 'Micro salada mix — Semi-elaborado' is a prepared mix, not the same product, so do not link to a planned recipe.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Vaso micro shiso roxo": {
+      "referenceType": "article",
+      "referenceId": 148,
+      "referenceName": "Vaso Shiso roxo",
+      "confidence": "high",
+      "rationale": "Names match on packaging ('Vaso') and variety ('Shiso roxo'); unit is 'un'. 'Micro' is a size descriptor and does not change identity.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Vaso micro shiso verde": {
+      "referenceType": "article",
+      "referenceId": 147,
+      "referenceName": "Vaso Shiso verde",
+      "confidence": "high",
+      "rationale": "Matches product name 'Vaso Shiso verde' (same words: vaso, shiso, verde). 'micro' likely a descriptive qualifier; unit 'un' matches, so identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Vaso micro sorrel": {
+      "referenceType": "article",
+      "referenceId": 149,
+      "referenceName": "Vaso Sorrel",
+      "confidence": "high",
+      "rationale": "‘Vaso micro sorrel’ clearly refers to a pot (‘Vaso’) of sorrel microgreens; active article ‘Vaso Sorrel’ matches name and unit (un) and packaging—no ambiguity.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "un"
+    },
+    "Wasabi em po Kona Wasabi Oroshi": {
+      "referenceType": "article",
+      "referenceId": 463,
+      "referenceName": "wasabi em po",
+      "confidence": "high",
+      "rationale": "Exact name match to active article 'wasabi em po'. 'Kona'/'oroshi' indicate powdered wasabi (same product). Excel unit 'un' vs article unit 'g' is a minor mismatch but identity is indisputable.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Xantana": {
+      "referenceType": "article",
+      "referenceId": 184,
+      "referenceName": "Gelespessa - Goma Xantana",
+      "confidence": "high",
+      "rationale": "‘Xantana’ is the Portuguese shorthand for xanthan gum and matches active article ‘Gelespessa - Goma Xantana’ (same product, unit g).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "abacaxi": {
+      "referenceType": "article",
+      "referenceId": 17,
+      "referenceName": "Ananas/abacaxi",
+      "confidence": "high",
+      "rationale": "Exact synonym match: 'abacaxi' is Portuguese for ananás/pineapple and active article 'Ananas/abacaxi' explicitly includes this term; unit matches (g). Example 'Jardin Semi-elaborado' indicates usage but does not override identity.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "fARINHA S/FERMENTO": {
+      "referenceType": "article",
+      "referenceId": 352,
+      "referenceName": "Farinha sem fermento",
+      "confidence": "high",
+      "rationale": "Exact lexical match: 'S/FERMENTO' = 'sem fermento' (plain/unsifted flour) and active article 352 is 'Farinha sem fermento'. Unit in Excel is 'un' while article uses 'g', but identity is indisputable so confidence remains high.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Farinha de trigo": {
+      "referenceType": "article",
+      "referenceId": 352,
+      "referenceName": "Farinha sem fermento",
+      "confidence": "high",
+      "rationale": "‘Farinha de trigo’ corresponds to plain wheat flour; best match is the article ‘Farinha sem fermento’ with the same unit (g). Planned bases are prepared items, not raw flour.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Carabineiro": {
+      "referenceType": "article",
+      "referenceId": 248,
+      "referenceName": "Carabineiros",
+      "confidence": "high",
+      "rationale": "‘Carabineiro’ matches the ingredient article ‘Carabineiros’ (singular/plural of the same product) and units align (g). References to molho/recheio are distinct prepared bases with different names, so not selected.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Citronela": {
+      "referenceType": "article",
+      "referenceId": 271,
+      "referenceName": "Lemon grass",
+      "confidence": "high",
+      "rationale": "'Citronela' in Portuguese commonly denotes culinary lemongrass. Active article 'Lemon grass' matches name/synonym and unit (g). Example contexts (curry, osuimono, gyoza filling, kaffir lime gel) are consistent with lemongrass usage.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Bao sesamo preto 80gr": {
+      "referenceType": "article",
+      "referenceId": 240,
+      "referenceName": "Bao sesamo preto",
+      "confidence": "high",
+      "rationale": "Exact name match; '80gr' indicates piece size. Although Excel unit is 'un' vs article in 'g', identity is clear and usage examples align with this bun.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Arroz Gohan Semi-elaborado": {
+      "referenceType": "planned_recipe",
+      "referenceId": 42,
+      "referenceName": "Gohan Semi-elaborado",
+      "confidence": "high",
+      "rationale": "Name matches the prepared base (“Gohan Semi-elaborado”) and context dish (Katsudon) uses plain gohan; active articles are raw rice. Unit mismatch (un vs g) but identity is clear.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Peixe carvão": {
+      "referenceType": "article",
+      "referenceId": 265,
+      "referenceName": "Guindara",
+      "confidence": "high",
+      "rationale": "Peixe carvão is black cod (gindara); example mentions 'Guindara no Miso'. Same product and unit (g).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "g"
+    },
+    "Purê de cereja negra": {
+      "referenceType": "article",
+      "referenceId": 204,
+      "referenceName": "Pure de cereza negra",
+      "confidence": "high",
+      "rationale": "Name matches exactly across PT/ES (Purê/Pure, cereja/cereza negra). Despite g vs ml units, identity is clear for a cherry puree. The example refers to a filling but the component is the puree ingredient, not the prepared base.",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    },
+    "Vinho Vinha Casinha tinto": {
+      "referenceType": "article",
+      "referenceId": 461,
+      "referenceName": "Vinho tinto",
+      "confidence": "high",
+      "rationale": "Specific brand of red wine; clearly maps to generic 'Vinho tinto' article and units match (ml).",
+      "source": "recomendacao_modelo_alta_confianca",
+      "unit": "ml"
+    }
+  },
+  "deferred": [
+    {
+      "sourceName": "Shoyo - Soja",
+      "occurrences": 30,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Shoyo’ is a variant spelling of soy sauce and units (ml) match, but KB has multiple soy sauce articles (Soja kikoman, Soja sem glúten kikoman, Soja branca) and none exactly named ‘Shoyo - Soja’. Cannot unambiguously pick a specific article or a planned base recipe."
+    },
+    {
+      "sourceName": "Shoyo - Soja",
+      "occurrences": 30,
+      "referenceType": "article",
+      "referenceName": "Soja kikoman",
+      "confidence": "medium",
+      "rationale": "\"Shoyo/Shoyu\" refers to soy sauce; the closest active article is standard Kikkoman soy sauce (ml). Excel name is generic and doesn’t specify gluten-free or white soy sauce, so variant ambiguity lowers confidence."
+    },
+    {
+      "sourceName": "Azeite",
+      "occurrences": 22,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Component 'Azeite' (ml) likely refers to olive oil but active articles include both 'Azeite makro' and 'Azeite V. Extra' (different specifications/brands). Exact identity not certain, so no definitive link chosen."
+    },
+    {
+      "sourceName": "Azeite",
+      "occurrences": 22,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Azeite is generic and could map to either 'Azeite V. Extra' (id 330) or 'Azeite makro' (id 329); identity not explicit despite unit match, so avoid assuming."
+    },
+    {
+      "sourceName": "Gema - Liquida",
+      "occurrences": 8,
+      "referenceType": "article",
+      "referenceName": "Gemas liquidas",
+      "confidence": "medium",
+      "rationale": "Lexical match to Portuguese 'Gema(s) líquida(s)' — same culinary product. Unit mismatch (excel in g vs article in ml) reduces confidence."
+    },
+    {
+      "sourceName": "Gema - Liquida",
+      "occurrences": 8,
+      "referenceType": "article",
+      "referenceName": "Gemas liquidas",
+      "confidence": "medium",
+      "rationale": "Name matches liquid egg yolk (Portuguese singular/plural); distinct from whole egg or whites. Unit g vs ml lowers confidence."
+    },
+    {
+      "sourceName": "Sake sho Chiku Bai 15% 18lt",
+      "occurrences": 8,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "high",
+      "rationale": "Item is a branded sake (Sho Chiku Bai, 15%, 18 L). No active article or planned base recipe matches this brand/product (closest active is 'Sake shogun', which is different). Do not invent a link."
+    },
+    {
+      "sourceName": "Sake sho Chiku Bai 15% 18lt",
+      "occurrences": 8,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item is Sake Sho Chiku Bai (brand-specific). The only active article is Sake shogun (different brand). Despite both being sake and units matching, brand mismatch prevents a certain identity match; not a prepared base."
+    },
+    {
+      "sourceName": "Pargo (Pagnus pagnus)",
+      "occurrences": 6,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item is the fish 'Pargo' (species Pagrus pagrus, misspelled 'Pagnus pagnus'). No active article or planned base recipe in the KB matches 'Pargo' or that species name; cannot invent a link."
+    },
+    {
+      "sourceName": "Pargo (Pagnus pagnus)",
+      "occurrences": 6,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item is Pargo (Pagrus pagrus), a white fish for sashimi/usuzukuri. No active article or planned base recipe explicitly for pargo is present (no synonyms like besugo/red seabream either). Therefore no safe link can be made."
+    },
+    {
+      "sourceName": "YAKINORI ''Takaokaya\" A- 100 folhas",
+      "occurrences": 6,
+      "referenceType": "article",
+      "referenceName": "Takaokay \"a\" - 50 folhas",
+      "confidence": "medium",
+      "rationale": "Excel item is nori sheets (YAKINORI / Takaokaya). Active article 448 (Takaokay 'a' - 50 folhas) matches the same product and unit (un); packaging count differs (100 vs 50) and spelling variant present, so medium confidence."
+    },
+    {
+      "sourceName": "YAKINORI ''Takaokaya\" A- 100 folhas",
+      "occurrences": 6,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item is Yakinori Takaokaya A – 100 folhas; closest article is Takaokay \"a\" – 50 folhas (id 448). Brand/grade match but packaging count differs, which affects inventory units. No planned base recipe applies. Exact identity uncertain, so no link."
+    },
+    {
+      "sourceName": "Folhas de shiso",
+      "occurrences": 5,
+      "referenceType": "article",
+      "referenceName": "Folha shiso",
+      "confidence": "medium",
+      "rationale": "Exact lexical match (Folhas de shiso → Folha shiso) and examples show typical culinary use as shiso leaves. Active article unit is g while Excel also lists 'un' (unit mismatch lowers confidence)."
+    },
+    {
+      "sourceName": "Folhas de shiso",
+      "occurrences": 5,
+      "referenceType": "article",
+      "referenceName": "Folha shiso",
+      "confidence": "medium",
+      "rationale": "Name matches generically (shiso leaves). Other shiso variants exist (verde/bicolor) and source units include both g and un, so unit/variant ambiguity lowers confidence, but product identity is consistent with the generic Folha shiso article."
+    },
+    {
+      "sourceName": "Salsa de Soja",
+      "occurrences": 5,
+      "referenceType": "article",
+      "referenceName": "Soja kikoman",
+      "confidence": "medium",
+      "rationale": "“Salsa de Soja” is the generic name for soy sauce matching KB ingredient ‘Soja kikoman’. No brand in Excel and unit is ‘un’ vs article ml, so identity likely but not certain — choose article with medium confidence."
+    },
+    {
+      "sourceName": "Salsa de Soja",
+      "occurrences": 5,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Salsa de Soja is generic and could match multiple articles (Soja kikoman, Soja sem glúten kikoman, Soja branca). Unit mismatch (un vs ml) increases ambiguity, and it does not unmistakably refer to the Soja Kabuki planned base."
+    },
+    {
+      "sourceName": "Atum",
+      "occurrences": 4,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Source name is generic 'Atum' but examples mix distinct tuna products (e.g. 'Salsa Tonnato Semi-elaborado' — a planned recipe, 'Usuzukuri Maguro', 'Tártaro Toro') and the KB contains multiple specific tuna items (Atum lombo, ventresca, Toro, aparas). No single active article or planned base recipe clearly and unambiguously matches all occurrences."
+    },
+    {
+      "sourceName": "Atum",
+      "occurrences": 4,
+      "referenceType": "article",
+      "referenceName": "Atum lombo",
+      "confidence": "medium",
+      "rationale": "Excel component ‘Atum’ (maguro/tuna) appears in sashimi/tartar contexts; raw loin is the most generic match. Units (g) align. However, ambiguity remains with other tuna cuts (Akami, Toro, Ventresca) and canned tuna for tonnato, so confidence is medium."
+    },
+    {
+      "sourceName": "Camarão",
+      "occurrences": 4,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Camarão’ is a generic shrimp name but the KB has multiple possible shrimp articles (e.g. Camarao 20/30 id 246, Camarão vermelho 20/25 id 247, Carabineiros id 248, Nobashi ebi id 288). Size/species/form not specified in the Excel data, so mapping would be ambiguous despite matching unit 'g'."
+    },
+    {
+      "sourceName": "Camarão",
+      "occurrences": 4,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Camarão’ is generic. Several plausible shrimp articles exist (e.g., Camarao 20/30, Camarão vermelho 20/25, Nobashi ebi, Gamba), and the examples span different uses. No single active article or specific planned base recipe is unmistakably identical."
+    },
+    {
+      "sourceName": "Flores Mix 30g",
+      "occurrences": 4,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article or planned base recipe named or clearly matching 'Flores Mix 30g'. There are individual flower articles (e.g. 'Flor de alho' id 60, 'Flor manjericao' id 61) but not a mixed flowers product; the '30g' weight vs Excel unit 'un' increases uncertainty."
+    },
+    {
+      "sourceName": "Flores Mix 30g",
+      "occurrences": 4,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article or planned base recipe clearly matches an edible flower mix; only specific flower items (e.g., Flor de alho, Flor manjericao) exist. Pack reference “30g” and unit “un” suggest a retail pack not listed. Therefore, do not link."
+    },
+    {
+      "sourceName": "Agua Canalizada",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "high",
+      "rationale": "'Agua Canalizada' = tap water (ml). No active article or planned base recipe matching 'água/agua/water' in the KB; cannot invent a link. Recommend creating an 'Água (canalizada)' ingredient/article if needed."
+    },
+    {
+      "sourceName": "Agua Canalizada",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Agua Canalizada = tap water; no active article for water and no planned base recipe named for water. Avoid inventing a link."
+    },
+    {
+      "sourceName": "Alga Nori Ariake",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "'Alga Nori Ariake' likely refers to nori seaweed (Ariake brand, sheets). No active article matches the Ariake brand or exact format. Closest items: id 448 'Takaokay \"a\" - 50 folhas' (sheets, different brand, un), id 374 'Kizami nori' (shredded, g), id 103 'Nori fresca' (g), id 402 'Nori em po' (g). Brand and format uncertainty prevent a definitive link."
+    },
+    {
+      "sourceName": "Alga Nori Ariake",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item specifies Alga Nori Ariake (brand/sheets). Active articles list only different nori forms (kizami, powder, fresh) or a different brand/pack size (Takaokay 50 folhas). Brand and form/packaging are unclear matches, and unit clues (un) could be sheets/packs. No planned base recipe applies. Avoid mislinking; recommend no match."
+    },
+    {
+      "sourceName": "Carapau (trachurus trachurus))",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel name is explicit for Carapau (Trachurus trachurus) — horse mackerel / aji — and examples show sashimi/aji usage. The active articles list contains no entry or clear synonym for carapau/aji, and there is no planned base recipe for this species. Unit (g) is consistent but cannot create a link that does not exist in KB."
+    },
+    {
+      "sourceName": "Carapau (trachurus trachurus))",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Carapau/horse mackerel (aji, Trachurus trachurus) is not present among active articles or planned bases. Similar entries like Aji inari tofu and Marinada de caballa are different products/species."
+    },
+    {
+      "sourceName": "Ruivo",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "'Ruivo' appears to be a supplier/brand covering multiple different semi‑elaborado products (examples: Jengibre Oroshi, Marinada de Atún, Marinada de Torino). It does not unambiguously match a single active KB article or a single planned base recipe."
+    },
+    {
+      "sourceName": "Ruivo",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "low",
+      "rationale": "Ruivo is ambiguous (possibly a fish or nickname) and no active article or planned base recipe matches it by name; unit 'un' also mismatches typical fish units ('g'), so identity is not certain."
+    },
+    {
+      "sourceName": "Sake Cocina",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Source name 'Sake Cocina' does not directly match any KB article or a single planned base recipe. Examples include exact planned recipes (Marinada Sake no miso id=84, Marinada de Atún id=53, Marinada de Torino id=52), suggesting rows refer to different semi-elaborados rather than one product; unit 'un' and possible confusion with article 'Sake shogun' (id=424, ml) increase ambiguity. Recommend NO_MATCH until supplier/product detail is clarified."
+    },
+    {
+      "sourceName": "Sake Cocina",
+      "occurrences": 3,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "The label 'Sake Cocina' is a category/source, not a single product. Its examples map to distinct planned base recipes (e.g., 'Marinada Sake no miso Semi-elaborado' ID 84, 'Marinada de Atún Semi-elaborado' ID 53, 'Marinada de Torino Semi-elaborado' ID 52). With multiple exact matches and unit mismatch (un vs g), no single definitive link can be chosen."
+    },
+    {
+      "sourceName": "Salsa Sriracha",
+      "occurrences": 3,
+      "referenceType": "article",
+      "referenceName": "Sriracha",
+      "confidence": "medium",
+      "rationale": "Exact name match to Sriracha (\"Salsa Sriracha\"); unit mismatch (excel uses g vs article ml) reduces confidence to medium."
+    },
+    {
+      "sourceName": "Salsa Sriracha",
+      "occurrences": 3,
+      "referenceType": "article",
+      "referenceName": "Sriracha",
+      "confidence": "medium",
+      "rationale": "‘Salsa Sriracha’ clearly matches the bottled Sriracha article; used in typical applications. Unit mismatch (g vs ml) lowers confidence."
+    },
+    {
+      "sourceName": "Aceite Barra Picual Virgen Extra",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Azeite V. Extra",
+      "confidence": "medium",
+      "rationale": "Spanish 'Aceite ... Virgen Extra' corresponds to Portuguese 'Azeite V. Extra' (extra virgin olive oil); 'Picual' is a cultivar variant but product is same. Excel unit 'un' vs article unit 'ml' causes reduced confidence."
+    },
+    {
+      "sourceName": "Aceite Barra Picual Virgen Extra",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Azeite V. Extra",
+      "confidence": "medium",
+      "rationale": "Spanish ‘Aceite Virgen Extra (Picual)’ matches Portuguese ‘Azeite V. Extra’ as the same product class; cultivar/brand not specified in KB and unit mismatch (un vs ml) lowers confidence."
+    },
+    {
+      "sourceName": "Aceite Oliva Virgen",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Azeite V. Extra",
+      "confidence": "medium",
+      "rationale": "‘Aceite Oliva Virgen’ (Spanish) maps to Portuguese 'Azeite V. Extra' (same product). Unit mismatch (excel: 'un' vs article: 'ml') reduces confidence to medium."
+    },
+    {
+      "sourceName": "Aceite Oliva Virgen",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Azeite V. Extra",
+      "confidence": "medium",
+      "rationale": "Spanish 'Aceite Oliva Virgen' corresponds to Portuguese olive oil; closest active article is extra virgin olive oil. Grade not explicitly 'extra' and unit mismatch (un vs ml) reduce certainty, but it is clearly olive oil and no planned base fits."
+    },
+    {
+      "sourceName": "AÇUCAR GRANULADO PCT PAPEL",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Açúcar branco",
+      "confidence": "medium",
+      "rationale": "Excel name 'AÇUCAR GRANULADO PCT PAPEL' clearly denotes granulated (white) sugar matching 'Açúcar branco'. Packaging note 'PCT PAPEL' and Excel unit 'un' vs article unit 'g' introduce a unit/packaging mismatch, so confidence lowered to medium."
+    },
+    {
+      "sourceName": "AÇUCAR GRANULADO PCT PAPEL",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Açúcar branco",
+      "confidence": "medium",
+      "rationale": "‘AÇUCAR GRANULADO PCT PAPEL’ denotes granulated white sugar in paper sachets. The closest active article is standard white sugar. Packaging and unit mismatch (un vs g) reduce confidence, but the product identity (granulated white sugar) matches."
+    },
+    {
+      "sourceName": "Arroz Minori",
+      "occurrences": 2,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Arroz Minori’ appears to be a brand/variety name and does not exactly match any active article (e.g. Arroz koshihikari, arroz agulha) nor is it unmistakably the prepared base (Gohan). Ambiguous whether raw Minori rice or cooked Gohan is intended, so no match recommended."
+    },
+    {
+      "sourceName": "Arroz Minori",
+      "occurrences": 2,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Arroz Minori appears to be a sushi-rice brand/variety not present among active articles. It is not the prepared base (e.g., Gohan/Shari), and no active article matches the name exactly; mapping to Arroz koshihikari would be speculative."
+    },
+    {
+      "sourceName": "Atún rojo de vivero",
+      "occurrences": 2,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "'Atún rojo de vivero' = farmed bluefin tuna. KB contains tuna entries (Atum lombo, Atum ventresca, aparas atum) and related planned recipes (Lombo de Atum — Limpo, Marinada de Atún), but the Excel name does not specify cut, cut state, or prepared base. Unit 'un' (unit) could mean whole fish or portion, adding ambiguity. Cannot unambiguously link to a single article or planned recipe."
+    },
+    {
+      "sourceName": "Atún rojo de vivero",
+      "occurrences": 2,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item specifies farmed bluefin tuna (Atún rojo de vivero). No active article explicitly matches species/source; available tuna articles are cuts (Akami, Toro, Atum lombo, Atum ventresca) and units differ (un vs g). Not a prepared base recipe. Identity is uncertain among multiple tuna entries, so no safe link."
+    },
+    {
+      "sourceName": "Folhas de lima Kaffir",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Folha lima kafir",
+      "confidence": "medium",
+      "rationale": "Name matches the culinary product (kaffir lime leaves) — minor spelling/accents differences only. Excel unit is 'un' while article unit is 'g', so confidence reduced to medium."
+    },
+    {
+      "sourceName": "Folhas de lima Kaffir",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Folha lima kafir",
+      "confidence": "medium",
+      "rationale": "Name matches kaffir lime leaves directly; spelling/accents align. Unit differs (Excel: un vs article: g), so confidence reduced despite clear identity."
+    },
+    {
+      "sourceName": "Molho de peixe - Fish sauce",
+      "occurrences": 2,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active KB article or planned base recipe corresponds to 'Molho de peixe / Fish sauce' (no synonyms like nuoc mam/nam pla present). Name clearly denotes fish sauce but there is no exact match in articles or planned recipes; unit (ml) aligns with a condiment but absence of entry prevents a confident link."
+    },
+    {
+      "sourceName": "Molho de peixe - Fish sauce",
+      "occurrences": 2,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Fish sauce (molho de peixe) is a purchased ingredient; no active article matches it and it is not a planned base recipe. Units (ml) align but no exact product exists to link."
+    },
+    {
+      "sourceName": "Vaso micro coentros",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Coentros microgreens",
+      "confidence": "medium",
+      "rationale": "‘Vaso micro coentros’ refers to micro (microgreens) coentros/cilantro; active article 'Coentros microgreens' matches the culinary product. Packaging note: Excel lists 'vaso' / unit 'un' while article unit is 'g', so confidence reduced to medium."
+    },
+    {
+      "sourceName": "Vaso micro coentros",
+      "occurrences": 2,
+      "referenceType": "article",
+      "referenceName": "Coentros microgreens",
+      "confidence": "medium",
+      "rationale": "‘Vaso micro coentros’ points to micro coriander; closest active article is ‘Coentros microgreens’. Packaging/unit differs (vaso/un vs g), so confidence reduced."
+    },
+    {
+      "sourceName": "Arroz",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Source 'Arroz' is generic and ambiguous. KB contains multiple specific rice articles (e.g. id 325 Arroz agulha/carolino; id 326/327 Arroz koshihikari) and planned recipes (id 146 Arroz koshihikari — Semi-elaborado). Example 'Areia de arroz' matches planned recipe id 138, but the component name does not unmistakably refer to that prepared base. Unit 'g' is consistent but not decisive."
+    },
+    {
+      "sourceName": "Arroz",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Source is generic 'Arroz' and could refer to multiple rice articles (agulha/carolino vs. koshihikari) or be used in bases; example 'Areia de arroz' is a distinct planned recipe but the component name does not unmistakably refer to it. Identity is ambiguous, so no safe link."
+    },
+    {
+      "sourceName": "Batata",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel entry is the generic term 'Batata' but KB has only specific potato articles ('Batata agria', 'Batata miuda', 'Batata doce') and no exact match; identity ambiguous despite matching unit (g)."
+    },
+    {
+      "sourceName": "Batata",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Batata is generic and could refer to Batata agria, Batata miuda, or Batata doce. No qualifier or context confirms a specific article or a prepared base, so an exact match cannot be determined."
+    },
+    {
+      "sourceName": "Batata p/ fritar",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Source 'Batata p/ fritar' (batata para fritar) is ambiguous: could be fresh frying potatoes (variety unspecified) or pre-cut frozen fries. No active article named exactly 'Batata para fritar'; closest candidates include 'Batata agria' (id 20) or 'Batata frita cong staff' (id 241), but identity is not unmistakable, so no match recommended."
+    },
+    {
+      "sourceName": "Batata p/ fritar",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Batata agria",
+      "confidence": "medium",
+      "rationale": "“Batata p/ fritar” refers to raw potato suitable for frying; Batata agria is the standard frying variety. Units (g) match. Not a prepared base. Slight naming generality lowers confidence."
+    },
+    {
+      "sourceName": "Cabeça de porco s/osso",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Cabeça de porco s/osso’ (boneless pig head) is a specific raw cut with no identical active article or planned base recipe. Example shows ‘Recheio Gyosa Porco’ (planned recipe id 93) but that is a prepared filling, not the same unmistakable item; unit is ‘un’ while most meat items use g, so no confident match."
+    },
+    {
+      "sourceName": "Cabeça de porco s/osso",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Cabeça de porco s/osso (boneless pig head) does not match any active article; nearest pork items (bochechas, lombo, toucinho) are different cuts. The planned recipe 'Recheio Gyosa Porco' is a prepared filling, not the raw ingredient. Unit mismatch (un vs g) also reduces confidence."
+    },
+    {
+      "sourceName": "Cachaço de porco fresca s/osso",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "'Cachaço de porco fresca s/osso' (pork neck, boneless) has no exact match in active articles or planned base recipes. KB contains other pork cuts (lombo, bochecha, toucinho) but none explicitly 'cachaço', so mapping is uncertain."
+    },
+    {
+      "sourceName": "Cachaço de porco fresca s/osso",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item is boneless fresh pork neck/shoulder; no active article matches this cut (closest are pork loin, belly/toucinho, kakuni). Planned recipes refer to prepared fillings/bases, not this raw cut."
+    },
+    {
+      "sourceName": "Cavala (Scomber Japonicus)",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel name is the fish 'Cavala (Scomber japonicus)' (mackerel). No active article matches 'cavala'/'caballa'/'scomber' or common synonym 'saba'. Planned recipe 'Marinada de caballa' exists but is a prepared marinade, not the raw fish. Cannot invent a link."
+    },
+    {
+      "sourceName": "Cavala (Scomber Japonicus)",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Não existe artigo ativo para Cavala/Saba (Scomber japonicus). A única opção relacionada é a 'Marinada de caballa Semi-elaborado', que é um preparado distinto do peixe cru indicado. Para evitar erro, não mapear."
+    },
+    {
+      "sourceName": "Chocolate negro",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Source is generic 'Chocolate negro' (g). KB has specific chocolate variants (e.g. equatoriale 55%, guanaja 70%, jivara 40%) but none exactly match a generic dark chocolate—percentage/brand unknown, so identity is uncertain."
+    },
+    {
+      "sourceName": "Chocolate negro",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel term is generic (Chocolate negro) and catalog has multiple dark chocolate articles with different percentages/variants; identity cannot be determined unambiguously."
+    },
+    {
+      "sourceName": "Cogumelo shimeji",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Cogumelo shimeji’ clearly refers to shimeji mushrooms, but KB contains two specific variants ('Shimejji branco' id 131 and 'Shimejji escuro' id 132). The Excel entry doesn't specify color/variant, so exact identity is ambiguous; cannot invent a link."
+    },
+    {
+      "sourceName": "Cogumelo shimeji",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Matches shimeji mushrooms but variant unspecified. Two active articles exist: Shimeji escuro (id 132) and Shimejji branco (id 131). Without color/variant detail, exact identity is uncertain; avoid choosing incorrectly."
+    },
+    {
+      "sourceName": "Entremeada Entrecosto de porco fresca",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Source is a raw pork cut (\"Entremeada Entrecosto de porco fresca\") with no exact match in active articles or planned recipes. Ambiguous whether belly, ribs or fatty cut; example (Recheio Gyosa Porco) is a prepared filling, not the same. Unit ('un') and lack of a directly matching article reduce certainty."
+    },
+    {
+      "sourceName": "Entremeada Entrecosto de porco fresca",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article for fresh pork belly/ribs (entremeada/entrecosto). The cited Recheio Gyosa Porco is a prepared base, not the raw cut. Unit mismatch (un vs g) further reduces confidence."
+    },
+    {
+      "sourceName": "Espinhos de peixe",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article name clearly matches 'Espinhos de peixe'. The term refers to raw fish bones (grams) rather than a prepared product; it could be an input for planned recipes like 'Caldo de peixe — Semi-Elaborado' (id 155) or used in 'Osuimono Semi-elaborado' (id 77), but identity is not unmistakable, so recommend NO_MATCH."
+    },
+    {
+      "sourceName": "Espinhos de peixe",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "The Excel item 'Espinhos de peixe' (fish bones) does not clearly match any active article name, and it is not a prepared base. Although used in 'Osuimono Semi-elaborado', that indicates it is an ingredient for a base, not the base itself. Closest article 'Cabeças peixe' is not the same product, so no safe link."
+    },
+    {
+      "sourceName": "Espumante Cortinha Velha Alvarinho 2019",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Specific espumante 'Cortinha Velha Alvarinho 2019' not present in KB. Only generic wine entries (e.g. 'Vinho branco') exist and are not clearly identical; unit mismatch (excel 'un' vs article 'ml') reduces confidence."
+    },
+    {
+      "sourceName": "Espumante Cortinha Velha Alvarinho 2019",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Specific sparkling wine (Espumante Cortinha Velha Alvarinho 2019) not found among active articles; closest generic is Vinho branco (ml) which differs in product type and unit. No relevant planned base recipe."
+    },
+    {
+      "sourceName": "Fios de ovos",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "high",
+      "rationale": "No active article or planned base recipe matches 'Fios de ovos' (Portuguese egg‑thread confection). Closest matches (Gemas liquidas, Ovo líquido, Tamago) are different products; cannot safely link."
+    },
+    {
+      "sourceName": "Fios de ovos",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Fios de ovos’ could be Portuguese egg-yolk threads or shredded omelette for sushi; no item exactly matches by name. ‘Tamago’ is related but not unequivocally the same product form."
+    },
+    {
+      "sourceName": "Glucose - Pó",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Source is 'Glucose - Pó' (powdered glucose). KB contains 'Glucose líquida' (id 185, liquid) but no powdered glucose article or planned base recipe. Different physical form (pó vs líquida) => no clear match."
+    },
+    {
+      "sourceName": "Glucose - Pó",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "high",
+      "rationale": "Excel item specifies glucose powder (pó); active list only has Glucose líquida (liquid), a different product. No planned base recipe fits. Avoid mismatching forms."
+    },
+    {
+      "sourceName": "Manga de Barco",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No exact match in KB. 'Manga de Barco' could be a type/packaging of 'Manga' (id 88) or a pickled mango used in tsukemono (planned tsukemono recipes exist), but identity is uncertain and unit (un vs g) differs — manual review required."
+    },
+    {
+      "sourceName": "Manga de Barco",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Sacos pasteleiro",
+      "confidence": "medium",
+      "rationale": "“Manga” in PT culinary refers to a piping bag; “de Barco” likely indicates use context. Units match (un) and no planned base recipe fits. Some ambiguity in naming remains, hence medium confidence."
+    },
+    {
+      "sourceName": "Matcha",
+      "occurrences": 1,
+      "referenceType": "planned_recipe",
+      "referenceName": "Sal de Té Matcha Semi-elaborado",
+      "confidence": "medium",
+      "rationale": "Example exactly matches planned base recipe name. Source name (‘Matcha’) is generic and unit 'un' (excel) vs recipe unit 'g' reduces certainty."
+    },
+    {
+      "sourceName": "Matcha",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article for matcha tea powder; planned base recipe 'Sal de Té Matcha Semi-elaborado' is a prepared item and the component name 'Matcha' does not unmistakably refer to it. Unit mismatch (un vs g) further reduces confidence."
+    },
+    {
+      "sourceName": "Maxlumen Gel conbustivel balde 5kg",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item is a commercial gel fuel (Maxlumen gel combustível, balde 5kg). No active article or planned base recipe matches a fuel/combustível gel. Closest names (e.g. Álcool gel) are different products (sanitiser) and units/categories differ, so identity is uncertain—recommend NO_MATCH."
+    },
+    {
+      "sourceName": "Maxlumen Gel conbustivel balde 5kg",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Item is fuel gel (Maxlumen, 5kg bucket) for heating/chafing, not a culinary ingredient or planned base. No active article clearly matches “gel combustível”; closest items (álcool gel, botija gás, carvão) are different products."
+    },
+    {
+      "sourceName": "Mayonesa Japonesa",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Maionese japonesa",
+      "confidence": "medium",
+      "rationale": "Direct lexical match (Mayonesa -> Maionese, Japonesa -> japonesa) to active article id 86. Unit in Excel is 'un' vs article 'g', so confidence reduced. Example 'Mayonesa Kimchi Semi-elaborado' corresponds to a planned semi-elaborado variant but is not the same product."
+    },
+    {
+      "sourceName": "Mayonesa Japonesa",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Maionese japonesa",
+      "confidence": "medium",
+      "rationale": "Spanish name matches Portuguese article for the same product; not the kimchi mayo base. Units differ (un vs g), so confidence reduced."
+    },
+    {
+      "sourceName": "Mexilhao (Mytilus galloprovincialis)",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "high",
+      "rationale": "Excel entry is mussel (Mexilhão / Mytilus galloprovincialis). No active KB article or planned base recipe for mussels found in the provided lists, so no safe mapping can be made."
+    },
+    {
+      "sourceName": "Mexilhao (Mytilus galloprovincialis)",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "high",
+      "rationale": "Excel component is mussel (Mexilhão, Mytilus galloprovincialis). No active article for mussel exists and no planned base recipe explicitly for mexilhão; linking to clams/oysters would be incorrect."
+    },
+    {
+      "sourceName": "Mini Folhas Acelgas 30g",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active KB article matching 'Acelgas' (chard). Could be raw mini chard leaves or a packed salad mix; planned recipes like 'Salada Semi-elaborado' or 'Micro salada mix' are possible but not unmistakable. Unit mismatch (un vs g) lowers certainty."
+    },
+    {
+      "sourceName": "Mini Folhas Acelgas 30g",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Mini Folhas Acelgas (Swiss chard) not found among active articles; item is a raw leafy green, not a prepared base like 'Salada Semi-elaborado'. Also unit mismatch (un vs g) reduces confidence."
+    },
+    {
+      "sourceName": "Mini folhas de Cenoura",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Ambiguous: 'Mini folhas de Cenoura' likely refers to carrot leaves/microgreens. No active article or planned recipe exactly named or clearly equivalent. Unit 'un' vs main 'Cenoura' (g) mismatches; 'Vaso de cenoura' (un) is not the same. Example 'Salada Semi-elaborado' suggests use in a prepared salad but does not prove identity."
+    },
+    {
+      "sourceName": "Mini folhas de Cenoura",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No exact article matches mini carrot leaves; closest is 'Vaso de cenoura' (potted plant), which is not the same product. No planned base recipe explicitly refers to mini carrot leaves. Example mentions a salad semi-elaborado but not a specific prepared base."
+    },
+    {
+      "sourceName": "mini folhas de mizuna",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Mizuna",
+      "confidence": "medium",
+      "rationale": "‘mini folhas de mizuna’ is the same product (mizuna leaves). Packaging note ‘mini folhas’ suggests baby/packaged leaves but active article is ‘Mizuna’ (unit g) — unit mismatch reduces confidence to medium."
+    },
+    {
+      "sourceName": "mini folhas de mizuna",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Mizuna",
+      "confidence": "medium",
+      "rationale": "‘Mini folhas de mizuna’ refers to baby/micro mizuna leaves; the active article ‘Mizuna’ is the same product. Unit mismatch (un vs g) reduces confidence, and this is an ingredient, not a prepared base."
+    },
+    {
+      "sourceName": "Mini Folhas de Mostaza Wasabi 30g",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Source 'Mini Folhas de Mostaza Wasabi 30g' appears to be a packed microgreen/leaf product (30g pack) referencing mustard/wasabi leaves. No active article exactly matches that product name or packaging. Possible related items (Mizuna id 100, Wasabi fresco id 151, or planned 'Micro salada mix' id 161) exist but none are clearly the same; unit packaging ('un' 30g pack) vs KB units (mostly g) increases uncertainty."
+    },
+    {
+      "sourceName": "Mini Folhas de Mostaza Wasabi 30g",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Parece referir-se a microfolhas de mostarda “wasabi”/wasabina (punnet 30 g). Não existe artigo correspondente na lista; ‘Mizuna’ é diferente e a unidade também diverge (un vs g)."
+    },
+    {
+      "sourceName": "Musgo (mastocarpus)",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article or planned base recipe exactly matches 'Musgo (mastocarpus)'. The name indicates a specific red seaweed (Mastocarpus/Irish moss). Similar KB items exist (Wakame, Kombu, Alface do mar, Agar Agar) but are different species/forms, so identity cannot be assumed."
+    },
+    {
+      "sourceName": "Musgo (mastocarpus)",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "high",
+      "rationale": "Musgo (mastocarpus) is a specific seaweed (Irish moss/falso musgo irlandês) not listed among active articles; available seaweeds (wakame, kombu, nori, alface do mar, etc.) are different species. It does not denote a prepared base recipe."
+    },
+    {
+      "sourceName": "N Peixe do dia",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘N Peixe do dia’ is a generic 'fish of the day' label, not a specific species or prepared base; no active article or planned recipe matches that exact name. Unit 'un' vs most fish articles in 'g' further reduces match certainty."
+    },
+    {
+      "sourceName": "N Peixe do dia",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "low",
+      "rationale": "'Peixe do dia' is a generic/variable market fish, not a specific product or prepared base. No active article or planned base recipe clearly matches, and unit (un) does not align with fish articles (g), further reducing confidence."
+    },
+    {
+      "sourceName": "N Toro Flambe",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "low",
+      "rationale": "Contains 'Toro' but includes 'N' and 'Flambe' (flambé) suggesting a prepared/seared menu item (nigiri) rather than the raw ingredient. No exact planned base recipe matches and unit is 'un' vs article 'Toro' in g, so identity is uncertain."
+    },
+    {
+      "sourceName": "N Toro Flambe",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Toro",
+      "confidence": "medium",
+      "rationale": "Toro matches the product; 'N' likely Nigiri and 'flambé' is a prep step. No matching planned base recipe. Unit mismatch (un vs g) lowers confidence."
+    },
+    {
+      "sourceName": "Nata UHT",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Nata 35% gorda",
+      "confidence": "medium",
+      "rationale": "'Nata UHT' is UHT cream and matches the KB article 'Nata 35% gorda' (same product). Confidence lowered to medium due to unit mismatch (excel: 'un' vs article: 'ml') and no explicit fat % in source name."
+    },
+    {
+      "sourceName": "Nata UHT",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Nata 35% gorda",
+      "confidence": "medium",
+      "rationale": "“Nata UHT” refers to UHT cream; the only cream article is “Nata 35% gorda”. UHT is a processing/packaging detail, likely same product. Unit mismatch (un vs ml) and unspecified fat % reduce confidence, but identity is still probable."
+    },
+    {
+      "sourceName": "Nori Tacos redondo",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Takaokay \"a\" - 50 folhas",
+      "confidence": "medium",
+      "rationale": "‘Nori’ = seaweed sheets; only active article that explicitly references sheets and uses unit 'un' is the 50‑folhas pack (id 448). Unit matches, but 'Tacos redondo' (round taco) could mean a pre-cut round sheet or a different SKU, so not fully certain."
+    },
+    {
+      "sourceName": "Nori Tacos redondo",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item likely refers to a round nori taco shell (used in Maguro Taco), but no active article explicitly matches (only generic nori forms like sheets, shredded, powder) and no planned base recipe corresponds. Linking would be speculative."
+    },
+    {
+      "sourceName": "ossos de frango",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "high",
+      "rationale": "'ossos de frango' = chicken bones (raw). No active article for chicken bones, and the planned 'Caldo de pollo Semi-elaborado' is a prepared chicken stock (not the same product). Unit (g) is consistent but does not make them identical."
+    },
+    {
+      "sourceName": "ossos de frango",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Ossos de frango’ is a raw ingredient and no active article matches it. The planned base recipe ‘Caldo de pollo Semi-elaborado’ is a different prepared product (unit ml vs g), so it should not be linked."
+    },
+    {
+      "sourceName": "Ossos de vaca",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Ossos de vaca’ are raw beef bones; no active article exactly matches 'ossos' and the only related planned recipe is 'Caldo de carne Semi-elaborado' (a prepared stock). The Excel term does not unmistakably refer to that prepared base and units differ, so no match."
+    },
+    {
+      "sourceName": "Ossos de vaca",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Ossos de vaca = beef bones (ingrediente cru). Não existe artigo ativo correspondente e não é um base preparado. A menção a 'Caldo de carne Semi-elaborado' indica uso, não identidade; além disso, a unidade do base (ml) difere de g."
+    },
+    {
+      "sourceName": "Panko 4MM",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item clearly denotes panko breadcrumbs but KB lacks a 'Panko 4MM' entry. KB has 'Panko 6MM' and 'Panko 10MM' (different crumb sizes). Size difference prevents a confident exact match."
+    },
+    {
+      "sourceName": "Panko 4MM",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel lists Panko 4MM; KB has Panko 6MM (id 407) and 10MM (id 408). Size variant likely indicates a different SKU, so no exact match. Not a prepared base recipe."
+    },
+    {
+      "sourceName": "Pasta rolo primavera",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Massa spring roll (rolinhos primavera)",
+      "confidence": "medium",
+      "rationale": "‘Pasta rolo primavera’ corresponds to spring-roll wrapper (‘massa spring roll (rolinhos primavera)’) — clear name/synonym match. Excel unit is ‘un’ vs article unit ‘g’, so confidence reduced to medium."
+    },
+    {
+      "sourceName": "Pasta rolo primavera",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Massa spring roll (rolinhos primavera)",
+      "confidence": "medium",
+      "rationale": "Name strongly matches spring roll pastry (Portuguese variation: pasta vs massa) and mentions rolo primavera; unit mismatch (un vs g) lowers confidence."
+    },
+    {
+      "sourceName": "Pata de vaca",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Pata de vaca’ (cow’s foot) is an ingredient used to make beef stock (example shows 'Caldo de carne Semi-elaborado') but there is no active article named or clearly synonymous with cow’s foot, and the planned recipe listed is the prepared stock (not the raw ingredient). Unit (g) fits ingredients but identity cannot be linked to any KB article or to a planned base recipe unambiguously."
+    },
+    {
+      "sourceName": "Pata de vaca",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "“Pata de vaca” is a raw beef leg/foot ingredient likely used to make stock; no active article clearly matches it, and it does not refer to the prepared base “Caldo de carne Semi-elaborado” (also unit mismatch: ml vs g)."
+    },
+    {
+      "sourceName": "Pimento em Po",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Paprika",
+      "confidence": "medium",
+      "rationale": "‘Pimento em Po’ (pimento em pó) most likely = paprika / pimentão em pó (matches article 'Paprika'). Source unit is 'un' while article unit is 'g', which reduces confidence. Could also be chilli powder (e.g. 'Piri piri em po') but paprika is the closer match."
+    },
+    {
+      "sourceName": "Pimento em Po",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Colorau",
+      "confidence": "medium",
+      "rationale": "“Pimento em pó” in PT typically refers to colorau/paprika. Active articles include both Colorau and Paprika; choosing the Portuguese term Colorau. Unit mismatch (un vs g) and slight ambiguity with Paprika lower confidence."
+    },
+    {
+      "sourceName": "Purê de manga - sem açúcar",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Pure manga",
+      "confidence": "medium",
+      "rationale": "Exact name match (Purê de manga → Pure manga). Excel specifies 'sem açúcar' (unsweetened) which is consistent with a plain mango purée; unit mismatch (g vs ml) reduces confidence to medium."
+    },
+    {
+      "sourceName": "Purê de manga - sem açúcar",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Pure manga",
+      "confidence": "medium",
+      "rationale": "Name matches mango purée; no planned base recipe exists. 'Sem açúcar' not specified on article and unit mismatch (g vs ml) reduces certainty, but it is likely the same ingredient."
+    },
+    {
+      "sourceName": "Raiz de apio",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Raiz de apio’ likely means celeriac (apionabo). There is no active article matching apionabo; a planned recipe 'Pure de Apionabo Semi-elaborado' exists and appears in examples, but the source_name refers to the raw root (not unmistakably the puree). Link uncertain, so recommend NO_MATCH."
+    },
+    {
+      "sourceName": "Raiz de apio",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Raiz de apio refers to celeriac (apionabo), which has no active article. 'Aipo' is celery stalks, not the same. The puree is a prepared base and the component name does not unmistakably refer to it."
+    },
+    {
+      "sourceName": "Rebentos mix",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "'Rebentos mix' likely means sprouts/microgreens but not unequivocally the planned 'Micro salada mix — Semi-elaborado' (name differs and unit in Excel is 'un' vs recipe 'g'); ambiguous identity, recommend NO_MATCH."
+    },
+    {
+      "sourceName": "Rebentos mix",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article explicitly matches 'Rebentos mix'. The closest planned base is 'Micro salada mix — Semi-elaborado' but it is not unmistakably the same product and units differ (un vs g), reducing confidence."
+    },
+    {
+      "sourceName": "Sake Nambanzuke Aper",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Name appears to be a prepared item (\"Sake Nambanzuke\" — a nambanzuke-style marinated appetizer), not a raw ingredient in KB. Could refer to salmon (Japanese 'sake') but no matching prepared article or planned base recipe exists; possible confusion with beverage 'sake' or raw salmon (KB has 'Salmão Limpo' and 'Salmao selvagem') and unit mismatch ('un' vs KB 'g') lowers certainty."
+    },
+    {
+      "sourceName": "Sake Nambanzuke Aper",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "low",
+      "rationale": "Excel item appears to be a prepared appetizer/dish component (Sake Nanbanzuke) for Bento Kabuki; no active article or planned base recipe matches this name, and unit 'un' does not align with available candidates."
+    },
+    {
+      "sourceName": "Sal em flocos negro",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article exactly matches 'Sal em flocos negro'. The closest KB item is 'Sal maldon' (id 427) which is a flaked salt, but the Excel name specifies 'negro' (black) — color/variant mismatch makes identity uncertain, so do not link."
+    },
+    {
+      "sourceName": "Sal em flocos negro",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item specifies black flake salt. Active articles include Sal maldon (flake salt) but not the black variant; this variant difference makes exact identity uncertain. No planned base recipe corresponds."
+    },
+    {
+      "sourceName": "Shitake",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Cogumelo shitake fresco",
+      "confidence": "medium",
+      "rationale": "Source name 'Shitake' matches 'Cogumelo shitake fresco' (same mushroom). Unit mismatch (source 'un' vs article 'g') reduces confidence to medium."
+    },
+    {
+      "sourceName": "Shitake",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Shitake could be fresh or dried; both exist as separate active articles. The source unit is 'un' while articles are in 'g', and the example (Take Dashi Semi-elaborado) does not clearly indicate which form is intended. Avoiding an incorrect link."
+    },
+    {
+      "sourceName": "Solomilo ingles, lombo de Wagyu",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Contains 'Wagyu' but cut name is ambiguous (\"Solomilo/solomillo\" vs \"lombo\"/\"lomo\"); KB has Wagyu items (maminha/Lomo Bajo) but none clearly identical to a Wagyu loin/solomillo. Not an unmistakable match to a planned base recipe."
+    },
+    {
+      "sourceName": "Solomilo ingles, lombo de Wagyu",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Maminha wagyu/Lomo Bajo",
+      "confidence": "medium",
+      "rationale": "Excel names Wagyu loin/sirloin (solomillo inglés/lombo). Article includes Wagyu and Lomo Bajo (striploin), matching language/synonyms and unit g. Some ambiguity due to 'maminha' in name, so medium confidence."
+    },
+    {
+      "sourceName": "Sweet Miso",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Miso doce",
+      "confidence": "medium",
+      "rationale": "'Sweet Miso' is the literal English equivalent of Portuguese 'Miso doce' (article id 284). Unit mismatch (excel 'un' vs article 'g') reduces confidence to medium; not matching a semi-elaborado recipe exactly."
+    },
+    {
+      "sourceName": "Sweet Miso",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Miso doce",
+      "confidence": "medium",
+      "rationale": "‘Sweet miso’ matches the Portuguese article ‘Miso doce’ (sweet/white miso). Minor ambiguity with ‘Shiro miso’ and unit mismatch (un vs g) reduce confidence."
+    },
+    {
+      "sourceName": "Tataki Ostra Aper",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Name includes 'Ostra' but 'Tataki' and 'Aper' suggest a prepared appetizer; no exact article or planned recipe match and unit (un vs g) differs, so identity uncertain."
+    },
+    {
+      "sourceName": "Tataki Ostra Aper",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "low",
+      "rationale": "Tataki Ostra Aper appears to be a prepared oyster appetizer component counted per unit; no active article clearly matches (closest is Ostras in g) and no planned base recipe mentions oyster tataki. Unit mismatch (un vs g) further reduces confidence."
+    },
+    {
+      "sourceName": "Tobiko",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Tobiko laranja",
+      "confidence": "medium",
+      "rationale": "‘Tobiko’ is flying-fish roe; KB contains ‘Tobiko laranja’ (id 305) and a similar ‘Ovas Tobikko red’ (id 290). Closest match is ‘Tobiko laranja’. Excel unit is ‘un’ vs article unit ‘g’, so confidence reduced to medium."
+    },
+    {
+      "sourceName": "Tobiko",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Tobiko’ likely means flying fish roe, but available articles are color-specific (‘Tobiko laranja’, ‘Ovas Tobikko red’). The Excel item does not specify color and units differ (un vs g), so exact identity is uncertain and no planned base recipe matches."
+    },
+    {
+      "sourceName": "Tofu biologico",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item is 'Tofu biologico' (organic tofu). KB has 'Tofu japones', 'Tofu makro' and 'Tofu momen' but none explicitly labeled organic — product identity (organic vs supplier/type) is ambiguous, so do not assign a specific article or planned recipe."
+    },
+    {
+      "sourceName": "Tofu biologico",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item is 'Tofu biologico' (organic tofu). Active articles include several tofu variants (Tofu japones, Tofu momen, Tofu makro, Aji inari tofu), none explicitly organic, and the exact type/brand is unclear. Unit matches (g) but identity is not certain, so no safe link."
+    },
+    {
+      "sourceName": "Torokeru Curry - Curry japones",
+      "occurrences": 1,
+      "referenceType": "planned_recipe",
+      "referenceName": "Salsa Curry vegetal Semi-elaborado",
+      "confidence": "medium",
+      "rationale": "Excel name indicates a Japanese curry product; examples include the exact planned base name. Unit matches (g). Not a perfect name match (brand/term 'Torokeru'), so medium confidence."
+    },
+    {
+      "sourceName": "Torokeru Curry - Curry japones",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Torokeru Curry is a specific Japanese curry roux brand, while available articles are generic 'Curry mix hot/medium' with unclear brand/strength. The component does not refer to the prepared base 'Salsa Curry vegetal'. Exact identity is uncertain, so no match."
+    },
+    {
+      "sourceName": "Uva",
+      "occurrences": 1,
+      "referenceType": "planned_recipe",
+      "referenceName": "Uva Limpa",
+      "confidence": "medium",
+      "rationale": "No active article named exactly “Uva”. Planned base recipe “Uva Limpa” matches the product name and unit (g); likely the intended item but not certain the Excel row refers specifically to the cleaned/processed base."
+    },
+    {
+      "sourceName": "Uva",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "‘Uva’ clearly means grapes, but there is no active article for grapes. A planned base ‘Uva Limpa’ exists, yet the Excel name does not specify cleaned/prepared, so linking to that base is not unmistakable."
+    },
+    {
+      "sourceName": "Vagem de baunilha",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "high",
+      "rationale": "‘Vagem de baunilha’ = vanilla bean/pod. No active article or planned base recipe corresponds to the ingredient (only 'Gelado baunilha' exists, which is a prepared ice cream and not the same product)."
+    },
+    {
+      "sourceName": "Vagem de baunilha",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article or planned base recipe corresponds to vanilla pods; closest items (e.g., Gelado baunilha) are different products. Avoiding an invented link."
+    },
+    {
+      "sourceName": "Vaso micro lemon balm",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Lemon balm (vaso)",
+      "confidence": "medium",
+      "rationale": "Name matches (lemon balm + vaso). 'Micro' qualifier and unit mismatch (excel: un vs article: g) introduce some uncertainty, but product is likely the same potted lemon balm."
+    },
+    {
+      "sourceName": "Vaso micro lemon balm",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Lemon balm (vaso)",
+      "confidence": "medium",
+      "rationale": "Name indicates lemon balm in a pot; matches article '(vaso)'. 'Micro' likely size/variety. Unit mismatch (un vs g) reduces confidence but product identity aligns."
+    },
+    {
+      "sourceName": "Vaso micro manjericao",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "No active article or planned recipe exactly matches 'Vaso micro manjericao'. Similar 'Vaso ...' articles exist and 'Manjericão' exists (unit g), but there is no explicit 'vaso' article for micro manjericão; cannot invent link."
+    },
+    {
+      "sourceName": "Vaso micro manjericao",
+      "occurrences": 1,
+      "referenceType": "NO_MATCH",
+      "referenceName": null,
+      "confidence": "medium",
+      "rationale": "Excel item is a potted micro basil (un). No active article explicitly matches this form; closest are Manjericão (g) and Flor manjericao (un), which differ in form/packaging. No planned base recipe corresponds to this raw herb."
+    },
+    {
+      "sourceName": "Vinagre de Vinho",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Vinagre vinho branco",
+      "confidence": "medium",
+      "rationale": "Excel name 'Vinagre de Vinho' matches a culinary wine vinegar; nearest KB article is 'Vinagre vinho branco' (food category). Unit mismatch (excel 'un' vs article 'ml') and unspecified wine type (white vs generic) reduce confidence. Cleaning-vinegar articles were ignored."
+    },
+    {
+      "sourceName": "Vinagre de Vinho",
+      "occurrences": 1,
+      "referenceType": "article",
+      "referenceName": "Vinagre vinho branco",
+      "confidence": "medium",
+      "rationale": "‘Vinagre de Vinho’ matches wine vinegar; the available active article is white wine vinegar. Color not specified in Excel and unit differs (un vs ml), so confidence reduced but still the closest clear culinary product."
+    }
+  ]
+}
