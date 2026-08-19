@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { trpc } from "@/lib/trpc";
-import { FlaskConical, Plus } from "lucide-react";
+import { FlaskConical, Plus, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +24,7 @@ type FormValues = {
 
 export default function Rendimento() {
   const [showForm, setShowForm] = useState(true);
+  const [showComparador, setShowComparador] = useState(false);
   const utils = trpc.useUtils();
   const { data: artigos } = trpc.artigos.listar.useQuery({ tipo: "ingrediente" });
   // Filtrar apenas proteínas animais: categorias "Peixe" e "Carnes e Aves"
@@ -58,6 +60,24 @@ export default function Rendimento() {
   const sobrecustoPct = precoKg > 0 ? ((custoRealPorKg - precoKg) / precoKg) * 100 : 0;
 
   const podePrevisualizar = pesoBruto > 0 && pesoLimpo > 0 && precoKg > 0;
+
+  const comparativoProteinas = useMemo<Array<{ nome: string; testes: number; aproveitamentoMedio: number; custoMedioKg: number }>>(() => {
+    const grupos = new Map<string, { testes: number; aproveitamento: number; custoKg: number }>();
+    for (const teste of testes ?? []) {
+      const chave = teste.artigoNome ?? "Sem proteína";
+      const atual = grupos.get(chave) ?? { testes: 0, aproveitamento: 0, custoKg: 0 };
+      atual.testes += 1;
+      atual.aproveitamento += Number(teste.aproveitamentoPct ?? 0);
+      atual.custoKg += Number(teste.custoRealPorKg ?? 0);
+      grupos.set(chave, atual);
+    }
+    return Array.from(grupos.entries()).map(([nome, valores]) => ({
+      nome,
+      testes: valores.testes,
+      aproveitamentoMedio: valores.aproveitamento / valores.testes,
+      custoMedioKg: valores.custoKg / valores.testes,
+    })).sort((a, b) => b.aproveitamentoMedio - a.aproveitamentoMedio);
+  }, [testes]);
 
   // Auto-suggest the clean article when the raw protein is selected
   const artigoIdWatch = watch("artigoId");
@@ -105,6 +125,39 @@ export default function Rendimento() {
           <Plus className="w-4 h-4" /> Novo Teste
         </Button>
       </div>
+
+      {(testes?.length ?? 0) > 0 && (
+        <Card className="bg-card border-border">
+          <CardHeader className="py-3 flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-gold" /> Comparador de Proteínas
+            </CardTitle>
+            <Button size="sm" variant="outline" className="border-border" onClick={() => setShowComparador(v => !v)}>
+              {showComparador ? "Ocultar" : "Comparar"}
+            </Button>
+          </CardHeader>
+          {showComparador && (
+            <CardContent className="pt-0 overflow-x-auto">
+              <table className="w-full text-sm tabular-nums">
+                <thead><tr className="border-b border-border">
+                  <th className="text-left py-2 text-xs text-muted-foreground uppercase tracking-wide">Proteína</th>
+                  <th className="text-right py-2 text-xs text-muted-foreground uppercase tracking-wide">Testes</th>
+                  <th className="text-right py-2 text-xs text-muted-foreground uppercase tracking-wide">Aproveitamento médio</th>
+                  <th className="text-right py-2 text-xs text-muted-foreground uppercase tracking-wide">Custo médio limpo</th>
+                </tr></thead>
+                <tbody>{comparativoProteinas.map((proteina) => (
+                  <tr key={proteina.nome} className="border-b border-border/60">
+                    <td className="py-2.5 font-medium">{proteina.nome}</td>
+                    <td className="py-2.5 text-right">{proteina.testes}</td>
+                    <td className="py-2.5 text-right text-gold">{fmt(proteina.aproveitamentoMedio, 1)}%</td>
+                    <td className="py-2.5 text-right">{fmt(proteina.custoMedioKg, 2)} €/kg</td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            </CardContent>
+          )}
+        </Card>
+      )}
 
       {showForm && (
         <Card className="bg-card border-border">

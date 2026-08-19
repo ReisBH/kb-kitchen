@@ -28,6 +28,7 @@ import Utilizadores from "./pages/Utilizadores";
 import QrSaida from "./pages/QrSaida";
 import QrLote from "./pages/QrLote";
 import Etiquetas from "./pages/Etiquetas";
+import MapaPos from "./pages/MapaPos";
 
 // Helper: wrap a component in EconomatoLayout + ProtectedRoute
 function P({ path, component }: { path: string; component: React.ComponentType }) {
@@ -62,6 +63,7 @@ function AppRoutes() {
       <Route path="/s/:codigo" component={QrSaida} />
       <Route path="/l/:codigo" component={QrLote} />
       <Route path="/etiquetas">{() => <P path="/etiquetas" component={Etiquetas} />}</Route>
+      <Route path="/mapa-pos">{() => <P path="/mapa-pos" component={MapaPos} />}</Route>
 
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

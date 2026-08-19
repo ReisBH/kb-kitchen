@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard, Package, Users, FlaskConical, ChefHat, BookOpen,
   ShoppingCart, ClipboardList, TrendingDown, Bell, FileImage, Receipt, ArrowLeftRight,
-  Menu, X, LogOut, ChevronRight, UserCog, QrCode
+  Menu, X, LogOut, ChevronRight, UserCog, QrCode, Link2
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { startLogin } from "@/const";
@@ -26,6 +26,7 @@ const ALL_NAV_ITEMS = [
   { href: "/alertas", label: "Alertas e Encomendas", icon: Bell },
   { href: "/ocr/faturas", label: "OCR — Faturas", icon: FileImage },
   { href: "/ocr/fecho-caixa", label: "OCR — Fecho de Caixa", icon: Receipt },
+  { href: "/mapa-pos", label: "Mapa POS", icon: Link2, roles: ["admin", "head_chef", "sub_chefe"] },
   { href: "/etiquetas", label: "QR Codes e Etiquetas", icon: QrCode, roles: ["admin", "head_chef"] },
   { href: "/utilizadores", label: "Utilizadores", icon: UserCog },
 ];

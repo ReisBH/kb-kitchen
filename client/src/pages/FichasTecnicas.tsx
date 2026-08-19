@@ -1,9 +1,12 @@
+import { useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { Plus, BookOpen } from "lucide-react";
+import { Plus, BookOpen, Trash2, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -12,64 +15,38 @@ function fmt(n: number | string | null | undefined, d = 2) {
   return parseFloat(String(n)).toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 
+type LinhaComponente = { componenteId: string; quantidade: string };
+
+function NovaFichaDialog({ onClose }: { onClose: () => void }) {
+  const utils = trpc.useUtils();
+  const { data: artigos } = trpc.artigos.listar.useQuery();
+  const [nome, setNome] = useState("");
+  const [secaoMenu, setSecaoMenu] = useState("");
+  const [precoVenda, setPrecoVenda] = useState("");
+  const [linhas, setLinhas] = useState<LinhaComponente[]>([{ componenteId: "", quantidade: "" }]);
+  const criar = trpc.fichas.criar.useMutation({
+    onSuccess: () => { toast.success("Ficha técnica criada com sucesso."); utils.fichas.listar.invalidate(); onClose(); },
+    onError: (erro) => toast.error(erro.message),
+  });
+  const opcoes = (artigos ?? []).filter((artigo) => artigo.ativo);
+  const alterarLinha = (indice: number, patch: Partial<LinhaComponente>) => setLinhas((atuais) => atuais.map((linha, i) => i === indice ? { ...linha, ...patch } : linha));
+  const custoEstimado = useMemo(() => linhas.reduce((total, linha) => {
+    const artigo = opcoes.find((item) => item.id === Number(linha.componenteId));
+    return total + Number(linha.quantidade || 0) * Number(artigo?.custoMedioPonderado ?? 0);
+  }, 0), [linhas, opcoes]);
+  const preco = Number(precoVenda || 0);
+  const foodCost = preco > 0 ? (custoEstimado / preco) * 100 : null;
+  const submeter = () => {
+    if (!nome.trim()) return toast.error("Indica o nome da ficha técnica.");
+    const componentes = linhas.filter((linha) => linha.componenteId && Number(linha.quantidade) > 0);
+    if (!componentes.length) return toast.error("Adiciona pelo menos um componente com quantidade.");
+    criar.mutate({ nome: nome.trim(), secaoMenu: secaoMenu || undefined, precoVenda: preco || undefined, componentes: componentes.map((linha, ordem) => ({ componenteId: Number(linha.componenteId), quantidade: Number(linha.quantidade), unidade: opcoes.find((artigo) => artigo.id === Number(linha.componenteId))?.unidadeBase ?? "g", ordem })) });
+  };
+  return <div className="space-y-4"><div className="grid grid-cols-1 sm:grid-cols-2 gap-3"><div className="sm:col-span-2"><label className="text-xs text-muted-foreground mb-1 block">Nome <span className="text-danger">*</span></label><Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex.: Nigiri de salmão" className="bg-input border-border" /></div><div><label className="text-xs text-muted-foreground mb-1 block">Secção de menu</label><Input value={secaoMenu} onChange={(e) => setSecaoMenu(e.target.value)} placeholder="Ex.: SUSHI" className="bg-input border-border" /></div><div><label className="text-xs text-muted-foreground mb-1 block">Preço de venda (€)</label><Input type="number" min="0" step="0.01" value={precoVenda} onChange={(e) => setPrecoVenda(e.target.value)} placeholder="0,00" className="bg-input border-border" /></div></div><Card className="bg-primary/5 border-primary/20"><CardContent className="p-3 flex items-center gap-3"><Calculator className="w-5 h-5 text-gold" /><div className="flex-1"><p className="text-xs text-muted-foreground">Simulador de preço</p><p className="font-medium">Custo estimado: <span className="text-gold">{fmt(custoEstimado, 2)} €</span></p></div><div className="text-right"><p className="text-xs text-muted-foreground">Food Cost</p><p className={cn("font-medium", foodCost != null && foodCost > 30 ? "text-danger" : "text-success")}>{foodCost == null ? "—" : `${fmt(foodCost, 1)}%`}</p></div></CardContent></Card><div className="space-y-2"><div className="flex items-center justify-between"><p className="text-xs text-muted-foreground uppercase tracking-wide">Componentes</p><Button type="button" size="sm" variant="outline" className="border-border h-7 text-xs" onClick={() => setLinhas((atuais) => [...atuais, { componenteId: "", quantidade: "" }])}><Plus className="w-3 h-3 mr-1" />Adicionar</Button></div>{linhas.map((linha, indice) => <div key={indice} className="flex gap-2"><select value={linha.componenteId} onChange={(e) => alterarLinha(indice, { componenteId: e.target.value })} className="min-w-0 flex-1 h-9 rounded-md bg-input border border-border px-3 text-sm"><option value="">— componente —</option>{opcoes.map((artigo) => <option key={artigo.id} value={artigo.id}>{artigo.nome} ({artigo.unidadeBase})</option>)}</select><Input type="number" min="0.001" step="0.001" value={linha.quantidade} onChange={(e) => alterarLinha(indice, { quantidade: e.target.value })} placeholder="Qtd." className="w-24 bg-input border-border" /><Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-danger" disabled={linhas.length === 1} onClick={() => setLinhas((atuais) => atuais.filter((_, i) => i !== indice))}><Trash2 className="w-4 h-4" /></Button></div>)}</div><div className="flex justify-end gap-2 pt-2"><Button variant="outline" className="border-border" onClick={onClose}>Cancelar</Button><Button className="bg-primary text-primary-foreground" disabled={criar.isPending} onClick={submeter}>{criar.isPending ? "A criar…" : "Criar Ficha"}</Button></div></div>;
+}
+
 export default function FichasTecnicas() {
+  const [novaFicha, setNovaFicha] = useState(false);
   const { data: fichas, isLoading } = trpc.fichas.listar.useQuery();
-  return (
-    <div className="space-y-5 animate-in">
-      <div className="flex items-center justify-between">
-        <div><h1 className="font-display text-3xl text-gold">Fichas Técnicas</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">{fichas?.length ?? 0} fichas activas</p></div>
-        <Button className="bg-primary text-primary-foreground gap-2" onClick={() => toast.info("Criação de fichas técnicas em breve.")}>
-          <Plus className="w-4 h-4" /> Nova Ficha
-        </Button>
-      </div>
-      {isLoading ? <div className="space-y-2">{[...Array(8)].map((_, i) => <div key={i} className="h-14 bg-card rounded animate-pulse" />)}</div>
-        : (fichas?.length ?? 0) === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" />
-            <p>Ainda não há fichas técnicas. Cria a primeira a partir dos ingredientes que já tens.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto rounded-lg border border-border">
-            <table className="w-full text-sm tabular-nums">
-              <thead><tr className="border-b border-border bg-secondary/50">
-                {["Prato", "Secção", "Custo/Dose", "Preço Venda", "Food Cost", "Margem", "Estado"].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">{h}</th>
-                ))}
-              </tr></thead>
-              <tbody>
-                {fichas!.map(f => {
-                  const custo = f.custoCalculado ?? 0;
-                  const preco = parseFloat(f.precoVenda ?? "0");
-                  const margem = preco - custo;
-                  const fc = f.foodCostPct ?? null;
-                  const fcAlvo = parseFloat(f.foodCostAlvo ?? "30");
-                  return (
-                    <tr key={f.id} className="border-b border-border hover:bg-secondary/30">
-                      <td className="px-4 py-3">
-                        <Link href={`/fichas/${f.id}`}>
-                          <span className="hover:text-gold cursor-pointer font-medium transition-colors">{f.nome}</span>
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">{f.secaoMenu ?? "—"}</td>
-                      <td className="px-4 py-3 font-mono">{fmt(custo, 2)} €</td>
-                      <td className="px-4 py-3 font-mono text-gold">{fmt(preco)} €</td>
-                      <td className={cn("px-4 py-3 font-mono font-medium", fc != null && fc > fcAlvo ? "text-danger" : fc != null ? "text-success" : "")}>
-                        {fc != null ? `${fmt(fc, 1)}%` : "—"}
-                      </td>
-                      <td className={cn("px-4 py-3 font-mono", margem > 0 ? "text-success" : "text-danger")}>{fmt(margem)} €</td>
-                      <td className="px-4 py-3">
-                        <Badge className={`text-xs ${f.ativo ? "bg-success/20 text-success" : "bg-secondary text-muted-foreground"}`}>
-                          {f.ativo ? "Activa" : "Inactiva"}
-                        </Badge>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-    </div>
-  );
+  return <div className="space-y-5 animate-in"><div className="flex items-center justify-between"><div><h1 className="font-display text-3xl text-gold">Fichas Técnicas</h1><p className="text-muted-foreground text-sm mt-0.5">{fichas?.length ?? 0} fichas activas</p></div><Button className="bg-primary text-primary-foreground gap-2" onClick={() => setNovaFicha(true)}><Plus className="w-4 h-4" /> Nova Ficha</Button></div><Dialog open={novaFicha} onOpenChange={setNovaFicha}><DialogContent className="bg-card border-border max-w-2xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle className="font-display text-xl text-gold">Nova Ficha Técnica</DialogTitle></DialogHeader><NovaFichaDialog onClose={() => setNovaFicha(false)} /></DialogContent></Dialog>{isLoading ? <div className="space-y-2">{[...Array(8)].map((_, i) => <div key={i} className="h-14 bg-card rounded animate-pulse" />)}</div> : (fichas?.length ?? 0) === 0 ? <div className="text-center py-16 text-muted-foreground"><BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" /><p>Ainda não há fichas técnicas. Cria a primeira a partir dos ingredientes que já tens.</p></div> : <div className="overflow-x-auto rounded-lg border border-border"><table className="w-full text-sm tabular-nums"><thead><tr className="border-b border-border bg-secondary/50">{["Prato", "Secção", "Custo/Dose", "Preço Venda", "Food Cost", "Margem", "Estado"].map((cabecalho) => <th key={cabecalho} className="text-left px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">{cabecalho}</th>)}</tr></thead><tbody>{fichas!.map((ficha) => { const custo = ficha.custoCalculado ?? 0; const preco = parseFloat(ficha.precoVenda ?? "0"); const margem = preco - custo; const foodCost = ficha.foodCostPct ?? null; const alvo = parseFloat(ficha.foodCostAlvo ?? "30"); return <tr key={ficha.id} className="border-b border-border hover:bg-secondary/30"><td className="px-4 py-3"><Link href={`/fichas/${ficha.id}`}><span className="hover:text-gold cursor-pointer font-medium transition-colors">{ficha.nome}</span></Link></td><td className="px-4 py-3 text-muted-foreground text-xs">{ficha.secaoMenu ?? "—"}</td><td className="px-4 py-3 font-mono">{fmt(custo, 2)} €</td><td className="px-4 py-3 font-mono text-gold">{fmt(preco)} €</td><td className={cn("px-4 py-3 font-mono font-medium", foodCost != null && foodCost > alvo ? "text-danger" : foodCost != null ? "text-success" : "")}>{foodCost != null ? `${fmt(foodCost, 1)}%` : "—"}</td><td className={cn("px-4 py-3 font-mono", margem > 0 ? "text-success" : "text-danger")}>{fmt(margem)} €</td><td className="px-4 py-3"><Badge className={`text-xs ${ficha.ativo ? "bg-success/20 text-success" : "bg-secondary text-muted-foreground"}`}>{ficha.ativo ? "Activa" : "Inactiva"}</Badge></td></tr>; })}</tbody></table></div>}</div>;
 }

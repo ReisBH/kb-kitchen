@@ -74,11 +74,11 @@
 - [x] RBAC: Sidebar filtrada por permissões do role activo
 - [x] RBAC: Página de gestão de utilizadores (Admin) — listar, convidar, desactivar
 - [x] RBAC: Página de acesso negado
-- [ ] Formulário de criação de receitas base com componentes
-- [ ] Formulário de criação de fichas técnicas com componentes
-- [ ] Simulador de preço nas fichas técnicas
-- [ ] Comparador de proteínas lado a lado
-- [ ] Mapa POS configurável via UI
+- [x] Formulário de criação de receitas base com componentes
+- [x] Formulário de criação de fichas técnicas com componentes
+- [x] Simulador de preço nas fichas técnicas
+- [x] Comparador de proteínas lado a lado
+- [x] Mapa POS configurável via UI
 - [x] Registo de Vendas em lote: lista todos os pratos com campo de quantidade, submissão única
 - [x] Entradas e saídas manuais de stock: formulário por ingrediente sem OCR
 - [x] OCR: ficha de revisão após leitura da foto antes de confirmar importação
@@ -106,7 +106,7 @@
 - [x] Importação: validar explicitamente o estado de custo das 104 receitas base sem rendimento preenchido e guardar evidência
 - [x] Desempenho: guardar evidência verificável da renderização autenticada da página /fichas com 128 registos
 - [x] Desempenho: autenticar uma sessão real no browser e capturar prova verificável da página /fichas com os 128 registos carregados
-- [ ] Importação: guardar a versão publicada após a validação final
+- [x] Importação: guardar a versão publicada após a validação final
 - [x] Importação: auditar explicitamente no ficheiro de classificações todas as renomeações pedidas pelo utilizador e confirmar que ficaram registadas corretamente
 - [x] Importação: rever e documentar os casos especiais de exclusão e duplicação no ficheiro final de classificação antes da escrita na base de dados
 - [x] Importação: normalizar no ficheiro de classificações as exclusões BAR/VINHOS sem nota padronizada identificadas na auditoria

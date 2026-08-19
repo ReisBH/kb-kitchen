@@ -1,4 +1,3 @@
-// ─── ROLES ────────────────────────────────────────────────────────────────────
 export type AppRole = "admin" | "head_chef" | "sub_chefe" | "cozinheiro" | "user";
 
 export const ROLE_LABELS: Record<AppRole, string> = {
@@ -9,9 +8,6 @@ export const ROLE_LABELS: Record<AppRole, string> = {
   user: "Utilizador",
 };
 
-// ─── ROUTE PERMISSIONS ────────────────────────────────────────────────────────
-// Each route lists the minimum roles that can access it.
-// Admin always has access to everything.
 export const ROUTE_PERMISSIONS: Record<string, AppRole[]> = {
   "/": ["admin", "head_chef", "sub_chefe", "cozinheiro"],
   "/ingredientes": ["admin", "head_chef", "sub_chefe"],
@@ -29,11 +25,11 @@ export const ROUTE_PERMISSIONS: Record<string, AppRole[]> = {
   "/alertas": ["admin", "head_chef", "sub_chefe"],
   "/ocr/faturas": ["admin", "head_chef"],
   "/ocr/fecho-caixa": ["admin", "head_chef", "sub_chefe"],
+  "/mapa-pos": ["admin", "head_chef", "sub_chefe"],
   "/utilizadores": ["admin", "head_chef"],
   "/etiquetas": ["admin", "head_chef"],
 };
 
-// ─── NAV ITEMS PERMISSIONS ────────────────────────────────────────────────────
 export const NAV_PERMISSIONS: Record<string, AppRole[]> = {
   "/": ["admin", "head_chef", "sub_chefe", "cozinheiro"],
   "/ingredientes": ["admin", "head_chef", "sub_chefe"],
@@ -48,6 +44,7 @@ export const NAV_PERMISSIONS: Record<string, AppRole[]> = {
   "/alertas": ["admin", "head_chef", "sub_chefe"],
   "/ocr/faturas": ["admin", "head_chef"],
   "/ocr/fecho-caixa": ["admin", "head_chef", "sub_chefe"],
+  "/mapa-pos": ["admin", "head_chef", "sub_chefe"],
   "/utilizadores": ["admin", "head_chef"],
   "/etiquetas": ["admin", "head_chef"],
 };
@@ -59,6 +56,7 @@ export function canAccess(role: AppRole | undefined | null, path: string): boole
   if (!allowed) return false;
   return allowed.includes(role);
 }
+
 export const ROLE_DESCRIPTIONS: Record<string, string> = {
   admin: "Acesso total — gestão de utilizadores, configurações, todos os módulos",
   head_chef: "Acesso geral à plataforma — todos os módulos incluindo gestão de utilizadores (não pode alterar o perfil do Administrador)",
