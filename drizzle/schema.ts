@@ -79,6 +79,8 @@ export const artigos = mysqlTable("artigos", {
   tipoEtiqueta: mysqlEnum("tipoEtiqueta", ["prateleira", "producao", "ambas", "nenhuma"]).default("ambas").notNull(),
   tipo: mysqlEnum("tipo", ["ingrediente", "proteina_limpa", "receita_base"]).notNull(),
   categoria: varchar("categoria", { length: 100 }),
+  // Família culinária das receitas base (Cozinha Quente, Sushi ou Pastelaria)
+  familia: varchar("familia", { length: 100 }),
   // Unidade base em que o stock é contado (g, ml, un)
   unidadeBase: varchar("unidadeBase", { length: 20 }).notNull(),
   // Unidade de compra e fator de conversão para unidade base
@@ -230,6 +232,8 @@ export const fichasTecnicas = mysqlTable("fichas_tecnicas", {
   nome: varchar("nome", { length: 255 }).notNull(),
   descricao: text("descricao"),
   secaoMenu: varchar("secaoMenu", { length: 100 }),
+  // Família culinária da ficha técnica (Cozinha Quente, Sushi ou Pastelaria)
+  familia: varchar("familia", { length: 100 }),
   precoVenda: decimal("precoVenda", { precision: 10, scale: 2 }),
   foodCostAlvo: decimal("foodCostAlvo", { precision: 5, scale: 2 }),
   tempoPrepMin: int("tempoPrepMin"),

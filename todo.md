@@ -106,6 +106,9 @@
 - [x] Importação: validar explicitamente o estado de custo das 104 receitas base sem rendimento preenchido e guardar evidência
 - [x] Desempenho: guardar evidência verificável da renderização autenticada da página /fichas com 128 registos
 - [x] Desempenho: autenticar uma sessão real no browser e capturar prova verificável da página /fichas com os 128 registos carregados
+- [x] Receitas e fichas: permitir edição completa de nome, família, preço e componentes
+- [x] Receitas e fichas: adicionar as famílias Cozinha Quente, Sushi e Pastelaria ao fluxo de criação e edição
+- [x] Receitas e fichas: disponibilizar pesquisa aproximada por nome e filtro por família nas listas
 - [x] Importação: guardar a versão publicada após a validação final
 - [x] Importação: auditar explicitamente no ficheiro de classificações todas as renomeações pedidas pelo utilizador e confirmar que ficaram registadas corretamente
 - [x] Importação: rever e documentar os casos especiais de exclusão e duplicação no ficheiro final de classificação antes da escrita na base de dados

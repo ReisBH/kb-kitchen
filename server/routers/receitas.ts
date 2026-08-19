@@ -47,6 +47,7 @@ export const receitasRouter = router({
     .input(z.object({
       nome: z.string().min(1),
       categoria: z.string().optional(),
+      familia: z.enum(["Cozinha Quente", "Sushi", "Pastelaria"]),
       unidadeBase: z.string().min(1),
       rendimentoEsperado: z.number().positive(),
       validadeProducaoDias: z.number().optional(),
@@ -67,6 +68,7 @@ export const receitasRouter = router({
         nome: input.nome,
         tipo: "receita_base",
         categoria: input.categoria,
+        familia: input.familia,
         unidadeBase: input.unidadeBase,
         rendimentoEsperado: input.rendimentoEsperado.toFixed(3),
         validadeProducaoDias: input.validadeProducaoDias,
@@ -88,6 +90,42 @@ export const receitasRouter = router({
         );
       }
       return { id: receitaId };
+    }),
+
+  atualizar: protectedProcedure
+    .input(z.object({
+      id: z.number(),
+      nome: z.string().min(1),
+      familia: z.enum(["Cozinha Quente", "Sushi", "Pastelaria"]),
+      unidadeBase: z.string().min(1),
+      rendimentoEsperado: z.number().min(0),
+      validadeProducaoDias: z.number().nullable().optional(),
+      tempoPrepMin: z.number().nullable().optional(),
+      componentes: z.array(z.object({
+        componenteId: z.number(),
+        quantidade: z.number().positive(),
+        unidade: z.string(),
+        ordem: z.number().default(0),
+      })),
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      for (const comp of input.componentes) {
+        const temCiclo = await detetarCiclo(input.id, comp.componenteId);
+        if (temCiclo) throw new TRPCError({ code: "BAD_REQUEST", message: "Ciclo detetado: dependência circular" });
+      }
+      await db.update(artigos).set({
+        nome: input.nome,
+        familia: input.familia,
+        unidadeBase: input.unidadeBase,
+        rendimentoEsperado: input.rendimentoEsperado.toFixed(3),
+        validadeProducaoDias: input.validadeProducaoDias ?? null,
+        tempoPrepMin: input.tempoPrepMin ?? null,
+      } as any).where(and(eq(artigos.id, input.id), eq(artigos.tipo, "receita_base")));
+      await db.delete(receitasBaseComponentes).where(eq(receitasBaseComponentes.receitaId, input.id));
+      if (input.componentes.length) await db.insert(receitasBaseComponentes).values(input.componentes.map((comp) => ({ receitaId: input.id, ...comp, quantidade: comp.quantidade.toFixed(4) } as any)));
+      return { success: true };
     }),
 
   atualizarComponentes: protectedProcedure
@@ -181,4 +219,3 @@ export const receitasRouter = router({
       return db.select().from(producoes).where(eq(producoes.receitaId, input.receitaId)).orderBy(producoes.createdAt);
     }),
 });
-
