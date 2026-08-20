@@ -109,6 +109,41 @@
 - [x] Receitas e fichas: permitir edição completa de nome, família, preço e componentes
 - [x] Receitas e fichas: adicionar as famílias Cozinha Quente, Sushi e Pastelaria ao fluxo de criação e edição
 - [x] Receitas e fichas: disponibilizar pesquisa aproximada por nome e filtro por família nas listas
+- [x] Receitas base: verificar a acessibilidade do botão de edição e confirmar o fluxo publicado de alteração de receita
+- [x] Custos: auditar componentes de todas as receitas base e fichas técnicas contra os artigos existentes
+- [x] Custos: vincular com segurança os componentes efetivamente gravados e documentar as referências de origem sem ligação segura
+- [x] Custos: validar receitas e fichas com custo calculado a partir dos produtos vinculados, documentando as exceções sem componentes ou custo disponível
+- [x] Custos: substituir o preenchimento manual por rendimento provisório calculado enquanto houver quantidades disponíveis
+- [x] Custos: auditar receitas e fichas após o preenchimento de rendimentos e comprovar os custos calculados
+- [x] Custos: destacar na interface receitas sem rendimento e custos ainda impossíveis de calcular
+- [x] Custos: preencher rendimentos provisórios pela soma das quantidades disponíveis no banco e no Excel
+- [x] Custos: recalcular custos médios das receitas base a partir dos ingredientes vinculados e documentar exceções sem custo médio
+- [x] Detalhes: apresentar custo por ingrediente e componente de receita base para Administrador, Head-Chef e Chef
+- [x] Detalhes: apresentar custo por ingrediente e receita associada em fichas técnicas para Administrador, Head-Chef e Chef
+- [x] Custos: completar os três componentes de Cogumelos mix — Semi-elaborado, cujas quantidades no Excel eram 0, para calcular rendimento e custo
+- [x] Custos: aplicar 30 g de enoki, paris e shiitake em Cogumelos mix — Semi-elaborado e recalcular o custo
+- [x] Custos: gerar uma auditoria final por receita e ficha, distinguindo custos calculados de exceções justificadas
+- [x] Custos: tentar correspondências inequívocas de componentes existentes para as 20 receitas base sem custo
+- [x] Custos: aplicar as novas ligações sem ambiguidade e documentar as restantes para revisão
+- [x] Unidades: extrair e entregar a lista de todos os componentes de receitas e fichas técnicas registados como `un`
+- [x] Unidades: converter componentes de receitas e fichas de `un` para `g`, mantendo apenas Folhas de bambu e ovos de codorniz em `un`
+- [x] Unidades: impedir que referências convertidas de g para artigos nativos em un multipliquem custos pelo fator de conversão
+- [x] Unidades: apresentar nas fichas técnicas a unidade de referência registada (`g`), mesmo quando o artigo tem stock nativo em `un`
+- [x] Unidades: exibir a quantidade de referência real em gramas sem substituir a quantidade nativa usada no custo e stock
+- [x] Custos: validar os cálculos de receitas e fichas técnicas após a conversão das unidades
+- [x] Unidades: definir pesos reais em gramas para cada artigo nativo em `un` usado nas receitas e fichas
+- [x] Unidades: aplicar 45 g por ovo e 5 g por flor ou folha, mantendo ovos de codorniz em `un`
+- [x] Unidades: converter quantidades originalmente em `un` para equivalentes reais em gramas e recalcular rendimentos e custos
+- [x] Fichas técnicas: manter `un` para Folhas de bambu e ovos de codorniz, conforme as exceções confirmadas
+- [x] Custos: revalidar exemplos críticos de ovos, shiso, flores e microvasos depois das conversões reais
+- [x] Receitas base: corrigir o carregamento da página de detalhe e validar uma receita com componentes convertidos para g
+- [x] Receitas base: calcular o custo de cada componente com a conversão g→un antes de o apresentar no detalhe
+- [x] Custos: validar e guardar evidência para um caso com shiso e outro com microvaso após a equivalência de 5 g por unidade
+- [x] Custos: repetir a auditoria final incluindo receita base e ficha técnica para ovos, flores, folhas/shiso e microvasos
+- [x] Custos: completar a auditoria final com evidência verificável de receita base e ficha técnica para cada grupo convertido
+- [x] Custos: guardar no relatório final os IDs e valores de quantidade/custo observados em cada caso validado
+- [x] Permissões: restringir no backend os custos detalhados aos papéis admin, head_chef e sub_chefe (Chef)
+- [x] Permissões: testar que perfis não autorizados não recebem custos detalhados nas respostas tRPC
 - [x] Importação: guardar a versão publicada após a validação final
 - [x] Importação: auditar explicitamente no ficheiro de classificações todas as renomeações pedidas pelo utilizador e confirmar que ficaram registadas corretamente
 - [x] Importação: rever e documentar os casos especiais de exclusão e duplicação no ficheiro final de classificação antes da escrita na base de dados

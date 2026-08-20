@@ -15,4 +15,11 @@ describe("funcionalidades pendentes da interface", () => {
     expect(page("Rendimento.tsx")).toContain("Comparador de Proteínas");
     expect(page("MapaPos.tsx")).toContain("trpc.ocr.guardarMapaPos.useMutation");
   });
+
+  it("mostra custos por componente apenas a perfis de gestão nas páginas de detalhe", () => {
+    expect(page("ReceitaDetalhe.tsx")).toContain('["admin", "head_chef", "sub_chefe"]');
+    expect(page("ReceitaDetalhe.tsx")).toContain("custoComponente");
+    expect(page("FichaDetalhe.tsx")).toContain('["admin", "head_chef", "sub_chefe"]');
+    expect(page("FichaDetalhe.tsx")).toContain("custoUnitario");
+  });
 });

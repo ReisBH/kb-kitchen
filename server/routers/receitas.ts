@@ -4,8 +4,8 @@ import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { artigos, receitasBaseComponentes, producoes } from "../../drizzle/schema";
-import { detetarCiclo, explodirReceita } from "../engine/explosao";
-import { registarMovimento, calcularStock } from "../engine/stock";
+import { calcularCustoNos, detetarCiclo, explodirReceita } from "../engine/explosao";
+import { registarMovimento, calcularStock, converterParaUnidadeBase } from "../engine/stock";
 
 export const receitasRouter = router({
   listar: protectedProcedure.query(async () => {
@@ -16,9 +16,10 @@ export const receitasRouter = router({
 
   obter: protectedProcedure
     .input(z.object({ id: z.number() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) return null;
+      const mostrarCustosDetalhados = ["admin", "head_chef", "sub_chefe"].includes(ctx.user.role);
       const [receita] = await db.select().from(artigos).where(eq(artigos.id, input.id)).limit(1);
       if (!receita) return null;
       const componentes = await db.select({
@@ -27,20 +28,40 @@ export const receitasRouter = router({
         tipoComponente: artigos.tipo,
         custoComponente: artigos.custoMedioPonderado,
         unidadeBase: artigos.unidadeBase,
+        fatorConversao: artigos.fatorConversao,
+        densidade: artigos.densidade,
       }).from(receitasBaseComponentes)
         .leftJoin(artigos, eq(receitasBaseComponentes.componenteId, artigos.id))
         .where(eq(receitasBaseComponentes.receitaId, input.id))
         .orderBy(receitasBaseComponentes.ordem);
       const stockAtual = await calcularStock(input.id);
-      return { ...receita, componentes: componentes.map(c => ({ ...c.comp, nomeComponente: c.nomeComponente, tipoComponente: c.tipoComponente, custoComponente: c.custoComponente, unidadeBase: c.unidadeBase })), stockAtual };
+      const componentesComCusto = componentes.map((c) => {
+        const quantidadeBase = converterParaUnidadeBase(
+          parseFloat(c.comp.quantidade),
+          c.comp.unidade,
+          c.unidadeBase ?? "g",
+          parseFloat(c.fatorConversao ?? "1"),
+          c.densidade ? parseFloat(c.densidade) : null,
+        );
+        const custoComponente = parseFloat(c.custoComponente ?? "0");
+        const custoTotal = quantidadeBase * custoComponente;
+        return {
+          ...c.comp,
+          nomeComponente: c.nomeComponente,
+          tipoComponente: c.tipoComponente,
+          custoComponente: mostrarCustosDetalhados ? c.custoComponente : null,
+          custoTotal: mostrarCustosDetalhados ? custoTotal : null,
+          unidadeBase: c.unidadeBase,
+        };
+      });
+      return { ...receita, componentes: componentesComCusto, stockAtual };
     }),
 
   custo: protectedProcedure
     .input(z.object({ id: z.number(), quantidade: z.number().default(1) }))
     .query(async ({ input }) => {
       const nos = await explodirReceita(input.id, input.quantidade);
-      const calcTotal = (ns: typeof nos): number => ns.reduce((acc, n) => acc + n.custoTotal, 0);
-      return { nos, custoTotal: calcTotal(nos) };
+      return { nos, custoTotal: calcularCustoNos(nos) };
     }),
 
   criar: protectedProcedure
@@ -167,6 +188,12 @@ export const receitasRouter = router({
       if (!receita) throw new Error("Receita não encontrada");
 
       const rendimentoEsperado = parseFloat(receita.rendimentoEsperado ?? "0");
+      if (rendimentoEsperado <= 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Preencha o rendimento esperado da receita antes de registar produção, para calcular corretamente o custo.",
+        });
+      }
       const desvioPct = rendimentoEsperado > 0
         ? ((input.quantidadeProduzida - rendimentoEsperado) / rendimentoEsperado) * 100
         : 0;

@@ -6,6 +6,15 @@ import { getDb } from "../db";
 import { fichasTecnicas, fichasTecnicasComponentes, artigos, vendas, vendaLinhas } from "../../drizzle/schema";
 import { detetarCiclo, explodirFicha, calcularCustoFicha, executarExplosaoVenda } from "../engine/explosao";
 
+function removerCustosDaArvore(no: any): any {
+  return {
+    ...no,
+    custoUnitario: 0,
+    custoTotal: 0,
+    filhos: no.filhos?.map(removerCustosDaArvore),
+  };
+}
+
 export const fichasRouter = router({
   listar: protectedProcedure
     .input(z.object({ apenasAtivas: z.boolean().default(true) }).optional())
@@ -37,9 +46,10 @@ export const fichasRouter = router({
 
   obter: protectedProcedure
     .input(z.object({ id: z.number() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) return null;
+      const mostrarCustosDetalhados = ["admin", "head_chef", "sub_chefe"].includes(ctx.user.role);
       const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, input.id)).limit(1);
       if (!ficha) return null;
       const componentes = await db.select({
@@ -52,17 +62,17 @@ export const fichasRouter = router({
         .leftJoin(artigos, eq(fichasTecnicasComponentes.componenteId, artigos.id))
         .where(eq(fichasTecnicasComponentes.fichaId, input.id))
         .orderBy(fichasTecnicasComponentes.ordem);
-      const arvore = await explodirFicha(input.id, 1);
-      const custoCalculado = arvore.reduce((acc, n) => acc + n.custoTotal, 0);
+      const arvoreCompleta = await explodirFicha(input.id, 1);
+      const custoCalculado = await calcularCustoFicha(input.id);
       const preco = parseFloat(ficha.precoVenda ?? "0");
       const foodCostPct = preco > 0 ? (custoCalculado / preco) * 100 : null;
       return {
         ...ficha,
-        componentes: componentes.map(c => ({ ...c.comp, nomeComponente: c.nomeComponente, tipoComponente: c.tipoComponente, custoComponente: c.custoComponente, unidadeBase: c.unidadeBase })),
-        arvore,
-        custoCalculado,
-        foodCostPct,
-        margemBruta: preco > 0 ? preco - custoCalculado : null,
+        componentes: componentes.map(c => ({ ...c.comp, nomeComponente: c.nomeComponente, tipoComponente: c.tipoComponente, custoComponente: mostrarCustosDetalhados ? c.custoComponente : null, unidadeBase: c.unidadeBase })),
+        arvore: mostrarCustosDetalhados ? arvoreCompleta : arvoreCompleta.map(removerCustosDaArvore),
+        custoCalculado: mostrarCustosDetalhados ? custoCalculado : null,
+        foodCostPct: mostrarCustosDetalhados ? foodCostPct : null,
+        margemBruta: mostrarCustosDetalhados && preco > 0 ? preco - custoCalculado : null,
       };
     }),
 

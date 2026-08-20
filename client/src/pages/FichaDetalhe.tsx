@@ -5,25 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fmtQtd } from "@/lib/fmtQtd";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 function fmt(n: number | string | null | undefined, d = 2) {
   if (n == null) return "—";
   return parseFloat(String(n)).toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 
-function ArvoreNo({ no, depth = 0 }: { no: any; depth?: number }) {
-  const pct = no.custoTotal > 0 ? no.custoTotal : 0;
+function ArvoreNo({ no, depth = 0, mostrarCustos }: { no: any; depth?: number; mostrarCustos: boolean }) {
   return (
     <div className={`${depth > 0 ? "ml-6 border-l border-border pl-3" : ""}`}>
       <div className="flex items-center justify-between py-1.5 text-sm">
         <div className="flex items-center gap-2">
           <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${no.tipo === "receita_base" ? "bg-info" : no.tipo === "proteina_limpa" ? "bg-warning" : "bg-muted-foreground"}`} />
           <span className={depth === 0 ? "font-medium" : "text-muted-foreground"}>{no.nome}</span>
-          <span className="text-xs text-muted-foreground tabular-nums">{fmtQtd(no.quantidade, no.unidade)}</span>
+          <span className="text-xs text-muted-foreground tabular-nums">{fmtQtd(no.quantidadeReferencia ?? no.quantidade, no.unidade)}</span>
         </div>
-        <span className="text-gold tabular-nums font-mono text-xs">{fmt(no.custoTotal, 4)} €</span>
+        {mostrarCustos && <div className="text-right shrink-0"><span className="text-[11px] text-muted-foreground font-mono">{fmt(no.custoUnitario, 6)} €/ {no.unidadeCusto ?? no.unidade}</span><span className="block text-gold tabular-nums font-mono text-xs">{fmt(no.custoTotal, 4)} €</span></div>}
       </div>
-      {no.filhos?.map((f: any, i: number) => <ArvoreNo key={i} no={f} depth={depth + 1} />)}
+      {no.filhos?.map((f: any, i: number) => <ArvoreNo key={i} no={f} depth={depth + 1} mostrarCustos={mostrarCustos} />)}
     </div>
   );
 }
@@ -31,6 +31,7 @@ function ArvoreNo({ no, depth = 0 }: { no: any; depth?: number }) {
 export default function FichaDetalhe() {
   const { id } = useParams<{ id: string }>();
   const [, navigate] = useLocation();
+  const { user } = useAuth();
   const { data, isLoading } = trpc.fichas.obter.useQuery({ id: parseInt(id!) });
 
   if (isLoading) return <div className="space-y-4"><Skeleton className="h-8 w-48" /><Skeleton className="h-64" /></div>;
@@ -40,6 +41,7 @@ export default function FichaDetalhe() {
   const custo = data.custoCalculado ?? 0;
   const margem = preco - custo;
   const foodCost = preco > 0 ? (custo / preco) * 100 : null;
+  const mostrarCustos = ["admin", "head_chef", "sub_chefe"].includes(user?.role ?? "");
 
   return (
     <div className="space-y-6 animate-in">
@@ -67,17 +69,17 @@ export default function FichaDetalhe() {
       </div>
       <Card className="bg-card border-border">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm text-muted-foreground uppercase tracking-wide">Explosão em Cascata — Árvore de Composição</CardTitle>
+          <CardTitle className="text-sm text-muted-foreground uppercase tracking-wide">Explosão em Cascata — Árvore de Composição{mostrarCustos ? " e Custos" : ""}</CardTitle>
         </CardHeader>
         <CardContent>
           {(data.arvore?.length ?? 0) === 0 ? (
             <p className="text-sm text-muted-foreground">Ainda não há componentes nesta ficha técnica.</p>
           ) : (
             <div className="space-y-1">
-              {data.arvore!.map((no, i) => <ArvoreNo key={i} no={no} />)}
+              {data.arvore!.map((no, i) => <ArvoreNo key={i} no={no} mostrarCustos={mostrarCustos} />)}
               <div className="flex justify-between pt-3 border-t border-border mt-3">
                 <span className="font-medium text-sm">Total por dose</span>
-                <span className="font-display text-gold tabular-nums">{fmt(custo, 4)} €</span>
+                {mostrarCustos && <span className="font-display text-gold tabular-nums">{fmt(custo, 4)} €</span>}
               </div>
             </div>
           )}

@@ -19,6 +19,10 @@ describe("converterParaUnidadeBase", () => {
     expect(converterParaUnidadeBase(1, "caixa", "g", 6000, null)).toBe(6000);
   });
 
+  it("converte gramas para artigos nativos por unidade com o peso real por unidade", () => {
+    expect(converterParaUnidadeBase(45, "g", "un", 45, null)).toBe(1);
+  });
+
   it("converte ml para g via densidade", () => {
     // Azeite: densidade ~0.92 g/ml → 100 ml = 92 g
     expect(converterParaUnidadeBase(100, "ml", "g", 1, 0.92)).toBeCloseTo(92, 1);
@@ -57,4 +61,3 @@ describe("custo médio ponderado — lógica", () => {
     expect(novoCusto).toBe(0.003);
   });
 });
-

@@ -117,11 +117,6 @@ export function converterParaUnidadeBase(
 ): number {
   if (unidadeOrigem === unidadeBase) return quantidade;
 
-  // Conversão por fator direto (ex: caixa → g)
-  if (fatorConversao && fatorConversao !== 1) {
-    return quantidade * fatorConversao;
-  }
-
   // Conversão peso ↔ volume via densidade
   const pesoUnidades = ["g", "kg"];
   const volumeUnidades = ["ml", "l", "cl", "dl"];
@@ -129,6 +124,21 @@ export function converterParaUnidadeBase(
   const isVolumeOrigem = volumeUnidades.includes(unidadeOrigem.toLowerCase());
   const isPesoBase = pesoUnidades.includes(unidadeBase.toLowerCase());
   const isVolumeBase = volumeUnidades.includes(unidadeBase.toLowerCase());
+
+  // Referências culinárias em g para artigos comprados à unidade (ex.: ovos
+  // ou flores). O fator guarda gramas por unidade e converte a quantidade de
+  // referência para o número físico de unidades que suporta o custo.
+  if (isPesoOrigem && unidadeBase.toLowerCase() === "un" && fatorConversao > 1) {
+    const quantidadeGramas = unidadeOrigem.toLowerCase() === "kg" ? quantidade * 1000 : quantidade;
+    return quantidadeGramas / fatorConversao;
+  }
+
+  // Conversão por fator direto (ex.: caixa → g). Unidades físicas já
+  // normalizadas (g/ml) não devem aplicar o fator de embalagem de um artigo
+  // cujo stock nativo é contado por unidade.
+  if (fatorConversao && fatorConversao !== 1 && !isPesoOrigem && !isVolumeOrigem) {
+    return quantidade * fatorConversao;
+  }
 
   // Normalizar para unidade SI (g ou ml)
   let qtdSI = quantidade;

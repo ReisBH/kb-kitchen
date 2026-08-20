@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import fs from "node:fs";
+import path from "node:path";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
@@ -20,18 +22,25 @@ function createAuthenticatedContext(): TrpcContext {
   };
 }
 
-describe("receitas base após importação", () => {
-  it("devolve 104 receitas sem rendimento/custo provisório, prontas para preenchimento manual", async () => {
+describe("receitas base após rendimento provisório", () => {
+  it("devolve receitas com rendimento e custo calculados a partir dos componentes vinculados", async () => {
     const caller = appRouter.createCaller(createAuthenticatedContext());
     const receitas = await caller.receitas.listar();
 
     expect(receitas).toHaveLength(104);
-    expect(receitas.every((receita) => receita.rendimentoEsperado === null)).toBe(true);
-    expect(receitas.every((receita) => Number(receita.custoMedioPonderado ?? 0) === 0)).toBe(true);
+    expect(receitas.filter((receita) => Number(receita.rendimentoEsperado ?? 0) > 0)).toHaveLength(104);
+    expect(receitas.filter((receita) => Number(receita.custoMedioPonderado ?? 0) > 0)).toHaveLength(86);
 
     const shari = receitas.find((receita) => receita.nome === "Shari");
     expect(shari).toBeDefined();
-    const custo = await caller.receitas.custo({ id: shari!.id, quantidade: 1 });
-    expect(custo).toEqual({ nos: [], custoTotal: 0 });
+    const custo = await caller.receitas.custo({ id: shari!.id, quantidade: Number(shari!.rendimentoEsperado) });
+    expect(custo.custoTotal).toBeGreaterThan(0);
   }, 20_000);
+});
+
+describe("produção com custo seguro", () => {
+  it("exige rendimento esperado antes de registar uma produção", () => {
+    const source = fs.readFileSync(path.resolve(import.meta.dirname, "routers", "receitas.ts"), "utf8");
+    expect(source).toContain("Preencha o rendimento esperado da receita antes de registar produção");
+  });
 });

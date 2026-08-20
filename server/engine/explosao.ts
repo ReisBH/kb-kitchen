@@ -16,8 +16,12 @@ export interface NoExplosao {
   artigoId: number;
   nome: string;
   tipo: string;
-  quantidade: number; // na unidade base
+  /** Quantidade nativa, usada em custos e movimentos de stock. */
+  quantidade: number;
+  /** Quantidade declarada na referência culinária, usada na interface. */
+  quantidadeReferencia?: number;
   unidade: string;
+  unidadeCusto?: string;
   custoUnitario: number;
   custoTotal: number;
   filhos?: NoExplosao[];
@@ -34,128 +38,77 @@ export async function detetarCiclo(
   if (componenteId === receitaId) return true;
   if (visitados.has(componenteId)) return false;
   visitados.add(componenteId);
-
   const db = await getDb();
   if (!db) return false;
-
-  // Verificar se o componente é uma receita base
   const [artigo] = await db.select().from(artigos).where(eq(artigos.id, componenteId)).limit(1);
   if (!artigo || artigo.tipo !== "receita_base") return false;
-
-  // Buscar componentes desta receita
-  const componentes = await db
-    .select()
-    .from(receitasBaseComponentes)
-    .where(eq(receitasBaseComponentes.receitaId, componenteId));
-
+  const componentes = await db.select().from(receitasBaseComponentes).where(eq(receitasBaseComponentes.receitaId, componenteId));
   for (const comp of componentes) {
-    if (await detetarCiclo(receitaId, comp.componenteId, new Set(visitados))) {
-      return true;
-    }
+    if (await detetarCiclo(receitaId, comp.componenteId, new Set(visitados))) return true;
   }
   return false;
 }
 
 /** Explode uma ficha técnica em árvore de componentes com custos */
-export async function explodirFicha(
-  fichaId: number,
-  doses: number = 1,
-  nivel: number = 0
-): Promise<NoExplosao[]> {
+export async function explodirFicha(fichaId: number, doses: number = 1, nivel: number = 0): Promise<NoExplosao[]> {
   if (nivel > MAX_PROFUNDIDADE) throw new Error("Profundidade máxima de explosão atingida");
-
   const db = await getDb();
   if (!db) throw new Error("Base de dados não disponível");
-
-  const componentes = await db
-    .select()
-    .from(fichasTecnicasComponentes)
-    .where(eq(fichasTecnicasComponentes.fichaId, fichaId))
-    .orderBy(fichasTecnicasComponentes.ordem);
-
+  const componentes = await db.select().from(fichasTecnicasComponentes).where(eq(fichasTecnicasComponentes.fichaId, fichaId)).orderBy(fichasTecnicasComponentes.ordem);
   const nos: NoExplosao[] = [];
   for (const comp of componentes) {
     const [artigo] = await db.select().from(artigos).where(eq(artigos.id, comp.componenteId)).limit(1);
     if (!artigo) continue;
-
-    const qtdBase = converterParaUnidadeBase(
-      parseFloat(comp.quantidade) * doses,
-      comp.unidade,
-      artigo.unidadeBase,
-      parseFloat(artigo.fatorConversao ?? "1"),
-      artigo.densidade ? parseFloat(artigo.densidade) : null
-    );
+    const quantidadeReferencia = parseFloat(comp.quantidade) * doses;
+    const qtdBase = converterParaUnidadeBase(quantidadeReferencia, comp.unidade, artigo.unidadeBase, parseFloat(artigo.fatorConversao ?? "1"), artigo.densidade ? parseFloat(artigo.densidade) : null);
     const custo = parseFloat(artigo.custoMedioPonderado ?? "0");
-
     const no: NoExplosao = {
       artigoId: artigo.id,
       nome: artigo.nome,
       tipo: artigo.tipo,
       quantidade: qtdBase,
-      unidade: artigo.unidadeBase,
+      quantidadeReferencia,
+      unidade: comp.unidade,
+      unidadeCusto: artigo.unidadeBase,
       custoUnitario: custo,
       custoTotal: qtdBase * custo,
       nivel,
     };
-
-    if (artigo.tipo === "receita_base") {
-      no.filhos = await explodirReceita(artigo.id, qtdBase, nivel + 1);
-    }
+    if (artigo.tipo === "receita_base") no.filhos = await explodirReceita(artigo.id, qtdBase, nivel + 1);
     nos.push(no);
   }
   return nos;
 }
 
 /** Explode uma receita base em componentes */
-export async function explodirReceita(
-  receitaId: number,
-  quantidade: number,
-  nivel: number = 0
-): Promise<NoExplosao[]> {
+export async function explodirReceita(receitaId: number, quantidade: number, nivel: number = 0): Promise<NoExplosao[]> {
   if (nivel > MAX_PROFUNDIDADE) throw new Error("Profundidade máxima de explosão atingida");
-
   const db = await getDb();
   if (!db) throw new Error("Base de dados não disponível");
-
   const [receita] = await db.select().from(artigos).where(eq(artigos.id, receitaId)).limit(1);
   if (!receita || !receita.rendimentoEsperado) return [];
-
   const fatorEscala = quantidade / parseFloat(receita.rendimentoEsperado);
-
-  const componentes = await db
-    .select()
-    .from(receitasBaseComponentes)
-    .where(eq(receitasBaseComponentes.receitaId, receitaId))
-    .orderBy(receitasBaseComponentes.ordem);
-
+  const componentes = await db.select().from(receitasBaseComponentes).where(eq(receitasBaseComponentes.receitaId, receitaId)).orderBy(receitasBaseComponentes.ordem);
   const nos: NoExplosao[] = [];
   for (const comp of componentes) {
     const [artigo] = await db.select().from(artigos).where(eq(artigos.id, comp.componenteId)).limit(1);
     if (!artigo) continue;
-
-    const qtdBase = converterParaUnidadeBase(
-      parseFloat(comp.quantidade) * fatorEscala,
-      comp.unidade,
-      artigo.unidadeBase,
-      parseFloat(artigo.fatorConversao ?? "1"),
-      artigo.densidade ? parseFloat(artigo.densidade) : null
-    );
+    const quantidadeReferencia = parseFloat(comp.quantidade) * fatorEscala;
+    const qtdBase = converterParaUnidadeBase(quantidadeReferencia, comp.unidade, artigo.unidadeBase, parseFloat(artigo.fatorConversao ?? "1"), artigo.densidade ? parseFloat(artigo.densidade) : null);
     const custo = parseFloat(artigo.custoMedioPonderado ?? "0");
-
     const no: NoExplosao = {
       artigoId: artigo.id,
       nome: artigo.nome,
       tipo: artigo.tipo,
       quantidade: qtdBase,
-      unidade: artigo.unidadeBase,
+      quantidadeReferencia,
+      unidade: comp.unidade,
+      unidadeCusto: artigo.unidadeBase,
       custoUnitario: custo,
       custoTotal: qtdBase * custo,
       nivel,
     };
-
-    if (artigo.tipo === "receita_base") {
-      no.filhos = await explodirReceita(artigo.id, qtdBase, nivel + 1);
-    }
+    if (artigo.tipo === "receita_base") no.filhos = await explodirReceita(artigo.id, qtdBase, nivel + 1);
     nos.push(no);
   }
   return nos;
@@ -163,18 +116,15 @@ export async function explodirReceita(
 
 /** Calcula o custo total de uma ficha técnica por dose */
 export async function calcularCustoFicha(fichaId: number): Promise<number> {
-  const nos = await explodirFicha(fichaId, 1);
-  return calcularCustoNos(nos);
+  return calcularCustoNos(await explodirFicha(fichaId, 1));
 }
 
-function calcularCustoNos(nos: NoExplosao[]): number {
-  return nos.reduce((acc, no) => acc + no.custoTotal, 0);
+/** Soma os custos no nível mais baixo disponível da composição. */
+export function calcularCustoNos(nos: NoExplosao[]): number {
+  return nos.reduce((acc, no) => acc + (no.filhos?.length ? calcularCustoNos(no.filhos) : no.custoTotal), 0);
 }
 
-/**
- * Executa a explosão de stock para uma venda (transacional)
- * Regista movimentos de consumo para todos os componentes
- */
+/** Executa a explosão de stock para uma venda. */
 export async function executarExplosaoVenda(input: {
   fichaId: number;
   doses: number;
@@ -186,7 +136,6 @@ export async function executarExplosaoVenda(input: {
 }): Promise<{ movimentos: number[]; stockNegativo: string[] }> {
   const db = await getDb();
   if (!db) throw new Error("Base de dados não disponível");
-
   const movimentosIds: number[] = [];
   const stockNegativo: string[] = [];
   const documentoId = input.vendaId ? `venda_${input.vendaId}` : `waste_${Date.now()}`;
@@ -196,47 +145,21 @@ export async function executarExplosaoVenda(input: {
   async function processarNo(no: NoExplosao): Promise<void> {
     const [artigo] = await db!.select().from(artigos).where(eq(artigos.id, no.artigoId)).limit(1);
     if (!artigo) return;
-
     if (artigo.tipo === "receita_base" && input.comportamento !== "sempre") {
-      // Verificar se há stock do subproduto
       const stockAtual = await calcularStock(no.artigoId);
       if (stockAtual >= no.quantidade || input.comportamento === "nunca") {
-        // Consumir do stock do subproduto
-        const { movimentoId } = await registarMovimento({
-          artigoId: no.artigoId,
-          tipo: tipoMovimento,
-          quantidade: -no.quantidade,
-          custoUnitario: no.custoUnitario,
-          documentoId,
-          documentoTipo: "venda",
-          motivo: motivoMovimento,
-          utilizadorId: input.utilizadorId,
-        });
+        const { movimentoId } = await registarMovimento({ artigoId: no.artigoId, tipo: tipoMovimento, quantidade: -no.quantidade, custoUnitario: no.custoUnitario, documentoId, documentoTipo: "venda", motivo: motivoMovimento, utilizadorId: input.utilizadorId });
         movimentosIds.push(movimentoId);
         const stockApos = stockAtual - no.quantidade;
         if (stockApos < 0) stockNegativo.push(`${artigo.nome} (stock: ${stockApos.toFixed(3)} ${artigo.unidadeBase})`);
         return;
       }
     }
-
-    // Explodir para componentes
-    if (no.filhos && no.filhos.length > 0) {
-      for (const filho of no.filhos) {
-        await processarNo(filho);
-      }
+    if (no.filhos?.length) {
+      for (const filho of no.filhos) await processarNo(filho);
     } else {
-      // Componente folha — consumir diretamente
       const stockAtual = await calcularStock(no.artigoId);
-      const { movimentoId } = await registarMovimento({
-        artigoId: no.artigoId,
-        tipo: tipoMovimento,
-        quantidade: -no.quantidade,
-        custoUnitario: no.custoUnitario,
-        documentoId,
-        documentoTipo: "venda",
-        motivo: motivoMovimento,
-        utilizadorId: input.utilizadorId,
-      });
+      const { movimentoId } = await registarMovimento({ artigoId: no.artigoId, tipo: tipoMovimento, quantidade: -no.quantidade, custoUnitario: no.custoUnitario, documentoId, documentoTipo: "venda", motivo: motivoMovimento, utilizadorId: input.utilizadorId });
       movimentosIds.push(movimentoId);
       const stockApos = stockAtual - no.quantidade;
       if (stockApos < 0) stockNegativo.push(`${artigo.nome} (stock: ${stockApos.toFixed(3)} ${artigo.unidadeBase})`);
@@ -245,11 +168,6 @@ export async function executarExplosaoVenda(input: {
 
   const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, input.fichaId)).limit(1);
   if (!ficha) throw new Error("Ficha técnica não encontrada");
-
-  const nos = await explodirFicha(input.fichaId, input.doses);
-  for (const no of nos) {
-    await processarNo(no);
-  }
-
+  for (const no of await explodirFicha(input.fichaId, input.doses)) await processarNo(no);
   return { movimentos: movimentosIds, stockNegativo };
 }
