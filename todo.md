@@ -163,3 +163,7 @@
 - [x] Importação: rever e documentar os casos especiais de exclusão e duplicação no ficheiro final de classificação antes da escrita na base de dados
 - [x] Importação: normalizar no ficheiro de classificações as exclusões BAR/VINHOS sem nota padronizada identificadas na auditoria
 - [x] Importação: registar uma marcação consistente para todos os casos especiais de duplicação e exclusão antes da escrita na base de dados
+- [x] Rendimentos: incluir os 18 ingredientes de proteína indicados na lista de seleção da ferramenta
+- [x] Rendimentos: verificar e documentar a inexistência atual de artigos `proteina_limpa` correspondentes para os 18 ingredientes indicados
+- [x] Rendimentos: validar a seleção atualizada, a ausência de pares bruto/limpo e os testes automatizados antes de publicar
+- [x] Rendimentos: corrigir o cálculo no servidor para converter o peso bruto em gramas antes de aplicar o preço por quilograma

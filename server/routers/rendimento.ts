@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, desc, avg, min, max } from "drizzle-orm";
+import { eq, and, desc, avg, min, max } from "drizzle-orm";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { testesRendimento, artigos } from "../../drizzle/schema";
@@ -54,10 +54,35 @@ export const rendimentoRouter = router({
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
 
+      const [artigoBruto] = await db.select({
+        id: artigos.id,
+        nome: artigos.nome,
+        requerLimpeza: artigos.requerLimpeza,
+        ativo: artigos.ativo,
+      }).from(artigos).where(eq(artigos.id, input.artigoId)).limit(1);
+      if (!artigoBruto?.ativo || !artigoBruto.requerLimpeza) {
+        throw new Error("Selecciona uma proteína marcada para rendimento.");
+      }
+
+      if (input.criarMovimentos) {
+        if (!input.artigoLimpoId) {
+          throw new Error("Selecciona o artigo limpo de destino antes de registar o rendimento.");
+        }
+        const [artigoLimpo] = await db.select({ id: artigos.id }).from(artigos).where(and(
+          eq(artigos.id, input.artigoLimpoId),
+          eq(artigos.tipo, "proteina_limpa"),
+          eq(artigos.artigoBrutoId, input.artigoId),
+          eq(artigos.ativo, true),
+        )).limit(1);
+        if (!artigoLimpo) {
+          throw new Error("O artigo limpo selecionado não está associado à proteína bruta.");
+        }
+      }
+
       // Cálculos de rendimento
       const aproveitamentoPct = (input.pesoLimpo / input.pesoBruto) * 100;
       const perdaPct = 100 - aproveitamentoPct;
-      const custoTotal = input.pesoBruto * input.precoKgBruto;
+      const custoTotal = (input.pesoBruto / 1000) * input.precoKgBruto;
       const custoLiquido = custoTotal - input.valorAparas;
       const custoRealPorKg = custoLiquido / input.pesoLimpo;
       const sobrecusto = custoRealPorKg - input.precoKgBruto;
@@ -118,4 +143,3 @@ export const rendimentoRouter = router({
       };
     }),
 });
-

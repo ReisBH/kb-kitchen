@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { filtrarArtigosLimposDoBruto, filtrarProteinasParaRendimento } from "@/lib/rendimentoProteinas";
 import { FlaskConical, Plus, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,9 +27,8 @@ export default function Rendimento() {
   const [showComparador, setShowComparador] = useState(false);
   const utils = trpc.useUtils();
   const { data: artigos } = trpc.artigos.listar.useQuery({ tipo: "ingrediente" });
-  // Filtrar apenas proteínas animais: categorias "Peixe" e "Carnes e Aves"
-  const CATEGORIAS_PROTEINA = ["Peixe", "Carnes e Aves"]; // still used for artigo limpo filter
-  const proteinas = artigos?.filter(a => CATEGORIAS_PROTEINA.includes(a.categoria ?? "") && (a as any).requerLimpeza === true);
+  const { data: artigosLimpos, isLoading: artigosLimposACarregar } = trpc.artigos.listar.useQuery({ tipo: "proteina_limpa" });
+  const proteinas = useMemo(() => filtrarProteinasParaRendimento(artigos ?? []), [artigos]);
   const { data: testes, isLoading } = trpc.rendimento.listar.useQuery();
   const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm<FormValues>();
 
@@ -79,21 +78,21 @@ export default function Rendimento() {
     })).sort((a, b) => b.aproveitamentoMedio - a.aproveitamentoMedio);
   }, [testes]);
 
-  // Auto-suggest the clean article when the raw protein is selected
   const artigoIdWatch = watch("artigoId");
+  const artigoBrutoSelecionadoId = artigoIdWatch ? parseInt(artigoIdWatch) : undefined;
+  const artigosLimposDoBruto = useMemo(
+    () => filtrarArtigosLimposDoBruto(artigosLimpos ?? [], artigoBrutoSelecionadoId),
+    [artigoBrutoSelecionadoId, artigosLimpos],
+  );
+
+  // Seleciona automaticamente o destino apenas quando existe uma ligação explícita ao artigo bruto.
   useEffect(() => {
-    if (!artigoIdWatch || !artigos) return;
-    const bruto = artigos.find(a => a.id === parseInt(artigoIdWatch));
-    if (!bruto) return;
-    const nomeBruto = bruto.nome.toLowerCase().replace(/\s*(inteiro|inteira|bruto|bruta|fresco|fresca)\s*/g, "").trim();
-    const candidatos = artigos.filter(a => {
-      const n = a.nome.toLowerCase();
-      return n.includes(nomeBruto) && (n.includes("limpo") || n.includes("limpa") || n.includes("limpas"));
-    });
-    if (candidatos.length === 1) {
-      setValue("artigoLimpoId", String(candidatos[0].id));
+    if (artigosLimposDoBruto.length === 1) {
+      setValue("artigoLimpoId", String(artigosLimposDoBruto[0].id));
+      return;
     }
-  }, [artigoIdWatch, artigos]);
+    setValue("artigoLimpoId", "");
+  }, [artigosLimposDoBruto, setValue]);
 
   function onSubmit(d: FormValues) {
     registar.mutate({
@@ -198,10 +197,7 @@ export default function Rendimento() {
                   className="w-full h-9 rounded-md bg-input border border-border text-sm px-3 focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   <option value="">— seleccionar artigo limpo —</option>
-                  {artigos?.filter(a => {
-                    const n = a.nome.toLowerCase();
-                    return n.includes("limpo") || n.includes("limpa") || n.includes("limpas") || n.includes("filete");
-                  }).map(a => (
+                  {artigosLimposDoBruto.map(a => (
                     <option key={a.id} value={a.id}>{a.nome}</option>
                   ))}
                 </select>
@@ -211,6 +207,11 @@ export default function Rendimento() {
                 <p className="text-xs text-muted-foreground mt-1">
                   O stock deste artigo será incrementado com o peso limpo registado.
                 </p>
+                {artigoBrutoSelecionadoId && !artigosLimposACarregar && artigosLimposDoBruto.length === 0 && (
+                  <p className="text-xs text-warning mt-1">
+                    Ainda não existe um artigo limpo associado a esta proteína. Cria primeiro o respetivo destino no stock.
+                  </p>
+                )}
               </div>
 
               {/* Os 3 campos obrigatórios */}
