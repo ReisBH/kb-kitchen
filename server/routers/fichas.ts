@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
 import { eq, and, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, roleProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { fichasTecnicas, fichasTecnicasComponentes, artigos, vendas, vendaLinhas } from "../../drizzle/schema";
+import { fichasTecnicas, fichasTecnicasComponentes, artigos, vendas, vendaLinhas, movimentos } from "../../drizzle/schema";
 import { detetarCiclo, explodirFicha, calcularCustoFicha, executarExplosaoVenda } from "../engine/explosao";
 
 function removerCustosDaArvore(no: any): any {
@@ -17,14 +18,15 @@ function removerCustosDaArvore(no: any): any {
 
 export const fichasRouter = router({
   listar: protectedProcedure
-    .input(z.object({ apenasAtivas: z.boolean().default(true) }).optional())
+    .input(z.object({ apenasAtivas: z.boolean().default(true), apenasPublicadas: z.boolean().default(false) }).optional())
     .query(async ({ input }) => {
       const db = await getDb();
       if (!db) return [];
       const q = db.select().from(fichasTecnicas);
-      const rows = input?.apenasAtivas !== false
-        ? await q.where(sql`${fichasTecnicas.ativo} = 1`).orderBy(fichasTecnicas.nome)
-        : await q.orderBy(fichasTecnicas.nome);
+      const condicoes = [];
+      if (input?.apenasAtivas !== false) condicoes.push(eq(fichasTecnicas.ativo, true));
+      if (input?.apenasPublicadas) condicoes.push(eq(fichasTecnicas.estadoPublicacao, "publicada"));
+      const rows = condicoes.length ? await q.where(and(...condicoes)).orderBy(fichasTecnicas.nome) : await q.orderBy(fichasTecnicas.nome);
       // Limitar a concorrência permite carregar listas grandes sem executar 128 árvores de custo em série.
       const result = [];
       const tamanhoLote = 16;
@@ -147,6 +149,9 @@ export const fichasRouter = router({
       const updateData: Record<string, any> = { ...data };
       if (data.precoVenda !== undefined) updateData.precoVenda = data.precoVenda.toFixed(2);
       if (data.foodCostAlvo !== undefined) updateData.foodCostAlvo = data.foodCostAlvo.toFixed(2);
+      if (componentes !== undefined || data.precoVenda !== undefined || data.modoPreparacao !== undefined) {
+        updateData.estadoPublicacao = "em_revisao";
+      }
       await db.update(fichasTecnicas).set(updateData).where(eq(fichasTecnicas.id, id));
       if (componentes !== undefined) {
         await db.delete(fichasTecnicasComponentes).where(eq(fichasTecnicasComponentes.fichaId, id));
@@ -156,6 +161,41 @@ export const fichasRouter = router({
           );
         }
       }
+      return { success: true };
+    }),
+
+  validarPublicacao: protectedProcedure
+    .input(z.object({ fichaId: z.number() }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, input.fichaId)).limit(1);
+      if (!ficha) throw new Error("Ficha técnica não encontrada");
+      const componentes = await db.select({ total: sql<number>`COUNT(*)` }).from(fichasTecnicasComponentes).where(eq(fichasTecnicasComponentes.fichaId, input.fichaId));
+      const erros: string[] = [];
+      if (!ficha.ativo) erros.push("A ficha está inativa.");
+      if (Number(componentes[0]?.total ?? 0) === 0) erros.push("A ficha não tem componentes.");
+      if (parseFloat(ficha.precoVenda ?? "0") <= 0) erros.push("Indica um preço de venda superior a zero.");
+      try {
+        if (Number(componentes[0]?.total ?? 0) > 0) await calcularCustoFicha(input.fichaId);
+      } catch {
+        erros.push("Não foi possível calcular o custo da ficha.");
+      }
+      return { pronta: erros.length === 0, erros };
+    }),
+
+  publicar: roleProcedure(["head_chef"])
+    .input(z.object({ fichaId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, input.fichaId)).limit(1);
+      if (!ficha) throw new Error("Ficha técnica não encontrada");
+      const [componentes] = await db.select({ total: sql<number>`COUNT(*)` }).from(fichasTecnicasComponentes).where(eq(fichasTecnicasComponentes.fichaId, input.fichaId));
+      if (!ficha.ativo || Number(componentes?.total ?? 0) === 0 || parseFloat(ficha.precoVenda ?? "0") <= 0) {
+        throw new Error("A ficha precisa de estar ativa, ter componentes e preço de venda antes de ser publicada.");
+      }
+      await db.update(fichasTecnicas).set({ estadoPublicacao: "publicada", publicadaEm: new Date(), publicadaPor: ctx.user?.id }).where(eq(fichasTecnicas.id, input.fichaId));
       return { success: true };
     }),
 
@@ -169,74 +209,73 @@ export const fichasRouter = router({
         isWaste: z.boolean().default(false),
       })),
       isWaste: z.boolean().default(false),
+      idCliente: z.string().min(8).max(64).optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
       const dataVenda = input.data ?? new Date();
       const globalWaste = input.isWaste ?? false;
+      const idCliente = input.idCliente ?? randomUUID();
       const stockNegativoGlobal: string[] = [];
 
       // WASTE mode: explode stock as quebra, no venda record, no food cost impact
       if (globalWaste) {
-        for (const linha of input.linhas) {
-          const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
-          if (!ficha) continue;
-          const { stockNegativo } = await executarExplosaoVenda({
-            fichaId: linha.fichaId,
-            doses: linha.quantidade,
-            vendaId: null,
-            utilizadorId: ctx.user?.id,
-            comportamento: ficha.explodir_receitas ?? "auto",
-            tipoOverride: "quebra",
-            motivo: "Waste",
-          });
-          stockNegativoGlobal.push(...stockNegativo);
+        const [wasteExistente] = await db.select({ id: movimentos.id }).from(movimentos)
+          .where(eq(movimentos.documentoId, `waste_${idCliente}`)).limit(1);
+        if (wasteExistente) {
+          return { vendaId: null as number | null, custoTotal: 0, totalReceita: 0, foodCostPct: 0, stockNegativo: [], isWaste: true, idempotente: true };
         }
-        return { vendaId: null as number | null, custoTotal: 0, totalReceita: 0, foodCostPct: 0, stockNegativo: stockNegativoGlobal, isWaste: true };
+        return db.transaction(async (tx) => {
+          for (let indice = 0; indice < input.linhas.length; indice++) {
+            const linha = input.linhas[indice];
+            const [ficha] = await tx.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
+            if (!ficha) continue;
+            const { stockNegativo } = await executarExplosaoVenda({
+              fichaId: linha.fichaId,
+              doses: linha.quantidade,
+              vendaId: null,
+              utilizadorId: ctx.user?.id,
+              comportamento: ficha.explodir_receitas ?? "auto",
+              tipoOverride: "quebra",
+              motivo: "Waste",
+              documentoId: `waste_${idCliente}`,
+              idClienteBase: `${idCliente}:linha:${indice}`,
+              executor: tx,
+            });
+            stockNegativoGlobal.push(...stockNegativo);
+          }
+          return { vendaId: null as number | null, custoTotal: 0, totalReceita: 0, foodCostPct: 0, stockNegativo: stockNegativoGlobal, isWaste: true, idempotente: false };
+        });
       }
 
-      // NORMAL mode: create venda record and explode as venda_consumo
-      const [rv] = await db.insert(vendas).values({
-        data: dataVenda,
-        origem: "manual",
-        utilizadorId: ctx.user?.id,
-      } as any);
-      const vendaId = (rv as any).insertId as number;
-      let custoTotal = 0;
-      let totalReceita = 0;
-      for (const linha of input.linhas) {
-        const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
-        if (!ficha) continue;
-        const { stockNegativo } = await executarExplosaoVenda({
-          fichaId: linha.fichaId,
-          doses: linha.quantidade,
-          vendaId,
-          utilizadorId: ctx.user?.id,
-          comportamento: ficha.explodir_receitas ?? "auto",
-        });
-        stockNegativoGlobal.push(...stockNegativo);
-        const custoFicha = await calcularCustoFicha(linha.fichaId);
-        const custoLinha = custoFicha * linha.quantidade;
-        custoTotal += custoLinha;
-        const precoLinha = (linha.precoUnitario ?? parseFloat(ficha.precoVenda ?? "0")) * linha.quantidade;
-        totalReceita += precoLinha;
-        await db.insert(vendaLinhas).values({
-          vendaId,
-          fichaId: linha.fichaId,
-          quantidade: linha.quantidade.toFixed(3),
-          precoUnitario: (linha.precoUnitario ?? parseFloat(ficha.precoVenda ?? "0")).toFixed(2),
-          custoUnitario: custoFicha.toFixed(4),
-        } as any);
+      const [existente] = await db.select().from(vendas).where(eq(vendas.idCliente, idCliente)).limit(1);
+      if (existente) {
+        return { vendaId: existente.id, custoTotal: parseFloat(existente.custoTotal ?? "0"), totalReceita: parseFloat(existente.totalReceita ?? "0"), foodCostPct: parseFloat(existente.foodCostPct ?? "0"), stockNegativo: [], isWaste: false, idempotente: true };
       }
-      const foodCostPct = totalReceita > 0 ? (custoTotal / totalReceita) * 100 : 0;
-      await db.update(vendas).set({
-        custoTotal: custoTotal.toFixed(4),
-        totalReceita: totalReceita.toFixed(2),
-        foodCostPct: foodCostPct.toFixed(3),
-        processada: true,
-      }).where(eq(vendas.id, vendaId));
-      return { vendaId: vendaId as number | null, custoTotal, totalReceita, foodCostPct, stockNegativo: stockNegativoGlobal, isWaste: false };
+
+      return db.transaction(async (tx) => {
+        const [rv] = await tx.insert(vendas).values({ data: dataVenda, origem: "manual", idCliente, utilizadorId: ctx.user?.id } as any);
+        const vendaId = (rv as any).insertId as number;
+        let custoTotal = 0;
+        let totalReceita = 0;
+        for (let indice = 0; indice < input.linhas.length; indice++) {
+          const linha = input.linhas[indice];
+          const [ficha] = await tx.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
+          if (!ficha) continue;
+          if (!ficha.ativo || ficha.estadoPublicacao !== "publicada") throw new Error(`A ficha “${ficha.nome}” não está publicada para venda.`);
+          const { stockNegativo } = await executarExplosaoVenda({ fichaId: linha.fichaId, doses: linha.quantidade, vendaId, utilizadorId: ctx.user?.id, comportamento: ficha.explodir_receitas ?? "auto", idClienteBase: `${idCliente}:linha:${indice}`, executor: tx });
+          stockNegativoGlobal.push(...stockNegativo);
+          const custoFicha = await calcularCustoFicha(linha.fichaId);
+          custoTotal += custoFicha * linha.quantidade;
+          const precoUnitario = linha.precoUnitario ?? parseFloat(ficha.precoVenda ?? "0");
+          totalReceita += precoUnitario * linha.quantidade;
+          await tx.insert(vendaLinhas).values({ vendaId, fichaId: linha.fichaId, quantidade: linha.quantidade.toFixed(3), precoUnitario: precoUnitario.toFixed(2), custoUnitario: custoFicha.toFixed(4) } as any);
+        }
+        const foodCostPct = totalReceita > 0 ? (custoTotal / totalReceita) * 100 : 0;
+        await tx.update(vendas).set({ custoTotal: custoTotal.toFixed(4), totalReceita: totalReceita.toFixed(2), foodCostPct: foodCostPct.toFixed(3), processada: true }).where(eq(vendas.id, vendaId));
+        return { vendaId, custoTotal, totalReceita, foodCostPct, stockNegativo: stockNegativoGlobal, isWaste: false, idempotente: false };
+      });
     }),
 
   listarVendas: protectedProcedure

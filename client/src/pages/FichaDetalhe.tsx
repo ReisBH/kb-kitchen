@@ -4,8 +4,10 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import { fmtQtd } from "@/lib/fmtQtd";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { toast } from "sonner";
 
 function fmt(n: number | string | null | undefined, d = 2) {
   if (n == null) return "—";
@@ -32,7 +34,12 @@ export default function FichaDetalhe() {
   const { id } = useParams<{ id: string }>();
   const [, navigate] = useLocation();
   const { user } = useAuth();
+  const utils = trpc.useUtils();
   const { data, isLoading } = trpc.fichas.obter.useQuery({ id: parseInt(id!) });
+  const publicar = trpc.fichas.publicar.useMutation({
+    onSuccess: () => { toast.success("Ficha técnica publicada para vendas e POS."); utils.fichas.obter.invalidate({ id: parseInt(id!) }); utils.fichas.listar.invalidate(); },
+    onError: (erro) => toast.error(erro.message),
+  });
 
   if (isLoading) return <div className="space-y-4"><Skeleton className="h-8 w-48" /><Skeleton className="h-64" /></div>;
   if (!data) return <div className="text-muted-foreground">Ficha técnica não encontrada.</div>;
@@ -42,14 +49,21 @@ export default function FichaDetalhe() {
   const margem = preco - custo;
   const foodCost = preco > 0 ? (custo / preco) * 100 : null;
   const mostrarCustos = ["admin", "head_chef", "sub_chefe"].includes(user?.role ?? "");
+  const podePublicar = ["admin", "head_chef"].includes(user?.role ?? "") && data.estadoPublicacao !== "publicada";
 
   return (
     <div className="space-y-6 animate-in">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate("/fichas")}><ArrowLeft className="w-4 h-4" /></Button>
         <div>
           <h1 className="font-display text-3xl text-gold">{data.nome}</h1>
           <p className="text-muted-foreground text-sm">{data.secaoMenu} · {data.tempoPrepMin ? `${data.tempoPrepMin} min` : ""}</p>
+        </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge className={data.estadoPublicacao === "publicada" ? "bg-success/20 text-success" : data.estadoPublicacao === "em_revisao" ? "bg-warning/20 text-warning" : "bg-secondary text-muted-foreground"}>{data.estadoPublicacao === "publicada" ? "Publicada" : data.estadoPublicacao === "em_revisao" ? "Em revisão" : "Rascunho"}</Badge>
+          {podePublicar && <Button size="sm" className="bg-primary text-primary-foreground" disabled={publicar.isPending} onClick={() => publicar.mutate({ fichaId: data.id })}>{publicar.isPending ? "A publicar…" : "Publicar"}</Button>}
         </div>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

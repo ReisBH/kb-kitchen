@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { eq, and, isNull, sql, lte } from 'drizzle-orm';
+import { eq, and, isNull, sql, lte, desc } from 'drizzle-orm';
 import { TRPCError } from '@trpc/server';
 import { protectedProcedure, publicProcedure, router, roleProcedure } from '../_core/trpc';
 import { getDb } from '../db';
@@ -281,7 +281,14 @@ export const qrRouter = router({
       const validade = lote.dataValidade ? new Date(lote.dataValidade) : null;
       const diasRestantes = validade ? Math.floor((validade.getTime() - hoje.getTime()) / 86400000) : null;
 
-      return { ...lote, nomeProduto, diasRestantes };
+      const historico = await db.select({
+        id: movimentos.id,
+        tipo: movimentos.tipo,
+        quantidade: movimentos.quantidade,
+        motivo: movimentos.motivo,
+        dataMovimento: movimentos.dataMovimento,
+      }).from(movimentos).where(eq(movimentos.loteId, lote.id)).orderBy(desc(movimentos.dataMovimento)).limit(12);
+      return { ...lote, nomeProduto, diasRestantes, movimentos: historico };
     }),
 
   consumirLote: publicProcedure
@@ -289,43 +296,50 @@ export const qrRouter = router({
       codigoLote: z.string(),
       quantidade: z.number().positive(),
       pinToken: z.string().optional(),
+      idCliente: z.string().min(8).max(64).optional(),
     }))
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
-
-      const [lote] = await db.select().from(lotes).where(eq(lotes.codigoLote, input.codigoLote.toUpperCase())).limit(1);
-      if (!lote) throw new TRPCError({ code: 'NOT_FOUND' });
-
-      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-      const validade = lote.dataValidade ? new Date(lote.dataValidade) : null;
-      if (validade && validade < hoje && lote.estado !== 'descartado') {
-        throw new TRPCError({ code: 'FORBIDDEN', message: 'Lote expirado. Requer autorização de gestor para descarte.' });
-      }
-
-      const restante = Number(lote.quantidadeRestante) - input.quantidade;
-      const novoEstado = restante <= 0 ? 'esgotado' : lote.estado;
-
-      await db.update(lotes).set({
-        quantidadeRestante: Math.max(0, restante).toFixed(3),
-        estado: novoEstado,
-      } as any).where(eq(lotes.id, lote.id));
-
-      return { success: true, quantidadeRestante: Math.max(0, restante), estado: novoEstado };
+      return db.transaction(async (tx) => {
+        const [lote] = await tx.select().from(lotes).where(eq(lotes.codigoLote, input.codigoLote.toUpperCase())).limit(1);
+        if (!lote) throw new TRPCError({ code: 'NOT_FOUND' });
+        if (!lote.artigoId) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Este lote não está associado a um artigo de stock.' });
+        const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+        const validade = lote.dataValidade ? new Date(lote.dataValidade) : null;
+        if (validade && validade < hoje && lote.estado !== 'descartado') throw new TRPCError({ code: 'FORBIDDEN', message: 'Lote expirado. Requer autorização de gestor para descarte.' });
+        if (input.quantidade > Number(lote.quantidadeRestante)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Quantidade superior ao saldo disponível do lote.' });
+        const [artigo] = await tx.select().from(artigos).where(eq(artigos.id, lote.artigoId)).limit(1);
+        if (!artigo) throw new TRPCError({ code: 'NOT_FOUND', message: 'Artigo do lote não encontrado.' });
+        const restante = Number(lote.quantidadeRestante) - input.quantidade;
+        const novoEstado = restante <= 0 ? 'esgotado' : lote.estado;
+        const chave = input.idCliente ?? `lote-${lote.id}-${Date.now()}`;
+        const { movimentoId } = await registarMovimento({ artigoId: lote.artigoId, loteId: lote.id, tipo: 'producao_consumo', quantidade: -input.quantidade, custoUnitario: Number(artigo.custoMedioPonderado ?? 0), documentoId: `lote_${lote.codigoLote}`, documentoTipo: 'lote', motivo: `Consumo do lote ${lote.codigoLote}`, origem: 'qr', idCliente: chave }, tx as any);
+        await tx.update(lotes).set({ quantidadeRestante: Math.max(0, restante).toFixed(3), estado: novoEstado } as any).where(eq(lotes.id, lote.id));
+        return { success: true, movimentoId, quantidadeRestante: Math.max(0, restante), estado: novoEstado };
+      });
     }),
 
   descartarLote: protectedProcedure
     .input(z.object({ codigoLote: z.string(), motivo: z.string().optional() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
-      const [lote] = await db.select().from(lotes).where(eq(lotes.codigoLote, input.codigoLote.toUpperCase())).limit(1);
-      if (!lote) throw new TRPCError({ code: 'NOT_FOUND' });
-      await db.update(lotes).set({
-        estado: 'descartado',
-        notas: (lote.notas ?? '') + ` | Descartado: ${input.motivo ?? 'Sem motivo'}`,
-      } as any).where(eq(lotes.id, lote.id));
-      return { success: true };
+      return db.transaction(async (tx) => {
+        const [lote] = await tx.select().from(lotes).where(eq(lotes.codigoLote, input.codigoLote.toUpperCase())).limit(1);
+        if (!lote) throw new TRPCError({ code: 'NOT_FOUND' });
+        if (lote.estado === 'descartado') return { success: true, duplicado: true };
+        let movimentoId: number | null = null;
+        const restante = Number(lote.quantidadeRestante);
+        if (lote.artigoId && restante > 0) {
+          const [artigo] = await tx.select().from(artigos).where(eq(artigos.id, lote.artigoId)).limit(1);
+          if (!artigo) throw new TRPCError({ code: 'NOT_FOUND', message: 'Artigo do lote não encontrado.' });
+          const movimento = await registarMovimento({ artigoId: lote.artigoId, loteId: lote.id, tipo: 'quebra', quantidade: -restante, custoUnitario: Number(artigo.custoMedioPonderado ?? 0), documentoId: `lote_${lote.codigoLote}`, documentoTipo: 'lote', motivo: `Descarte do lote ${lote.codigoLote}: ${input.motivo ?? 'Sem motivo'}`, origem: 'sistema', idCliente: `lote-descartar-${lote.id}`, utilizadorId: ctx.user?.id }, tx as any);
+          movimentoId = movimento.movimentoId;
+        }
+        await tx.update(lotes).set({ estado: 'descartado', quantidadeRestante: '0.000', notas: (lote.notas ?? '') + ` | Descartado: ${input.motivo ?? 'Sem motivo'}` } as any).where(eq(lotes.id, lote.id));
+        return { success: true, duplicado: false, movimentoId };
+      });
     }),
 
   listarLotes: protectedProcedure

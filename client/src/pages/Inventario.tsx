@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -23,12 +22,13 @@ export default function Inventario() {
   const utils = trpc.useUtils();
   const { data: inventarios, isLoading } = trpc.inventario.listar.useQuery();
   const [activeId, setActiveId] = useState<number | null>(null);
+  const [idClienteNovoInventario, setIdClienteNovoInventario] = useState(() => crypto.randomUUID());
   const { data: invAtivo } = trpc.inventario.obter.useQuery({ id: activeId! }, { enabled: !!activeId });
   const [contagens, setContagens] = useState<Record<number, string>>({});
 
   // Mutations
   const iniciar = trpc.inventario.iniciar.useMutation({
-    onSuccess: (d) => { toast.success("Inventário iniciado"); setActiveId(d.id); utils.inventario.listar.invalidate(); },
+    onSuccess: (d) => { toast.success(d.duplicado ? "Inventário já iniciado" : "Inventário iniciado"); setActiveId(d.id); setIdClienteNovoInventario(crypto.randomUUID()); utils.inventario.listar.invalidate(); },
     onError: (e) => toast.error(e.message),
   });
   const registar = trpc.inventario.registarContagem.useMutation({
@@ -61,7 +61,6 @@ export default function Inventario() {
 
   // Delete dialog
   const [deleteDialog, setDeleteDialog] = useState<{ id: number; nome: string; estado: string } | null>(null);
-  const [reverterAjustes, setReverterAjustes] = useState(false);
 
   async function handleFechar() {
     if (!activeId) return;
@@ -88,7 +87,7 @@ export default function Inventario() {
           <h1 className="font-display text-3xl text-primary">Inventário</h1>
           <p className="text-muted-foreground text-sm mt-1">Contagem física e ajuste de stock</p>
         </div>
-        <Button onClick={() => iniciar.mutate({})} disabled={iniciar.isPending} className="bg-primary text-primary-foreground gap-2">
+        <Button onClick={() => iniciar.mutate({ idCliente: idClienteNovoInventario })} disabled={iniciar.isPending} className="bg-primary text-primary-foreground gap-2">
           <Plus className="w-4 h-4" /> Novo Inventário
         </Button>
       </div>
@@ -193,14 +192,14 @@ export default function Inventario() {
                         >
                           <Pencil className="w-3.5 h-3.5" />
                         </Button>
-                        <Button
+                        {inv.estado === "em_curso" && <Button
                           size="icon"
                           variant="ghost"
                           className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-danger"
-                          onClick={() => { setDeleteDialog({ id: inv.id, nome: inv.nome ?? `Inventário #${inv.id}`, estado: inv.estado }); setReverterAjustes(false); }}
+                          onClick={() => setDeleteDialog({ id: inv.id, nome: inv.nome ?? `Inventário #${inv.id}`, estado: inv.estado })}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
+                        </Button>}
                       </>
                     )}
                   </div>
@@ -263,23 +262,6 @@ export default function Inventario() {
                   Tens a certeza que queres eliminar <strong className="text-foreground">"{deleteDialog?.nome}"</strong>?
                   Esta acção não pode ser desfeita.
                 </p>
-                {deleteDialog?.estado === "fechado" && (
-                  <div className="flex items-start gap-3 p-3 rounded-md bg-warning/5 border border-warning/20">
-                    <Checkbox
-                      id="reverterAjustes"
-                      checked={reverterAjustes}
-                      onCheckedChange={(v) => setReverterAjustes(!!v)}
-                      className="mt-0.5 border-warning data-[state=checked]:bg-warning data-[state=checked]:border-warning"
-                    />
-                    <label htmlFor="reverterAjustes" className="text-sm cursor-pointer">
-                      <span className="font-medium text-warning">Reverter ajustes de stock</span>
-                      <span className="text-xs text-muted-foreground block mt-0.5">
-                        Remove os movimentos de ajuste de inventário criados quando este inventário foi fechado.
-                        Atenção: afecta os saldos de stock actuais.
-                      </span>
-                    </label>
-                  </div>
-                )}
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -287,7 +269,7 @@ export default function Inventario() {
             <AlertDialogCancel className="border-border">Cancelar</AlertDialogCancel>
             <AlertDialogAction
               className="bg-danger text-white hover:bg-danger/90"
-              onClick={() => deleteDialog && eliminar.mutate({ id: deleteDialog.id, reverterAjustes })}
+              onClick={() => deleteDialog && eliminar.mutate({ id: deleteDialog.id })}
             >
               {eliminar.isPending ? "A eliminar…" : "Eliminar"}
             </AlertDialogAction>

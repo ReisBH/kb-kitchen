@@ -145,6 +145,8 @@ export const movimentos = mysqlTable("movimentos", {
   // Referência ao documento de origem (fatura, venda, inventário, etc.)
   documentoId: varchar("documentoId", { length: 64 }),
   documentoTipo: varchar("documentoTipo", { length: 50 }),
+  // Lote físico associado à entrada, consumo ou descarte, quando aplicável.
+  loteId: int("loteId"),
   // Motivo (obrigatório para quebras)
   motivo: text("motivo"),
   utilizadorId: int("utilizadorId"),
@@ -163,6 +165,7 @@ export const movimentos = mysqlTable("movimentos", {
   index("movimentos_data_idx").on(t.dataMovimento),
   index("movimentos_documento_idx").on(t.documentoId),
   index("movimentos_idcliente_idx").on(t.idCliente),
+  index("movimentos_lote_idx").on(t.loteId),
 ]);
 export type Movimento = typeof movimentos.$inferSelect;
 export type InsertMovimento = typeof movimentos.$inferInsert;
@@ -244,6 +247,10 @@ export const fichasTecnicas = mysqlTable("fichas_tecnicas", {
   modoPreparacao: text("modoPreparacao"),
   alergenios: int("alergenios").default(0),
   ativo: boolean("ativo").default(true).notNull(),
+  // Fichas só podem alimentar vendas e POS depois de publicadas.
+  estadoPublicacao: mysqlEnum("estadoPublicacao", ["rascunho", "em_revisao", "publicada"]).default("rascunho").notNull(),
+  publicadaEm: timestamp("publicadaEm"),
+  publicadaPor: int("publicadaPor"),
   // Comportamento de explosão de receitas base
   explodir_receitas: mysqlEnum("explodir_receitas", ["auto", "sempre", "nunca"]).default("auto"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -272,7 +279,9 @@ export const vendas = mysqlTable("vendas", {
   id: int("id").autoincrement().primaryKey(),
   data: timestamp("data").notNull(),
   origem: mysqlEnum("origem", ["manual", "ocr_pos"]).default("manual").notNull(),
-  documentoOcrId: int("documentoOcrId"),
+  documentoOcrId: int("documentoOcrId").unique(),
+  // Chave idempotente da submissão manual; o documento OCR usa documentoOcrId.
+  idCliente: varchar("idCliente", { length: 64 }).unique(),
   totalReceita: decimal("totalReceita", { precision: 12, scale: 2 }),
   custoTotal: decimal("custoTotal", { precision: 12, scale: 4 }),
   foodCostPct: decimal("foodCostPct", { precision: 6, scale: 3 }),
@@ -281,6 +290,7 @@ export const vendas = mysqlTable("vendas", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (t) => [
   index("vendas_data_idx").on(t.data),
+  index("vendas_idcliente_idx").on(t.idCliente),
 ]);
 export type Venda = typeof vendas.$inferSelect;
 export type InsertVenda = typeof vendas.$inferInsert;
@@ -304,6 +314,8 @@ export const inventarios = mysqlTable("inventarios", {
   nome: varchar("nome", { length: 255 }),
   zona: varchar("zona", { length: 100 }),
   estado: mysqlEnum("estado", ["em_curso", "fechado"]).default("em_curso").notNull(),
+  // Evita abrir duas vezes a mesma sessão de inventário após reenvio do cliente.
+  idCliente: varchar("idCliente", { length: 64 }).unique(),
   utilizadorId: int("utilizadorId"),
   fechadoEm: timestamp("fechadoEm"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -398,6 +410,9 @@ export const mapaPos = mysqlTable("mapa_pos", {
   id: int("id").autoincrement().primaryKey(),
   nomePos: varchar("nomePos", { length: 255 }).notNull().unique(),
   fichaId: int("fichaId").notNull(),
+  ativo: boolean("ativo").default(true).notNull(),
+  validadoEm: timestamp("validadoEm"),
+  validadoPor: int("validadoPor"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 export type MapaPos = typeof mapaPos.$inferSelect;

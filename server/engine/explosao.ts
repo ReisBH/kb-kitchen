@@ -133,22 +133,27 @@ export async function executarExplosaoVenda(input: {
   comportamento: "auto" | "sempre" | "nunca";
   tipoOverride?: "venda_consumo" | "quebra";
   motivo?: string;
+  documentoId?: string;
+  idClienteBase?: string;
+  executor?: any;
 }): Promise<{ movimentos: number[]; stockNegativo: string[] }> {
-  const db = await getDb();
+  const db = input.executor ?? await getDb();
   if (!db) throw new Error("Base de dados não disponível");
   const movimentosIds: number[] = [];
   const stockNegativo: string[] = [];
-  const documentoId = input.vendaId ? `venda_${input.vendaId}` : `waste_${Date.now()}`;
+  const documentoId = input.documentoId ?? (input.vendaId ? `venda_${input.vendaId}` : `waste_${Date.now()}`);
   const tipoMovimento = input.tipoOverride ?? "venda_consumo";
   const motivoMovimento = input.motivo;
+  let sequenciaMovimento = 0;
+  const proximaChave = () => input.idClienteBase ? `${input.idClienteBase}:mov:${sequenciaMovimento++}` : undefined;
 
   async function processarNo(no: NoExplosao): Promise<void> {
     const [artigo] = await db!.select().from(artigos).where(eq(artigos.id, no.artigoId)).limit(1);
     if (!artigo) return;
     if (artigo.tipo === "receita_base" && input.comportamento !== "sempre") {
-      const stockAtual = await calcularStock(no.artigoId);
+      const stockAtual = await calcularStock(no.artigoId, db as any);
       if (stockAtual >= no.quantidade || input.comportamento === "nunca") {
-        const { movimentoId } = await registarMovimento({ artigoId: no.artigoId, tipo: tipoMovimento, quantidade: -no.quantidade, custoUnitario: no.custoUnitario, documentoId, documentoTipo: "venda", motivo: motivoMovimento, utilizadorId: input.utilizadorId });
+        const { movimentoId } = await registarMovimento({ artigoId: no.artigoId, tipo: tipoMovimento, quantidade: -no.quantidade, custoUnitario: no.custoUnitario, documentoId, documentoTipo: "venda", motivo: motivoMovimento, utilizadorId: input.utilizadorId, origem: "sistema", idCliente: proximaChave() }, db as any);
         movimentosIds.push(movimentoId);
         const stockApos = stockAtual - no.quantidade;
         if (stockApos < 0) stockNegativo.push(`${artigo.nome} (stock: ${stockApos.toFixed(3)} ${artigo.unidadeBase})`);
@@ -158,8 +163,8 @@ export async function executarExplosaoVenda(input: {
     if (no.filhos?.length) {
       for (const filho of no.filhos) await processarNo(filho);
     } else {
-      const stockAtual = await calcularStock(no.artigoId);
-      const { movimentoId } = await registarMovimento({ artigoId: no.artigoId, tipo: tipoMovimento, quantidade: -no.quantidade, custoUnitario: no.custoUnitario, documentoId, documentoTipo: "venda", motivo: motivoMovimento, utilizadorId: input.utilizadorId });
+      const stockAtual = await calcularStock(no.artigoId, db as any);
+      const { movimentoId } = await registarMovimento({ artigoId: no.artigoId, tipo: tipoMovimento, quantidade: -no.quantidade, custoUnitario: no.custoUnitario, documentoId, documentoTipo: "venda", motivo: motivoMovimento, utilizadorId: input.utilizadorId, origem: "sistema", idCliente: proximaChave() }, db as any);
       movimentosIds.push(movimentoId);
       const stockApos = stockAtual - no.quantidade;
       if (stockApos < 0) stockNegativo.push(`${artigo.nome} (stock: ${stockApos.toFixed(3)} ${artigo.unidadeBase})`);

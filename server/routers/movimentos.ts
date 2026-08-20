@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eq, and, desc, gte, lte, isNull, sql } from "drizzle-orm";
 import { protectedProcedure, roleProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { movimentos, artigos } from "../../drizzle/schema";
+import { movimentos, artigos, lotes } from "../../drizzle/schema";
 import { criarDadosEstorno, registarMovimento } from "../engine/stock";
 
 export const movimentosRouter = router({
@@ -31,7 +31,10 @@ export const movimentosRouter = router({
         movimento: movimentos,
         artigoNome: artigos.nome,
         artigoUnidade: artigos.unidadeBase,
-      }).from(movimentos).leftJoin(artigos, eq(movimentos.artigoId, artigos.id));
+        loteCodigo: lotes.codigoLote,
+      }).from(movimentos)
+        .leftJoin(artigos, eq(movimentos.artigoId, artigos.id))
+        .leftJoin(lotes, eq(movimentos.loteId, lotes.id));
 
       const items = conditions.length > 0
         ? await baseQuery.where(and(...conditions)).orderBy(desc(movimentos.dataMovimento)).limit(limite).offset(offset)
@@ -42,7 +45,7 @@ export const movimentosRouter = router({
         : await db.select({ count: sql<number>`COUNT(*)` }).from(movimentos);
 
       return {
-        items: items.map(r => ({ ...r.movimento, artigoNome: r.artigoNome, artigoUnidade: r.artigoUnidade })),
+        items: items.map(r => ({ ...r.movimento, artigoNome: r.artigoNome, artigoUnidade: r.artigoUnidade, loteCodigo: r.loteCodigo })),
         total: Number(countQ[0]?.count ?? 0),
       };
     }),

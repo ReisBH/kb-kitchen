@@ -31,6 +31,7 @@ type MovItem = {
   stockApos: string | null;
   documentoId: string | null;
   documentoTipo: string | null;
+  loteCodigo: string | null;
   dataMovimento: Date;
   motivo: string | null;
   anuladoEm: Date | null;
@@ -120,7 +121,7 @@ export default function Movimentos() {
                   </td>
                   <td className="px-4 py-2.5 font-mono">{m.stockApos != null ? parseFloat(m.stockApos).toFixed(1) : "—"}</td>
                   <td className="px-4 py-2.5 text-xs text-muted-foreground max-w-[180px] truncate">
-                    {m.anuladoEm ? `Estornado · ${m.motivo ?? ""}` : (m.motivo ?? m.documentoId ?? "—")}
+                    {m.anuladoEm ? `Estornado · ${m.motivo ?? ""}` : (m.loteCodigo ? `Lote ${m.loteCodigo} · ${m.motivo ?? m.documentoId ?? ""}` : (m.motivo ?? m.documentoId ?? "—"))}
                   </td>
                   {canEdit && (
                     <td className="px-4 py-2.5">

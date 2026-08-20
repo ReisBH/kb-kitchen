@@ -17,6 +17,7 @@ export default function QrLote() {
   const { user } = useAuth();
   const [consumindo, setConsumindo] = useState(false);
   const [qtdConsumo, setQtdConsumo] = useState('');
+  const [idClienteConsumo, setIdClienteConsumo] = useState(() => crypto.randomUUID());
   const { data: lote, isLoading, error, refetch } = trpc.qr.obterLotePorCodigo.useQuery({ codigo: codigo ?? '' }, { enabled: !!codigo });
   const consumir = trpc.qr.consumirLote.useMutation();
   const descartar = trpc.qr.descartarLote.useMutation();
@@ -40,8 +41,8 @@ export default function QrLote() {
 
   const handleConsumir = () => {
     if (!qtdConsumo || Number(qtdConsumo) <= 0) return;
-    consumir.mutate({ codigoLote: codigo!, quantidade: Number(qtdConsumo) }, {
-      onSuccess: () => { toast.success('Consumo registado'); setConsumindo(false); setQtdConsumo(''); refetch(); },
+    consumir.mutate({ codigoLote: codigo!, quantidade: Number(qtdConsumo), idCliente: idClienteConsumo }, {
+      onSuccess: () => { toast.success('Consumo registado'); setConsumindo(false); setQtdConsumo(''); setIdClienteConsumo(crypto.randomUUID()); refetch(); },
       onError: (err) => toast.error(err.message),
     });
   };
@@ -139,6 +140,20 @@ export default function QrLote() {
       {lote.estado !== 'ativo' && (
         <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(255,255,255,0.05)' }}>
           <p className="text-gray-400 text-sm capitalize">Estado: {lote.estado}</p>
+        </div>
+      )}
+
+      {(lote.movimentos?.length ?? 0) > 0 && (
+        <div className="mt-4 rounded-xl p-4" style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.2)' }}>
+          <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">Rastreabilidade do lote</p>
+          <div className="space-y-2">
+            {lote.movimentos.map((movimento: any) => (
+              <div key={movimento.id} className="flex justify-between gap-3 text-xs text-gray-300">
+                <span>{new Date(movimento.dataMovimento).toLocaleDateString('pt-PT')} · {movimento.motivo ?? movimento.tipo}</span>
+                <span className={Number(movimento.quantidade) < 0 ? 'text-red-300' : 'text-emerald-300'}>{Number(movimento.quantidade) > 0 ? '+' : ''}{Number(movimento.quantidade).toFixed(1)} {lote.unidade}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

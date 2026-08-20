@@ -184,3 +184,8 @@
 - [x] Estabilização: acrescentar regressões de custo, rollback e idempotência ao rendimento de proteínas
 - [x] Estabilização: substituir edição/apagamento de movimentos por estorno auditável
 - [x] Estabilização: validar e publicar o primeiro marco da fase de estabilização
+- [x] Estabilização 2: mapear chaves de idempotência e fluxos de escrita de vendas, OCR e inventário
+- [x] Estabilização 2: aplicar idempotência persistente às confirmações de vendas, OCR e inventário
+- [x] Estabilização 2: ligar lotes aos movimentos e apresentar rastreabilidade no livro de stock
+- [x] Estabilização 2: criar ciclo de publicação controlada para fichas técnicas e validação de mapeamentos POS
+- [x] Estabilização 2: validar, documentar e publicar o segundo marco

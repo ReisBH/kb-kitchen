@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, isNull, sql } from "drizzle-orm";
 import { protectedProcedure, router, roleProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { inventarios, inventarioLinhas, artigos } from "../../drizzle/schema";
@@ -35,35 +35,28 @@ export const inventarioRouter = router({
       nome: z.string().optional(),
       zona: z.string().optional(),
       artigoIds: z.array(z.number()).optional(),
+      idCliente: z.string().min(8).max(64).optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
-      const [r] = await db.insert(inventarios).values({
-        nome: input.nome ?? `Inventário ${new Date().toLocaleDateString("pt-PT")}`,
-        zona: input.zona,
-        utilizadorId: ctx.user?.id,
-      } as any);
-      const inventarioId = (r as any).insertId as number;
-
-      // Pré-carregar artigos com stock teórico (oculto até à contagem)
-      const artList = input.artigoIds
-        ? await db.select().from(artigos).where(sql`${artigos.id} IN (${sql.join(input.artigoIds.map(id => sql`${id}`), sql`, `)})`)
-        : await db.select().from(artigos).where(eq(artigos.ativo, true));
-
-      const ids = artList.map(a => a.id);
-      const stockMap = await calcularStockMultiplos(ids);
-
-      if (artList.length > 0) {
-        await db.insert(inventarioLinhas).values(
-          artList.map(a => ({
-            inventarioId,
-            artigoId: a.id,
-            stockTeorico: (stockMap.get(a.id) ?? 0).toFixed(3),
-          } as any))
-        );
+      const idCliente = input.idCliente;
+      if (idCliente) {
+        const [existente] = await db.select().from(inventarios).where(eq(inventarios.idCliente, idCliente)).limit(1);
+        if (existente) return { id: existente.id, duplicado: true };
       }
-      return { id: inventarioId };
+      return db.transaction(async (tx) => {
+        const [r] = await tx.insert(inventarios).values({ nome: input.nome ?? `Inventário ${new Date().toLocaleDateString("pt-PT")}`, zona: input.zona, idCliente, utilizadorId: ctx.user?.id } as any);
+        const inventarioId = (r as any).insertId as number;
+        const artList = input.artigoIds
+          ? await tx.select().from(artigos).where(sql`${artigos.id} IN (${sql.join(input.artigoIds.map(id => sql`${id}`), sql`, `)})`)
+          : await tx.select().from(artigos).where(eq(artigos.ativo, true));
+        const stockMap = await calcularStockMultiplos(artList.map(a => a.id), tx as any);
+        if (artList.length > 0) {
+          await tx.insert(inventarioLinhas).values(artList.map(a => ({ inventarioId, artigoId: a.id, stockTeorico: (stockMap.get(a.id) ?? 0).toFixed(3) } as any)));
+        }
+        return { id: inventarioId, duplicado: false };
+      });
     }),
 
   registarContagem: protectedProcedure
@@ -103,33 +96,23 @@ export const inventarioRouter = router({
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
-      const linhas = await db.select({
-        linha: inventarioLinhas,
-        artigo: artigos,
-      }).from(inventarioLinhas)
-        .leftJoin(artigos, eq(inventarioLinhas.artigoId, artigos.id))
-        .where(and(eq(inventarioLinhas.inventarioId, input.inventarioId), sql`${inventarioLinhas.stockReal} IS NOT NULL`));
-
-      for (const { linha, artigo } of linhas) {
-        if (!artigo) continue;
-        const desvio = parseFloat(linha.desvioQtd ?? "0");
-        if (Math.abs(desvio) < 0.001) continue;
-        const { movimentoId } = await registarMovimento({
-          artigoId: artigo.id,
-          tipo: "ajuste_inventario",
-          quantidade: desvio,
-          custoUnitario: parseFloat(artigo.custoMedioPonderado ?? "0"),
-          documentoId: `inventario_${input.inventarioId}`,
-          documentoTipo: "inventario",
-          motivo: `Ajuste de inventário #${input.inventarioId}`,
-          utilizadorId: ctx.user?.id,
-        });
-        await db.update(inventarioLinhas).set({ ajusteMovimentoId: movimentoId })
-          .where(eq(inventarioLinhas.id, linha.id));
-      }
-      await db.update(inventarios).set({ estado: "fechado", fechadoEm: new Date() })
-        .where(eq(inventarios.id, input.inventarioId));
-      return { success: true };
+      return db.transaction(async (tx) => {
+        const [inventario] = await tx.select().from(inventarios).where(eq(inventarios.id, input.inventarioId)).limit(1);
+        if (!inventario) throw new Error("Inventário não encontrado");
+        if (inventario.estado === "fechado") return { success: true, duplicado: true };
+        const linhas = await tx.select({ linha: inventarioLinhas, artigo: artigos }).from(inventarioLinhas)
+          .leftJoin(artigos, eq(inventarioLinhas.artigoId, artigos.id))
+          .where(and(eq(inventarioLinhas.inventarioId, input.inventarioId), sql`${inventarioLinhas.stockReal} IS NOT NULL`, isNull(inventarioLinhas.ajusteMovimentoId)));
+        for (const { linha, artigo } of linhas) {
+          if (!artigo) continue;
+          const desvio = parseFloat(linha.desvioQtd ?? "0");
+          if (Math.abs(desvio) < 0.001) continue;
+          const { movimentoId } = await registarMovimento({ artigoId: artigo.id, tipo: "ajuste_inventario", quantidade: desvio, custoUnitario: parseFloat(artigo.custoMedioPonderado ?? "0"), documentoId: `inventario_${input.inventarioId}`, documentoTipo: "inventario", motivo: `Ajuste de inventário #${input.inventarioId}`, origem: "inventario", idCliente: `inventario-${input.inventarioId}:linha-${linha.id}`, utilizadorId: ctx.user?.id }, tx as any);
+          await tx.update(inventarioLinhas).set({ ajusteMovimentoId: movimentoId }).where(eq(inventarioLinhas.id, linha.id));
+        }
+        await tx.update(inventarios).set({ estado: "fechado", fechadoEm: new Date() }).where(eq(inventarios.id, input.inventarioId));
+        return { success: true, duplicado: false };
+      });
     }),
 
   // ─── Verificar desvios antes de fechar (retorna desvios >5%) ─────────────────
@@ -186,29 +169,16 @@ export const inventarioRouter = router({
     return { success: true };
   }),
 
-  // ─── Eliminar inventário (Admin e Head Chef) ──────────────────────────────────
-  // Elimina o inventário e as suas linhas. Se fechado, reverte os ajustes de stock.
+  // ─── Eliminar inventário em curso (Admin e Head Chef) ─────────────────────────
+  // Um inventário fechado mantém o registo e os ajustes; estes são operações auditáveis.
   eliminar: roleProcedure(["head_chef"]).input(z.object({
     id: z.number(),
-    reverterAjustes: z.boolean().default(false),
   })).mutation(async ({ input, ctx }) => {
     const db = await getDb();
     if (!db) throw new Error("Base de dados não disponível");
-    // If reverterAjustes, delete the ajuste_inventario movements created by this inventory
-    if (input.reverterAjustes) {
-      const { movimentos } = await import("../../drizzle/schema");
-      await db.delete(movimentos).where(
-        sql`${movimentos.documentoId} = ${`inventario_${input.id}`} AND ${movimentos.tipo} = 'ajuste_inventario'`
-      );
-      // Recalculate stock for affected artigos
-      const linhas = await db.select({ artigoId: inventarioLinhas.artigoId })
-        .from(inventarioLinhas).where(eq(inventarioLinhas.inventarioId, input.id));
-      // After reverting movements, recalculate stock for affected artigos
-      for (const l of linhas) {
-        await calcularStock(l.artigoId);
-      }
-    }
-    // Delete lines then inventory
+    const [inventario] = await db.select().from(inventarios).where(eq(inventarios.id, input.id)).limit(1);
+    if (!inventario) throw new Error("Inventário não encontrado");
+    if (inventario.estado === "fechado") throw new Error("Inventários fechados não podem ser eliminados; usa estorno nos ajustes necessários.");
     await db.delete(inventarioLinhas).where(eq(inventarioLinhas.inventarioId, input.id));
     await db.delete(inventarios).where(eq(inventarios.id, input.id));
     return { success: true };

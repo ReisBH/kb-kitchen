@@ -43,8 +43,8 @@ export async function calcularStock(artigoId: number, executor?: DbExecutor): Pr
 }
 
 /** Calcula o stock de múltiplos artigos de uma vez */
-export async function calcularStockMultiplos(artigoIds: number[]): Promise<Map<number, number>> {
-  const db = await getDb();
+export async function calcularStockMultiplos(artigoIds: number[], executor?: DbExecutor): Promise<Map<number, number>> {
+  const db = executor ?? await getDb();
   if (!db) throw new Error("Base de dados não disponível");
   if (artigoIds.length === 0) return new Map();
   const result = await db
@@ -70,6 +70,7 @@ export async function registarMovimento(input: {
   custoUnitario: number;
   documentoId?: string;
   documentoTipo?: string;
+  loteId?: number;
   motivo?: string;
   utilizadorId?: number;
   dataMovimento?: Date;
@@ -107,6 +108,7 @@ export async function registarMovimento(input: {
     stockApos: stockApos.toFixed(3),
     documentoId: input.documentoId,
     documentoTipo: input.documentoTipo,
+    loteId: input.loteId,
     motivo: input.motivo,
     utilizadorId: input.utilizadorId,
     origem: input.origem,

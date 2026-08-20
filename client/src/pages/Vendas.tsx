@@ -17,8 +17,9 @@ export default function Vendas() {
   const [quantidades, setQuantidades] = useState<Record<number, string>>({});
   const [confirmado, setConfirmado] = useState(false);
   const [isWaste, setIsWaste] = useState(false);
+  const [idCliente, setIdCliente] = useState(() => crypto.randomUUID());
   const utils = trpc.useUtils();
-  const { data: fichas, isLoading } = trpc.fichas.listar.useQuery();
+  const { data: fichas, isLoading } = trpc.fichas.listar.useQuery({ apenasPublicadas: true });
   const { data: vendas } = trpc.fichas.listarVendas.useQuery();
 
   const registar = trpc.fichas.registarVenda.useMutation({
@@ -36,6 +37,7 @@ export default function Vendas() {
       }
       setQuantidades({});
       setConfirmado(false);
+      setIdCliente(crypto.randomUUID());
       utils.fichas.listarVendas.invalidate();
       utils.dashboard.resumo.invalidate();
       utils.artigos.listar.invalidate();
@@ -67,6 +69,7 @@ export default function Vendas() {
     setQuantidades({});
     setConfirmado(false);
     setIsWaste(false);
+    setIdCliente(crypto.randomUUID());
   }
 
   function submeter() {
@@ -74,7 +77,7 @@ export default function Vendas() {
       toast.error("Preenche pelo menos uma quantidade.");
       return;
     }
-    registar.mutate({ linhas: linhasComQuantidade, isWaste });
+    registar.mutate({ linhas: linhasComQuantidade, isWaste, idCliente });
   }
 
   return (
@@ -241,4 +244,3 @@ export default function Vendas() {
     </div>
   );
 }
-

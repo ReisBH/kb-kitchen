@@ -64,6 +64,27 @@
       "when": 1787238251552,
       "tag": "0008_secret_the_hand",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1787240346318,
+      "tag": "0009_violet_big_bertha",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1787240682774,
+      "tag": "0010_zippy_fallen_one",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1787240840886,
+      "tag": "0011_silky_squadron_supreme",
+      "breakpoints": true
     }
   ]
 }

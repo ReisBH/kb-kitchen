@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { eq, and, like, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, roleProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { documentosOcr, aliasesFornecedor, mapaPos, artigos, fichasTecnicas, fornecedores, vendas, vendaLinhas } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
@@ -172,41 +172,36 @@ export const ocrRouter = router({
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
-      const [doc] = await db.select().from(documentosOcr).where(eq(documentosOcr.id, input.docId)).limit(1);
-      if (!doc) throw new Error("Documento não encontrado");
+      return db.transaction(async (tx) => {
+        const [doc] = await tx.select().from(documentosOcr).where(eq(documentosOcr.id, input.docId)).limit(1);
+        if (!doc) throw new Error("Documento não encontrado");
+        if (doc.estado === "confirmado") return { success: true, duplicado: true };
+        if (!["em_revisao", "extraido"].includes(doc.estado)) throw new Error("O documento não está pronto para confirmação");
 
-      for (const linha of input.linhas) {
-        const [artigo] = await db.select().from(artigos).where(eq(artigos.id, linha.artigoId)).limit(1);
-        if (!artigo) continue;
-
-        // Verificar variação de preço > 15%
-        const custoAtual = parseFloat(artigo.custoMedioPonderado ?? "0");
-        if (custoAtual > 0) {
-          const variacao = Math.abs((linha.precoUnitario - custoAtual) / custoAtual) * 100;
-          // Variação registada nos dados extraídos para alerta na UI
-        }
-
-        await registarMovimento({
-          artigoId: linha.artigoId,
-          tipo: "entrada_compra",
-          quantidade: linha.quantidade,
-          custoUnitario: linha.precoUnitario,
-          documentoId: `ocr_${input.docId}`,
-          documentoTipo: "fatura",
-          utilizadorId: ctx.user?.id,
-        });
-
-        if (linha.guardarAlias) {
-          await db.insert(aliasesFornecedor).values({
-            fornecedorId: doc.fornecedorId,
-            alias: linha.descricao.toUpperCase().trim(),
+        for (let indice = 0; indice < input.linhas.length; indice++) {
+          const linha = input.linhas[indice];
+          const [artigo] = await tx.select().from(artigos).where(eq(artigos.id, linha.artigoId)).limit(1);
+          if (!artigo) throw new Error(`Artigo ${linha.artigoId} não encontrado`);
+          await registarMovimento({
             artigoId: linha.artigoId,
-          } as any).onDuplicateKeyUpdate({ set: { artigoId: linha.artigoId } });
-        }
-      }
+            tipo: "entrada_compra",
+            quantidade: linha.quantidade,
+            custoUnitario: linha.precoUnitario,
+            documentoId: `ocr_${input.docId}`,
+            documentoTipo: "fatura",
+            origem: "fatura",
+            idCliente: `ocr-fatura-${input.docId}:${indice}`,
+            utilizadorId: ctx.user?.id,
+          }, tx as any);
 
-      await db.update(documentosOcr).set({ estado: "confirmado" }).where(eq(documentosOcr.id, input.docId));
-      return { success: true };
+          if (linha.guardarAlias) {
+            await tx.insert(aliasesFornecedor).values({ fornecedorId: doc.fornecedorId, alias: linha.descricao.toUpperCase().trim(), artigoId: linha.artigoId } as any)
+              .onDuplicateKeyUpdate({ set: { artigoId: linha.artigoId } });
+          }
+        }
+        await tx.update(documentosOcr).set({ estado: "confirmado" }).where(eq(documentosOcr.id, input.docId));
+        return { success: true, duplicado: false };
+      });
     }),
 
   listar: protectedProcedure.query(async () => {
@@ -233,15 +228,28 @@ export const ocrRouter = router({
     return db.select({
       mapa: mapaPos,
       fichaNome: fichasTecnicas.nome,
+      fichaEstadoPublicacao: fichasTecnicas.estadoPublicacao,
     }).from(mapaPos).leftJoin(fichasTecnicas, eq(mapaPos.fichaId, fichasTecnicas.id));
   }),
 
-  guardarMapaPos: protectedProcedure
+  guardarMapaPos: roleProcedure(["head_chef"])
     .input(z.object({ nomePos: z.string(), fichaId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, input.fichaId)).limit(1);
+      if (!ficha?.ativo || ficha.estadoPublicacao !== "publicada") throw new Error("Só podes mapear fichas técnicas ativas e publicadas no POS.");
+      await db.insert(mapaPos).values({ ...input, nomePos: input.nomePos.trim(), ativo: true, validadoEm: new Date(), validadoPor: ctx.user?.id } as any)
+        .onDuplicateKeyUpdate({ set: { fichaId: input.fichaId, ativo: true, validadoEm: new Date(), validadoPor: ctx.user?.id } });
+      return { success: true };
+    }),
+
+  desativarMapaPos: roleProcedure(["head_chef"])
+    .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
-      await db.insert(mapaPos).values(input as any).onDuplicateKeyUpdate({ set: { fichaId: input.fichaId } });
+      await db.update(mapaPos).set({ ativo: false }).where(eq(mapaPos.id, input.id));
       return { success: true };
     }),
 
@@ -258,46 +266,37 @@ export const ocrRouter = router({
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
-      const [rv] = await db.insert(vendas).values({
-        data: new Date(),
-        origem: "ocr_fecho_caixa",
-        utilizadorId: ctx.user?.id,
-      } as any);
-      const vendaId = (rv as any).insertId as number;
-      let custoTotal = 0;
-      let totalReceita = 0;
-      const stockNegativo: string[] = [];
-      for (const linha of input.linhas) {
-        const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
-        if (!ficha) continue;
-        const { stockNegativo: sn } = await executarExplosaoVenda({
-          fichaId: linha.fichaId,
-          doses: linha.quantidade,
-          vendaId,
-          utilizadorId: ctx.user?.id,
-          comportamento: ficha.explodir_receitas ?? "auto",
-        });
-        stockNegativo.push(...sn);
-        const custoFicha = await calcularCustoFicha(linha.fichaId);
-        custoTotal += custoFicha * linha.quantidade;
-        totalReceita += linha.valorTotal;
-        await db.insert(vendaLinhas).values({
-          vendaId,
-          fichaId: linha.fichaId,
-          quantidade: linha.quantidade.toFixed(3),
-          precoUnitario: (linha.valorTotal / linha.quantidade).toFixed(2),
-          custoUnitario: custoFicha.toFixed(4),
-        } as any);
-      }
-      const foodCostPct = totalReceita > 0 ? (custoTotal / totalReceita) * 100 : 0;
-      await db.update(vendas).set({
-        custoTotal: custoTotal.toFixed(4),
-        totalReceita: totalReceita.toFixed(2),
-        foodCostPct: foodCostPct.toFixed(3),
-        processada: true,
-      }).where(eq(vendas.id, vendaId));
-      await db.update(documentosOcr).set({ estado: "confirmado" }).where(eq(documentosOcr.id, input.docId));
-      return { vendaId, custoTotal, totalReceita, foodCostPct, stockNegativo };
+      return db.transaction(async (tx) => {
+        const [doc] = await tx.select().from(documentosOcr).where(eq(documentosOcr.id, input.docId)).limit(1);
+        if (!doc || doc.tipo !== "fecho_caixa") throw new Error("Fecho de caixa não encontrado");
+        if (doc.vendaId) {
+          const [existente] = await tx.select().from(vendas).where(eq(vendas.id, doc.vendaId)).limit(1);
+          if (existente) return { vendaId: existente.id, custoTotal: parseFloat(existente.custoTotal ?? "0"), totalReceita: parseFloat(existente.totalReceita ?? "0"), foodCostPct: parseFloat(existente.foodCostPct ?? "0"), stockNegativo: [], duplicado: true };
+        }
+        if (!["em_revisao", "extraido"].includes(doc.estado)) throw new Error("O documento não está pronto para confirmação");
+
+        const [rv] = await tx.insert(vendas).values({ data: new Date(), origem: "ocr_fecho_caixa", documentoOcrId: doc.id, utilizadorId: ctx.user?.id } as any);
+        const vendaId = (rv as any).insertId as number;
+        let custoTotal = 0;
+        let totalReceita = 0;
+        const stockNegativo: string[] = [];
+        for (let indice = 0; indice < input.linhas.length; indice++) {
+          const linha = input.linhas[indice];
+          const [ficha] = await tx.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
+          if (!ficha) throw new Error(`Ficha técnica ${linha.fichaId} não encontrada`);
+          if (!ficha.ativo || ficha.estadoPublicacao !== "publicada") throw new Error(`A ficha “${ficha.nome}” não está publicada para POS.`);
+          const { stockNegativo: sn } = await executarExplosaoVenda({ fichaId: linha.fichaId, doses: linha.quantidade, vendaId, utilizadorId: ctx.user?.id, comportamento: ficha.explodir_receitas ?? "auto", idClienteBase: `ocr-caixa-${doc.id}:linha:${indice}`, executor: tx });
+          stockNegativo.push(...sn);
+          const custoFicha = await calcularCustoFicha(linha.fichaId);
+          custoTotal += custoFicha * linha.quantidade;
+          totalReceita += linha.valorTotal;
+          await tx.insert(vendaLinhas).values({ vendaId, fichaId: linha.fichaId, quantidade: linha.quantidade.toFixed(3), precoUnitario: (linha.valorTotal / linha.quantidade).toFixed(2), custoUnitario: custoFicha.toFixed(4) } as any);
+        }
+        const foodCostPct = totalReceita > 0 ? (custoTotal / totalReceita) * 100 : 0;
+        await tx.update(vendas).set({ custoTotal: custoTotal.toFixed(4), totalReceita: totalReceita.toFixed(2), foodCostPct: foodCostPct.toFixed(3), processada: true }).where(eq(vendas.id, vendaId));
+        await tx.update(documentosOcr).set({ estado: "confirmado", vendaId }).where(eq(documentosOcr.id, input.docId));
+        return { vendaId, custoTotal, totalReceita, foodCostPct, stockNegativo, duplicado: false };
+      });
     }),
 });
 
@@ -327,12 +326,12 @@ async function emparelharFicha(nomePos: string): Promise<{ id: number; nome: str
   const db = await getDb();
   if (!db) return null;
   const [mapa] = await db.select({ fichaId: mapaPos.fichaId })
-    .from(mapaPos).where(eq(mapaPos.nomePos, nomePos)).limit(1);
+    .from(mapaPos).where(and(eq(mapaPos.nomePos, nomePos), eq(mapaPos.ativo, true))).limit(1);
   if (mapa) {
     const [f] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, mapa.fichaId)).limit(1);
-    return f ? { id: f.id, nome: f.nome } : null;
+    return f?.ativo && f.estadoPublicacao === "publicada" ? { id: f.id, nome: f.nome } : null;
   }
   // Pesquisa aproximada
-  const [f] = await db.select().from(fichasTecnicas).where(like(fichasTecnicas.nome, `%${nomePos}%`)).limit(1);
+  const [f] = await db.select().from(fichasTecnicas).where(and(like(fichasTecnicas.nome, `%${nomePos}%`), eq(fichasTecnicas.ativo, true), eq(fichasTecnicas.estadoPublicacao, "publicada"))).limit(1);
   return f ? { id: f.id, nome: f.nome } : null;
 }
