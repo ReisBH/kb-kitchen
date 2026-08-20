@@ -198,16 +198,16 @@
 - [x] Estabilização 4: tornar os alertas de lote próximo da validade acionáveis e rastreáveis
 - [x] Estabilização 4: disponibilizar impressão de etiqueta após aprovação da produção por lote
 - [x] Estabilização 4: validar, documentar e publicar o quarto marco
-- [ ] Estabilização 5: mapear regras de criticidade, destinatários e relatórios operacionais existentes
-- [ ] Estabilização 5: configurar níveis de criticidade para desvios de inventário e validade de lotes
-- [ ] Estabilização 5: notificar Administrador, Head-Chef e Sub-Chef de pedidos de aprovação pendentes
-- [ ] Estabilização 5: disponibilizar relatório diário de desperdício e lotes a expirar em dois dias
-- [ ] Estabilização 5: validar, documentar e publicar o quinto marco
-- [ ] Estabilização 5: configurar Resend com remetente verificado e destinatários de chefia
-- [ ] Estabilização 5: programar o resumo diário por e-mail para as 08:00, hora de Lisboa
-- [ ] Estabilização 5: enviar e-mails ao Administrador registado e ao Head-Chef diegogarcapd@gmail.com
-- [ ] Estabilização 5: validar ou configurar cozinhakabuki.manus.space como domínio remetente no Resend
-- [ ] Supervisão: comparar e selecionar uma plataforma de e-mail gratuita sem exigência de domínio próprio verificado
-- [ ] Supervisão: configurar Brevo com remetente temporário, chave API e destinatários de chefia
-- [ ] Supervisão: substituir o envio Resend pelo Brevo após a validação de entrega
-- [ ] Supervisão: registar e validar a chave API Brevo fornecida pelo utilizador
+- [x] Estabilização 5: mapear regras de criticidade, destinatários e relatórios operacionais existentes
+- [x] Estabilização 5: configurar níveis de criticidade para desvios de inventário e validade de lotes
+- [x] Estabilização 5: notificar Administrador, Head-Chef e Sub-Chef de pedidos de aprovação pendentes
+- [x] Estabilização 5: disponibilizar relatório diário de desperdício e lotes a expirar em dois dias
+- [x] Estabilização 5: validar, documentar e publicar o quinto marco
+- [x] Estabilização 5: configurar Resend com remetente verificado e destinatários de chefia — substituído pelo Brevo por decisão do utilizador
+- [x] Estabilização 5: programar o resumo diário por e-mail para as 08:00, hora de Lisboa
+- [x] Estabilização 5: enviar e-mails ao Administrador registado e ao Head-Chef diegogarcapd@gmail.com
+- [x] Estabilização 5: validar ou configurar cozinhakabuki.manus.space como domínio remetente no Resend — substituído pelo remetente Brevo ativo
+- [x] Supervisão: comparar e selecionar uma plataforma de e-mail gratuita sem exigência de domínio próprio verificado
+- [x] Supervisão: configurar Brevo com remetente temporário, chave API e destinatários de chefia
+- [x] Supervisão: substituir o envio Resend pelo Brevo após a validação de entrega
+- [x] Supervisão: registar e validar a chave API Brevo fornecida pelo utilizador
