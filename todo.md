@@ -167,3 +167,7 @@
 - [x] Rendimentos: verificar e documentar a inexistência atual de artigos `proteina_limpa` correspondentes para os 18 ingredientes indicados
 - [x] Rendimentos: validar a seleção atualizada, a ausência de pares bruto/limpo e os testes automatizados antes de publicar
 - [x] Rendimentos: corrigir o cálculo no servidor para converter o peso bruto em gramas antes de aplicar o preço por quilograma
+- [x] Rendimentos: auditar correspondências de nome exatas e semelhantes antes de duplicar os 18 artigos limpos solicitados
+- [x] Rendimentos: criar ou reutilizar artigos `proteina_limpa` e ligá-los aos artigos brutos pela referência `artigoBrutoId`
+- [x] Rendimentos: validar os 18 destinos de stock na ferramenta e documentar as decisões de deduplicação
+- [x] Rendimentos: validar pela mesma lógica da interface os 18 pares bruto→limpo e confirmar um único destino associado por proteína
