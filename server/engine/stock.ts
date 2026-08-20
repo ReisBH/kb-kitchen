@@ -6,6 +6,8 @@ import { and, eq, sql, desc } from "drizzle-orm";
 import { getDb } from "../db";
 import { movimentos, artigos, type InsertMovimento } from "../../drizzle/schema";
 
+type DbExecutor = NonNullable<Awaited<ReturnType<typeof getDb>>>;
+
 export type TipoMovimento =
   | "entrada_compra"
   | "producao_consumo"
@@ -16,9 +18,22 @@ export type TipoMovimento =
   | "transformacao_entrada"
   | "ajuste_inventario";
 
+export function criarDadosEstorno(quantidadeOriginal: number, custoUnitarioOriginal: number) {
+  if (!Number.isFinite(quantidadeOriginal) || quantidadeOriginal === 0) {
+    throw new Error("A quantidade original do movimento deve ser diferente de zero.");
+  }
+  if (!Number.isFinite(custoUnitarioOriginal) || custoUnitarioOriginal < 0) {
+    throw new Error("O custo unitário original é inválido.");
+  }
+  return {
+    quantidade: -quantidadeOriginal,
+    custoUnitario: custoUnitarioOriginal,
+  };
+}
+
 /** Calcula o stock atual de um artigo somando todos os movimentos */
-export async function calcularStock(artigoId: number): Promise<number> {
-  const db = await getDb();
+export async function calcularStock(artigoId: number, executor?: DbExecutor): Promise<number> {
+  const db = executor ?? await getDb();
   if (!db) throw new Error("Base de dados não disponível");
   const result = await db
     .select({ total: sql<string>`COALESCE(SUM(${movimentos.quantidade}), 0)` })
@@ -58,15 +73,17 @@ export async function registarMovimento(input: {
   motivo?: string;
   utilizadorId?: number;
   dataMovimento?: Date;
-}): Promise<{ movimentoId: number; stockApos: number; custoMedioApos: number }> {
-  const db = await getDb();
+  origem?: "manual" | "qr" | "fatura" | "fecho_caixa" | "inventario" | "producao" | "sistema";
+  idCliente?: string;
+}, executor?: DbExecutor): Promise<{ movimentoId: number; stockApos: number; custoMedioApos: number }> {
+  const db = executor ?? await getDb();
   if (!db) throw new Error("Base de dados não disponível");
 
   // Buscar artigo atual
   const [artigo] = await db.select().from(artigos).where(eq(artigos.id, input.artigoId)).limit(1);
   if (!artigo) throw new Error(`Artigo ${input.artigoId} não encontrado`);
 
-  const stockAtual = await calcularStock(input.artigoId);
+  const stockAtual = await calcularStock(input.artigoId, db);
   const custoAtual = parseFloat(artigo.custoMedioPonderado ?? "0");
 
   // Calcular novo custo médio ponderado (só para entradas)
@@ -92,6 +109,8 @@ export async function registarMovimento(input: {
     documentoTipo: input.documentoTipo,
     motivo: input.motivo,
     utilizadorId: input.utilizadorId,
+    origem: input.origem,
+    idCliente: input.idCliente,
     dataMovimento: input.dataMovimento ?? new Date(),
   } as InsertMovimento);
 

@@ -171,3 +171,16 @@
 - [x] Rendimentos: criar ou reutilizar artigos `proteina_limpa` e ligá-los aos artigos brutos pela referência `artigoBrutoId`
 - [x] Rendimentos: validar os 18 destinos de stock na ferramenta e documentar as decisões de deduplicação
 - [x] Rendimentos: validar pela mesma lógica da interface os 18 pares bruto→limpo e confirmar um único destino associado por proteína
+- [x] Auditoria: mapear arquitetura, modelo de dados e fluxos entre ingredientes, receitas, fichas técnicas, stock e vendas
+- [x] Auditoria: verificar integridade, sincronização e riscos operacionais com evidência de código e base de dados
+- [x] Auditoria: avaliar segurança, qualidade de código, testes, desempenho e experiência de operação em restauração
+- [x] Auditoria: entregar relatório priorizado com correções localizadas e planos de ação objetivos
+- [x] Rendimentos: medir e preservar o impacto dos testes de rendimento afetados antes de qualquer recuperação de dados
+- [x] Rendimentos: definir a correção de unidades, a recuperação transacional e os testes de regressão do cálculo de custo limpo
+- [x] Competência: criar e validar uma skill reutilizável de auditoria técnica-operacional para sistemas de restauração
+- [x] Auditoria: entregar o plano urgente detalhado para correção do rendimento de proteínas
+- [x] Estabilização: criar motor único de custo de rendimento com unidades explícitas e validações físicas
+- [x] Estabilização: usar transação para registar saída bruta, entrada limpa e teste de rendimento
+- [x] Estabilização: acrescentar regressões de custo, rollback e idempotência ao rendimento de proteínas
+- [x] Estabilização: substituir edição/apagamento de movimentos por estorno auditável
+- [x] Estabilização: validar e publicar o primeiro marco da fase de estabilização

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { converterParaUnidadeBase } from "./stock";
+import { converterParaUnidadeBase, criarDadosEstorno } from "./stock";
 
 describe("converterParaUnidadeBase", () => {
   it("retorna a mesma quantidade se unidade origem === unidade base", () => {
@@ -59,5 +59,17 @@ describe("custo médio ponderado — lógica", () => {
     const novoStock = stockAtual + qtdEntrada;
     const novoCusto = novoStock > 0 ? (stockAtual * custoAtual + qtdEntrada * custoEntrada) / novoStock : custoEntrada;
     expect(novoCusto).toBe(0.003);
+  });
+});
+
+describe("estorno imutável de movimentos", () => {
+  it("cria a quantidade inversa preservando o custo unitário original", () => {
+    expect(criarDadosEstorno(-250, 0.004)).toEqual({ quantidade: 250, custoUnitario: 0.004 });
+    expect(criarDadosEstorno(500, 0.0025)).toEqual({ quantidade: -500, custoUnitario: 0.0025 });
+  });
+
+  it("rejeita valores inválidos que não podem gerar um estorno auditável", () => {
+    expect(() => criarDadosEstorno(0, 0.004)).toThrow(/quantidade/i);
+    expect(() => criarDadosEstorno(100, -0.004)).toThrow(/custo/i);
   });
 });

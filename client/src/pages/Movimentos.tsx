@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { ClipboardList, Pencil, Trash2, X, Check } from "lucide-react";
+import { ClipboardList, Undo2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -31,99 +30,18 @@ type MovItem = {
   custoUnitario: string;
   stockApos: string | null;
   documentoId: string | null;
+  documentoTipo: string | null;
   dataMovimento: Date;
   motivo: string | null;
+  anuladoEm: Date | null;
+  anuladoPorMovimentoId: number | null;
 };
-
-function EditDialog({ mov, onClose }: { mov: MovItem; onClose: () => void }) {
-  const utils = trpc.useUtils();
-  const [quantidade, setQuantidade] = useState(parseFloat(mov.quantidade).toString());
-  const [custo, setCusto] = useState(parseFloat(mov.custoUnitario).toString());
-  const [motivo, setMotivo] = useState(mov.motivo ?? "");
-  const [tipo, setTipo] = useState(mov.tipo);
-
-  const editar = trpc.movimentos.editar.useMutation({
-    onSuccess: () => {
-      toast.success("Movimento actualizado");
-      utils.movimentos.listar.invalidate();
-      onClose();
-    },
-    onError: (e) => toast.error(e.message),
-  });
-
-  return (
-    <DialogContent className="bg-card border-border max-w-md">
-      <DialogHeader>
-        <DialogTitle className="font-display text-xl text-gold">Editar Movimento #{mov.id}</DialogTitle>
-      </DialogHeader>
-      <div className="space-y-4 pt-2">
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Artigo</label>
-          <p className="text-sm font-medium">{mov.artigoNome}</p>
-        </div>
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Tipo</label>
-          <Select value={tipo} onValueChange={setTipo}>
-            <SelectTrigger className="bg-input border-border h-9">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover border-border">
-              {Object.entries(TIPOS).map(([k, v]) => (
-                <SelectItem key={k} value={k}>{v}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Quantidade ({mov.artigoUnidade})</label>
-            <Input type="number" step="any" value={quantidade} onChange={e => setQuantidade(e.target.value)}
-              className="bg-input border-border" />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">
-              Custo unit. (€/{mov.artigoUnidade === "g" ? "kg→g" : mov.artigoUnidade === "ml" ? "l→ml" : mov.artigoUnidade})
-            </label>
-            <Input type="number" step="any" min="0" value={custo} onChange={e => setCusto(e.target.value)}
-              className="bg-input border-border" />
-            <p className="text-xs text-muted-foreground mt-1">
-              Valor em €/{mov.artigoUnidade} (ex: 0.004200 para 4,20€/kg)
-            </p>
-          </div>
-        </div>
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Motivo / Observação</label>
-          <Input value={motivo} onChange={e => setMotivo(e.target.value)}
-            placeholder="Motivo da correcção…" className="bg-input border-border" />
-        </div>
-        <div className="flex gap-2 pt-2">
-          <Button variant="outline" className="flex-1 border-border" onClick={onClose}>
-            <X className="w-4 h-4 mr-1" /> Cancelar
-          </Button>
-          <Button
-            className="flex-1 bg-primary text-primary-foreground"
-            disabled={editar.isPending}
-            onClick={() => editar.mutate({
-              id: mov.id,
-              quantidade: parseFloat(quantidade),
-              custoUnitario: parseFloat(custo),
-              motivo: motivo || undefined,
-              tipo: tipo as any,
-            })}
-          >
-            {editar.isPending ? "A guardar…" : <><Check className="w-4 h-4 mr-1" /> Guardar</>}
-          </Button>
-        </div>
-      </div>
-    </DialogContent>
-  );
-}
 
 export default function Movimentos() {
   const { user } = useAuth();
   const [tipo, setTipo] = useState("todos");
-  const [editMov, setEditMov] = useState<MovItem | null>(null);
-  const [deleteMov, setDeleteMov] = useState<MovItem | null>(null);
+  const [estornoMov, setEstornoMov] = useState<MovItem | null>(null);
+  const [motivoEstorno, setMotivoEstorno] = useState("");
   const utils = trpc.useUtils();
 
   const { data, isLoading } = trpc.movimentos.listar.useQuery({
@@ -131,13 +49,14 @@ export default function Movimentos() {
     limite: 200,
   });
 
-  const eliminar = trpc.movimentos.eliminar.useMutation({
+  const estornar = trpc.movimentos.estornar.useMutation({
     onSuccess: () => {
-      toast.success("Movimento eliminado");
+      toast.success("Movimento estornado com registo de auditoria");
       utils.movimentos.listar.invalidate();
       utils.artigos.listar.invalidate();
       utils.dashboard.resumo.invalidate();
-      setDeleteMov(null);
+      setEstornoMov(null);
+      setMotivoEstorno("");
     },
     onError: (e) => toast.error(e.message),
   });
@@ -162,7 +81,7 @@ export default function Movimentos() {
 
       {canEdit && (
         <p className="text-xs text-warning bg-warning/10 border border-warning/20 rounded px-3 py-2">
-          ⚠️ Tens permissão para editar e eliminar movimentos. Estas acções afectam directamente o stock calculado e não podem ser desfeitas.
+          O livro é imutável: movimentos confirmados não são editados nem eliminados. Usa estorno com motivo para criar o movimento inverso auditável.
         </p>
       )}
 
@@ -185,7 +104,7 @@ export default function Movimentos() {
             </thead>
             <tbody>
               {data!.items.map(m => (
-                <tr key={m.id} className="border-b border-border hover:bg-secondary/30 group">
+                <tr key={m.id} className={cn("border-b border-border hover:bg-secondary/30 group", m.anuladoEm && "opacity-55")}>
                   <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">{format(new Date(m.dataMovimento), "dd/MM/yy HH:mm")}</td>
                   <td className="px-4 py-2.5 font-medium">{m.artigoNome}</td>
                   <td className="px-4 py-2.5 text-xs text-muted-foreground">{TIPOS[m.tipo] ?? m.tipo}</td>
@@ -200,18 +119,18 @@ export default function Movimentos() {
                       : `${parseFloat(m.custoUnitario).toFixed(4)} €/un`}
                   </td>
                   <td className="px-4 py-2.5 font-mono">{m.stockApos != null ? parseFloat(m.stockApos).toFixed(1) : "—"}</td>
-                  <td className="px-4 py-2.5 text-xs text-muted-foreground max-w-[180px] truncate">{m.motivo ?? m.documentoId ?? "—"}</td>
+                  <td className="px-4 py-2.5 text-xs text-muted-foreground max-w-[180px] truncate">
+                    {m.anuladoEm ? `Estornado · ${m.motivo ?? ""}` : (m.motivo ?? m.documentoId ?? "—")}
+                  </td>
                   {canEdit && (
                     <td className="px-4 py-2.5">
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-gold"
-                          onClick={() => setEditMov(m as any)}>
-                          <Pencil className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-danger"
-                          onClick={() => setDeleteMov(m as any)}>
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
+                        {!m.anuladoEm && m.documentoTipo !== "estorno" && (
+                          <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-warning"
+                            title="Estornar movimento" onClick={() => setEstornoMov(m as any)}>
+                            <Undo2 className="w-3.5 h-3.5" />
+                          </Button>
+                        )}
                       </div>
                     </td>
                   )}
@@ -222,30 +141,27 @@ export default function Movimentos() {
         </div>
       )}
 
-      {/* Edit dialog */}
-      <Dialog open={!!editMov} onOpenChange={open => { if (!open) setEditMov(null); }}>
-        {editMov && <EditDialog mov={editMov} onClose={() => setEditMov(null)} />}
-      </Dialog>
-
-      {/* Delete confirmation */}
-      <AlertDialog open={!!deleteMov} onOpenChange={open => { if (!open) setDeleteMov(null); }}>
+      <AlertDialog open={!!estornoMov} onOpenChange={open => { if (!open) setEstornoMov(null); }}>
         <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gold font-display">Eliminar Movimento?</AlertDialogTitle>
+            <AlertDialogTitle className="text-gold font-display">Estornar Movimento?</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
-              Vais eliminar o movimento <strong className="text-foreground">#{deleteMov?.id}</strong> de{" "}
-              <strong className="text-foreground">{deleteMov?.artigoNome}</strong> ({parseFloat(deleteMov?.quantidade ?? "0").toFixed(1)} {deleteMov?.artigoUnidade}).
+              Vais criar um movimento inverso para <strong className="text-foreground">#{estornoMov?.id}</strong> de{" "}
+              <strong className="text-foreground">{estornoMov?.artigoNome}</strong> ({parseFloat(estornoMov?.quantidade ?? "0").toFixed(1)} {estornoMov?.artigoUnidade}).
               <br /><br />
-              <span className="text-warning">⚠️ Esta acção não pode ser desfeita. O stock calculado será afectado.</span>
+              <span className="text-warning">O original será preservado e marcado como estornado.</span>
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <Input value={motivoEstorno} onChange={event => setMotivoEstorno(event.target.value)}
+            placeholder="Motivo obrigatório do estorno" className="bg-input border-border" />
           <AlertDialogFooter>
             <AlertDialogCancel className="border-border">Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-danger text-white hover:bg-danger/90"
-              onClick={() => deleteMov && eliminar.mutate({ id: deleteMov.id })}
+              className="bg-warning text-black hover:bg-warning/90"
+              disabled={motivoEstorno.trim().length < 3 || estornar.isPending}
+              onClick={() => estornoMov && estornar.mutate({ id: estornoMov.id, motivo: motivoEstorno.trim() })}
             >
-              Eliminar
+              {estornar.isPending ? "A estornar…" : "Confirmar estorno"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

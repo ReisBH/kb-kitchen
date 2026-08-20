@@ -186,10 +186,13 @@ export const testesRendimento = mysqlTable("testes_rendimento", {
   // Referência ao par de movimentos de transformação
   movimentoSaidaId: int("movimentoSaidaId"),
   movimentoEntradaId: int("movimentoEntradaId"),
+  // Chave idempotente da operação de rendimento enviada pelo cliente
+  idCliente: varchar("idCliente", { length: 64 }).unique(),
   utilizadorId: int("utilizadorId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (t) => [
   index("testes_artigo_idx").on(t.artigoId),
+  index("testes_idcliente_idx").on(t.idCliente),
 ]);
 export type TesteRendimento = typeof testesRendimento.$inferSelect;
 export type InsertTesteRendimento = typeof testesRendimento.$inferInsert;

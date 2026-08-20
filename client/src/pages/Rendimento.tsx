@@ -25,6 +25,7 @@ type FormValues = {
 export default function Rendimento() {
   const [showForm, setShowForm] = useState(true);
   const [showComparador, setShowComparador] = useState(false);
+  const [idCliente, setIdCliente] = useState(() => crypto.randomUUID());
   const utils = trpc.useUtils();
   const { data: artigos } = trpc.artigos.listar.useQuery({ tipo: "ingrediente" });
   const { data: artigosLimpos, isLoading: artigosLimposACarregar } = trpc.artigos.listar.useQuery({ tipo: "proteina_limpa" });
@@ -39,6 +40,7 @@ export default function Rendimento() {
       );
       utils.rendimento.listar.invalidate();
       reset();
+      setIdCliente(crypto.randomUUID());
       setShowForm(false);
     },
     onError: (e) => toast.error(e.message),
@@ -105,6 +107,7 @@ export default function Rendimento() {
       valorAparas: 0,
       pesoDesperdicio: 0,
       criarMovimentos: true,
+      idCliente,
     });
   }
 

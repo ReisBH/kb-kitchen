@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { eq, and, desc, gte, lte, sql } from "drizzle-orm";
+import { eq, and, desc, gte, lte, isNull, sql } from "drizzle-orm";
 import { protectedProcedure, roleProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { movimentos, artigos } from "../../drizzle/schema";
-import { registarMovimento } from "../engine/stock";
+import { criarDadosEstorno, registarMovimento } from "../engine/stock";
 
 export const movimentosRouter = router({
   listar: protectedProcedure
@@ -111,43 +111,45 @@ export const movimentosRouter = router({
       return result;
     }),
 
-  // ─── Editar movimento (Admin e Head Chef) ────────────────────────────────────
-  editar: roleProcedure(["head_chef"])
-    .input(z.object({
-      id: z.number(),
-      quantidade: z.number().optional(),
-      custoUnitario: z.number().nonnegative().optional(),
-      motivo: z.string().optional(),
-      tipo: z.enum([
-        "entrada_compra", "producao_consumo", "producao_entrada",
-        "venda_consumo", "quebra", "transformacao_saida",
-        "transformacao_entrada", "ajuste_inventario",
-      ]).optional(),
-    }))
-    .mutation(async ({ input }) => {
+  // ─── Estornar movimento (Admin e Head Chef) ───────────────────────────────────
+  estornar: roleProcedure(["head_chef"])
+    .input(z.object({ id: z.number(), motivo: z.string().min(3, "Indica o motivo do estorno") }))
+    .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
-      const [mov] = await db.select().from(movimentos).where(eq(movimentos.id, input.id)).limit(1);
-      if (!mov) throw new Error("Movimento não encontrado");
-      const updates: Record<string, unknown> = {};
-      if (input.quantidade !== undefined) updates.quantidade = input.quantidade.toFixed(3);
-      if (input.custoUnitario !== undefined) updates.custoUnitario = input.custoUnitario.toFixed(6);
-      if (input.motivo !== undefined) updates.motivo = input.motivo;
-      if (input.tipo !== undefined) updates.tipo = input.tipo;
-      if (Object.keys(updates).length === 0) return { success: true };
-      await db.update(movimentos).set(updates as any).where(eq(movimentos.id, input.id));
-      return { success: true };
-    }),
 
-  // ─── Eliminar movimento (Admin e Head Chef) ───────────────────────────────────
-  eliminar: roleProcedure(["head_chef"])
-    .input(z.object({ id: z.number() }))
-    .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Base de dados não disponível");
-      const [mov] = await db.select().from(movimentos).where(eq(movimentos.id, input.id)).limit(1);
-      if (!mov) throw new Error("Movimento não encontrado");
-      await db.delete(movimentos).where(eq(movimentos.id, input.id));
-      return { success: true };
+      return db.transaction(async (tx) => {
+        const [mov] = await tx.select().from(movimentos).where(eq(movimentos.id, input.id)).limit(1);
+        if (!mov) throw new Error("Movimento não encontrado");
+        if (mov.anuladoEm) throw new Error("Este movimento já foi estornado");
+        if (mov.documentoTipo === "estorno") throw new Error("Um movimento de estorno não pode ser estornado diretamente");
+
+        // Reserva a anulação antes de criar o inverso; a transação impede estornos duplicados.
+        const reserva = await tx.update(movimentos)
+          .set({ anuladoEm: new Date() } as any)
+          .where(and(eq(movimentos.id, mov.id), isNull(movimentos.anuladoEm)));
+        if ((reserva as any)[0]?.affectedRows !== 1) {
+          throw new Error("O movimento foi estornado por outra operação");
+        }
+
+        const dadosEstorno = criarDadosEstorno(parseFloat(mov.quantidade), parseFloat(mov.custoUnitario));
+        const inverso = await registarMovimento({
+          artigoId: mov.artigoId,
+          tipo: mov.tipo as any,
+          quantidade: dadosEstorno.quantidade,
+          custoUnitario: dadosEstorno.custoUnitario,
+          documentoId: `estorno_${mov.id}`,
+          documentoTipo: "estorno",
+          motivo: `Estorno do movimento #${mov.id}: ${input.motivo}`,
+          utilizadorId: ctx.user?.id,
+          origem: "sistema",
+        }, tx as any);
+
+        await tx.update(movimentos)
+          .set({ anuladoPorMovimentoId: inverso.movimentoId } as any)
+          .where(eq(movimentos.id, mov.id));
+
+        return { success: true, movimentoEstornoId: inverso.movimentoId };
+      });
     }),
 });
