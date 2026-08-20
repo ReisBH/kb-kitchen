@@ -10,6 +10,7 @@ import { registerLocalAuthRoutes } from "../localAuth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { executarSupervisaoDiaria } from "../scheduled/supervisao";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -40,6 +41,7 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerLocalAuthRoutes(app);
+  app.post("/api/scheduled/supervisao-diaria", executarSupervisaoDiaria);
   // tRPC API
   app.use(
     "/api/trpc",

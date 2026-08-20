@@ -7,6 +7,7 @@ import { artigos, receitasBaseComponentes, producoes, lotes, aprovacoesOperacion
 import { calcularCustoNos, detetarCiclo, explodirReceita } from "../engine/explosao";
 import { registarMovimento, calcularStock, converterParaUnidadeBase } from "../engine/stock";
 import { gerarCodigoLoteSync } from "../utils/codigoCurto";
+import { notificarAprovacaoPendente } from "../services/supervisao";
 
 const METODOS_CONSERVACAO = ["vacuo", "refrigerado", "congelado", "ambiente"] as const;
 
@@ -212,7 +213,7 @@ export const receitasRouter = router({
       const nos = await explodirReceita(input.receitaId, input.quantidadeProduzida);
       const custoPrevisto = nos.reduce((total, no) => total + no.custoTotal, 0);
       const dataValidade = receita.validadeProducaoDias == null ? null : new Date(Date.now() + Number(receita.validadeProducaoDias) * 86400000).toISOString().slice(0, 10);
-      return db.transaction(async (tx) => {
+      const pedido = await db.transaction(async (tx) => {
         const [r] = await tx.insert(producoes).values({
           receitaId: input.receitaId,
           estado: "pendente_aprovacao",
@@ -231,6 +232,8 @@ export const receitasRouter = router({
         await tx.insert(aprovacoesOperacionais).values({ tipo: "producao", entidadeId: producaoId, estado: "pendente", solicitadoPor: ctx.user!.id, motivo: input.notas ?? null } as any);
         return { id: producaoId, estado: "pendente_aprovacao" as const, custoLote: custoPrevisto, desvioPct, idempotente: false };
       });
+      await notificarAprovacaoPendente(db, { tipo: "producao", entidadeId: pedido.id, nome: receita.nome });
+      return pedido;
     }),
 
   listarAprovacoesPendentes: roleProcedure(["head_chef"])

@@ -6,7 +6,8 @@ import { getDb } from '../db';
 import {
   artigos, movimentos, lotes, regrasValidade, sessoesPinQr, users, credenciaisLocais,
 } from '../../drizzle/schema';
-import { gerarCodigoCurtoSync, gerarCodigoLoteSync } from '../utils/codigoCurto';
+import { gerarCodigoCurtoSync, gerarCodigoLoteSync } from "../utils/codigoCurto";
+import { obterConfiguracaoSupervisao } from "../services/supervisao";
 import { createHash, randomBytes } from 'crypto';
 import bcrypt from 'bcryptjs';
 import { registarMovimento, calcularStock } from '../engine/stock';
@@ -432,7 +433,9 @@ export const qrRouter = router({
     if (!db) return { expirados: [], aExpirar48h: [] };
 
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-    const em48h = new Date(hoje.getTime() + 48 * 60 * 60 * 1000);
+    const configuracao = await obterConfiguracaoSupervisao(db);
+    const diasAlerta = Math.max(1, Number(configuracao.alertaValidadeDias));
+    const em48h = new Date(hoje.getTime() + diasAlerta * 24 * 60 * 60 * 1000);
 
     const expirados = await db.select({
       id: lotes.id, codigoLote: lotes.codigoLote, dataValidade: lotes.dataValidade,
@@ -462,6 +465,7 @@ export const qrRouter = router({
     return {
       expirados: expirados.map(r => ({ ...r, diasRestantes: r.dataValidade ? Math.floor((new Date(r.dataValidade).getTime() - hoje.getTime()) / 86400000) : null })),
       aExpirar48h: aExpirar.map(r => ({ ...r, diasRestantes: r.dataValidade ? Math.floor((new Date(r.dataValidade).getTime() - hoje.getTime()) / 86400000) : null })),
+      diasAlerta,
     };
   }),
 });

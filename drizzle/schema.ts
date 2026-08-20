@@ -262,6 +262,50 @@ export const aprovacoesOperacionais = mysqlTable("aprovacoes_operacionais", {
 export type AprovacaoOperacional = typeof aprovacoesOperacionais.$inferSelect;
 export type InsertAprovacaoOperacional = typeof aprovacoesOperacionais.$inferInsert;
 
+// ─── SUPERVISÃO OPERACIONAL ────────────────────────────────────────────────────
+// Configuração única para que as chefias possam ajustar limites sem alterar código.
+export const configuracoesSupervisao = mysqlTable("configuracoes_supervisao", {
+  id: int("id").autoincrement().primaryKey(),
+  desvioInventarioCriticoPct: decimal("desvioInventarioCriticoPct", { precision: 6, scale: 3 }).default("5.000").notNull(),
+  alertaValidadeDias: int("alertaValidadeDias").default(2).notNull(),
+  relatorioHoraLisboa: varchar("relatorioHoraLisboa", { length: 5 }).default("08:00").notNull(),
+  scheduleCronTaskUid: varchar("schedule_cron_task_uid", { length: 65 }),
+  ativo: boolean("ativo").default(true).notNull(),
+  atualizadoPor: int("atualizadoPor"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (t) => [index("supervisao_schedule_idx").on(t.scheduleCronTaskUid)]);
+export type ConfiguracaoSupervisao = typeof configuracoesSupervisao.$inferSelect;
+
+export const notificacoesOperacionais = mysqlTable("notificacoes_operacionais", {
+  id: int("id").autoincrement().primaryKey(),
+  utilizadorId: int("utilizadorId").notNull(),
+  tipo: mysqlEnum("tipo", ["aprovacao_pendente", "validade_proxima", "lote_expirado", "relatorio_diario"]).notNull(),
+  severidade: mysqlEnum("severidade", ["informacao", "atencao", "critica"]).default("informacao").notNull(),
+  titulo: varchar("titulo", { length: 255 }).notNull(),
+  mensagem: text("mensagem").notNull(),
+  url: varchar("url", { length: 255 }),
+  chaveDedupe: varchar("chaveDedupe", { length: 120 }).notNull(),
+  lidaEm: timestamp("lidaEm"),
+  emailEnviadoEm: timestamp("emailEnviadoEm"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (t) => [
+  uniqueIndex("notificacao_dedupe_idx").on(t.utilizadorId, t.chaveDedupe),
+  index("notificacao_utilizador_idx").on(t.utilizadorId),
+  index("notificacao_lida_idx").on(t.lidaEm),
+]);
+export type NotificacaoOperacional = typeof notificacoesOperacionais.$inferSelect;
+
+export const relatoriosOperacionais = mysqlTable("relatorios_operacionais", {
+  id: int("id").autoincrement().primaryKey(),
+  tipo: mysqlEnum("tipo", ["diario_validade_desperdicio"]).notNull(),
+  dataReferencia: date("dataReferencia").notNull(),
+  conteudo: text("conteudo").notNull(),
+  enviadoEm: timestamp("enviadoEm"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (t) => [uniqueIndex("relatorio_tipo_data_idx").on(t.tipo, t.dataReferencia)]);
+export type RelatorioOperacional = typeof relatoriosOperacionais.$inferSelect;
+
 // ─── FICHAS TÉCNICAS ──────────────────────────────────────────────────────────
 export const fichasTecnicas = mysqlTable("fichas_tecnicas", {
   id: int("id").autoincrement().primaryKey(),

@@ -4,9 +4,11 @@ import { protectedProcedure, router, roleProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { inventarios, inventarioLinhas, artigos, aprovacoesOperacionais } from "../../drizzle/schema";
 import { calcularStock, calcularStockMultiplos, registarMovimento } from "../engine/stock";
+import { notificarAprovacaoPendente } from "../services/supervisao";
+import { obterConfiguracaoSupervisao } from "../services/supervisao";
 
-export function requerAprovacaoInventario(linhas: Array<{ desvioPct: string | null; desvioQtd: string | null }>) {
-  return linhas.some((linha) => Math.abs(parseFloat(linha.desvioPct ?? "0")) > 5 && Math.abs(parseFloat(linha.desvioQtd ?? "0")) > 0.001);
+export function requerAprovacaoInventario(linhas: Array<{ desvioPct: string | null; desvioQtd: string | null }>, limiarPct = 5) {
+  return linhas.some((linha) => Math.abs(parseFloat(linha.desvioPct ?? "0")) > limiarPct && Math.abs(parseFloat(linha.desvioQtd ?? "0")) > 0.001);
 }
 
 export const inventarioRouter = router({
@@ -105,13 +107,16 @@ export const inventarioRouter = router({
       if (inventarioAtual.estado === "fechado") return { success: true, duplicado: true, pendenteAprovacao: false };
       if (inventarioAtual.estado === "pendente_aprovacao") return { success: true, duplicado: true, pendenteAprovacao: true };
       const contagens = await db.select().from(inventarioLinhas).where(and(eq(inventarioLinhas.inventarioId, input.inventarioId), sql`${inventarioLinhas.stockReal} IS NOT NULL`));
-      const temDesvioCritico = requerAprovacaoInventario(contagens);
+      const configuracao = await obterConfiguracaoSupervisao(db);
+      const limiarPct = Number(configuracao.desvioInventarioCriticoPct);
+      const temDesvioCritico = requerAprovacaoInventario(contagens, limiarPct);
       if (temDesvioCritico) {
         await db.transaction(async (tx) => {
           await tx.update(inventarios).set({ estado: "pendente_aprovacao" }).where(eq(inventarios.id, input.inventarioId));
-          await tx.insert(aprovacoesOperacionais).values({ tipo: "inventario", entidadeId: input.inventarioId, estado: "pendente", solicitadoPor: ctx.user!.id, motivo: "Inventário com desvio superior a 5%; requer segunda aprovação antes de ajustar stock." } as any)
-            .onDuplicateKeyUpdate({ set: { estado: "pendente", solicitadoPor: ctx.user!.id, motivo: "Inventário reenviado com desvio crítico para aprovação.", decididoPor: null, decisaoMotivo: null, decididoEm: null } });
+          await tx.insert(aprovacoesOperacionais).values({ tipo: "inventario", entidadeId: input.inventarioId, estado: "pendente", solicitadoPor: ctx.user!.id, motivo: `Inventário com desvio superior a ${limiarPct.toLocaleString("pt-PT")}%; requer segunda aprovação antes de ajustar stock.` } as any)
+            .onDuplicateKeyUpdate({ set: { estado: "pendente", solicitadoPor: ctx.user!.id, motivo: `Inventário reenviado com desvio crítico acima de ${limiarPct.toLocaleString("pt-PT")}%.`, decididoPor: null, decisaoMotivo: null, decididoEm: null } });
         });
+        await notificarAprovacaoPendente(db, { tipo: "inventario", entidadeId: input.inventarioId, nome: inventarioAtual.nome ?? `Inventário #${input.inventarioId}` });
         return { success: true, duplicado: false, pendenteAprovacao: true };
       }
       return db.transaction(async (tx) => {
@@ -190,11 +195,13 @@ export const inventarioRouter = router({
           eq(inventarioLinhas.inventarioId, input.inventarioId),
           sql`${inventarioLinhas.stockReal} IS NOT NULL`
         ));
+      const configuracao = await obterConfiguracaoSupervisao(db);
+      const limiarPct = Number(configuracao.desvioInventarioCriticoPct);
       const desviosSignificativos = linhas
         .filter(l => {
           const pct = Math.abs(parseFloat(l.linha.desvioPct ?? "0"));
           const qtd = Math.abs(parseFloat(l.linha.desvioQtd ?? "0"));
-          return pct > 5 && qtd > 0.001;
+          return pct > limiarPct && qtd > 0.001;
         })
         .map(l => ({
           artigoId: l.linha.artigoId,
@@ -210,6 +217,7 @@ export const inventarioRouter = router({
       return {
         desvios: desviosSignificativos,
         temDesviosSignificativos: desviosSignificativos.length > 0,
+        limiarPct,
       };
     }),
 

@@ -15,6 +15,7 @@ import { dashboardRouter } from "./routers/dashboard";
 import { uploadRouter } from "./routers/upload";
 import { utilizadoresRouter } from "./routers/utilizadores";
 import { qrRouter } from "./routers/qr";
+import { supervisaoRouter } from "./routers/supervisao";
 
 export const appRouter = router({
   system: systemRouter,
@@ -39,6 +40,7 @@ export const appRouter = router({
   upload: uploadRouter,
   utilizadores: utilizadoresRouter,
   qr: qrRouter,
+  supervisao: supervisaoRouter,
 });
 
 export type AppRouter = typeof appRouter;
