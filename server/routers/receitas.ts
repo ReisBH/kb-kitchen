@@ -290,7 +290,7 @@ export const receitasRouter = router({
         await registarMovimento({ artigoId: producao.receitaId, loteId, tipo: "producao_entrada", quantidade: Number(producao.quantidadeProduzida), custoUnitario, documentoId, documentoTipo: "producao", motivo: `Entrada do lote ${codigoLote}`, utilizadorId: ctx.user!.id, origem: "producao", idCliente: `producao-${producao.id}-entrada` }, tx as any);
         await tx.update(producoes).set({ estado: "aprovada", loteId, custoLote: custoLote.toFixed(4) }).where(eq(producoes.id, producao.id));
         await tx.update(aprovacoesOperacionais).set({ estado: "aprovada", decididoPor: ctx.user!.id, decisaoMotivo: input.motivo ?? null, decididoEm: new Date() }).where(eq(aprovacoesOperacionais.id, aprovacao.id));
-        return { success: true, estado: "aprovada" as const, loteId, codigoLote, custoLote };
+        return { success: true, estado: "aprovada" as const, loteId, codigoLote, custoLote, etiqueta: { codigoLote, nomeProduto: receita.nome, quantidadeProduzida: Number(producao.quantidadeProduzida), unidade: receita.unidadeBase, dataProducao: new Date(), dataValidade: producao.dataValidade, metodoConservacao: producao.metodoConservacao } };
       });
     }),
 

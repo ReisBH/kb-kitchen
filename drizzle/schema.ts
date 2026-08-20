@@ -343,7 +343,7 @@ export const inventarios = mysqlTable("inventarios", {
   id: int("id").autoincrement().primaryKey(),
   nome: varchar("nome", { length: 255 }),
   zona: varchar("zona", { length: 100 }),
-  estado: mysqlEnum("estado", ["em_curso", "fechado"]).default("em_curso").notNull(),
+  estado: mysqlEnum("estado", ["em_curso", "pendente_aprovacao", "fechado"]).default("em_curso").notNull(),
   // Evita abrir duas vezes a mesma sessão de inventário após reenvio do cliente.
   idCliente: varchar("idCliente", { length: 64 }).unique(),
   utilizadorId: int("utilizadorId"),

@@ -36,7 +36,7 @@ export default function Inventario() {
     onError: (e) => toast.error(e.message),
   });
   const fechar = trpc.inventario.fechar.useMutation({
-    onSuccess: () => { toast.success("Inventário fechado. Ajustes de stock aplicados."); utils.inventario.listar.invalidate(); setActiveId(null); setShowDesviosDialog(false); },
+    onSuccess: (resultado) => { toast.success(resultado.pendenteAprovacao ? "Inventário enviado para aprovação. Nenhum ajuste foi aplicado." : "Inventário fechado. Ajustes de stock aplicados."); utils.inventario.listar.invalidate(); setActiveId(null); setShowDesviosDialog(false); },
     onError: (e) => toast.error(e.message),
   });
   const editar = trpc.inventario.editar.useMutation({
@@ -104,8 +104,8 @@ export default function Inventario() {
                   if (linhas.length > 0) registar.mutate({ inventarioId: activeId, linhas });
                   else toast.info("Sem contagens para guardar");
                 }}>Guardar Contagens</Button>
-                <Button size="sm" className="bg-primary text-primary-foreground h-8 text-xs gap-1" onClick={handleFechar} disabled={fechar.isPending}>
-                  <Lock className="w-3 h-3" /> Fechar Inventário
+                <Button size="sm" className="bg-primary text-primary-foreground h-8 text-xs gap-1" onClick={handleFechar} disabled={fechar.isPending || invAtivo.estado === "pendente_aprovacao"}>
+                  <Lock className="w-3 h-3" /> {invAtivo.estado === "pendente_aprovacao" ? "Pendente de Aprovação" : "Fechar Inventário"}
                 </Button>
               </div>
             </div>
@@ -288,7 +288,7 @@ export default function Inventario() {
               <div className="space-y-3">
                 <p className="text-muted-foreground text-sm">
                   Os seguintes artigos apresentam desvios superiores a <strong className="text-warning">5%</strong> face ao stock teórico.
-                  Confirma se pretendes fechar o inventário e aplicar estes ajustes de stock.
+                  O inventário será enviado para aprovação de uma segunda chefia. Os ajustes de stock só são aplicados após essa decisão.
                 </p>
                 <div className="max-h-64 overflow-y-auto rounded border border-border">
                   <table className="w-full text-xs tabular-nums">
@@ -331,10 +331,10 @@ export default function Inventario() {
           <AlertDialogFooter>
             <AlertDialogCancel className="border-border">Rever Contagens</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-danger text-white hover:bg-danger/90"
+              className="bg-primary text-primary-foreground"
               onClick={() => { setShowDesviosDialog(false); if (activeId) fechar.mutate({ inventarioId: activeId }); }}
             >
-              Confirmar e Fechar Inventário
+              Enviar para Aprovação
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

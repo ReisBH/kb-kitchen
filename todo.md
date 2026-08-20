@@ -193,3 +193,8 @@
 - [x] Estabilização 3: criar produções por lote com movimentos de saída de componentes e entrada do produto produzido
 - [x] Estabilização 3: implementar pedidos, decisão e auditoria de aprovação em dois níveis para operações sensíveis
 - [x] Estabilização 3: validar, documentar e publicar o terceiro marco
+- [x] Estabilização 4: mapear critérios de inventário crítico, alertas de validade e etiqueta de lote existentes
+- [x] Estabilização 4: enviar inventários críticos para aprovação de segundo utilizador antes de criar ajustes
+- [x] Estabilização 4: tornar os alertas de lote próximo da validade acionáveis e rastreáveis
+- [x] Estabilização 4: disponibilizar impressão de etiqueta após aprovação da produção por lote
+- [x] Estabilização 4: validar, documentar e publicar o quarto marco

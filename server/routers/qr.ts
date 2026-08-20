@@ -320,8 +320,8 @@ export const qrRouter = router({
       });
     }),
 
-  descartarLote: protectedProcedure
-    .input(z.object({ codigoLote: z.string(), motivo: z.string().optional() }))
+  descartarLote: roleProcedure(['head_chef'])
+    .input(z.object({ codigoLote: z.string(), motivo: z.string().trim().min(3).max(500) }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
@@ -334,10 +334,10 @@ export const qrRouter = router({
         if (lote.artigoId && restante > 0) {
           const [artigo] = await tx.select().from(artigos).where(eq(artigos.id, lote.artigoId)).limit(1);
           if (!artigo) throw new TRPCError({ code: 'NOT_FOUND', message: 'Artigo do lote não encontrado.' });
-          const movimento = await registarMovimento({ artigoId: lote.artigoId, loteId: lote.id, tipo: 'quebra', quantidade: -restante, custoUnitario: Number(artigo.custoMedioPonderado ?? 0), documentoId: `lote_${lote.codigoLote}`, documentoTipo: 'lote', motivo: `Descarte do lote ${lote.codigoLote}: ${input.motivo ?? 'Sem motivo'}`, origem: 'sistema', idCliente: `lote-descartar-${lote.id}`, utilizadorId: ctx.user?.id }, tx as any);
+          const movimento = await registarMovimento({ artigoId: lote.artigoId, loteId: lote.id, tipo: 'quebra', quantidade: -restante, custoUnitario: Number(artigo.custoMedioPonderado ?? 0), documentoId: `lote_${lote.codigoLote}`, documentoTipo: 'lote', motivo: `Descarte do lote ${lote.codigoLote}: ${input.motivo}`, origem: 'sistema', idCliente: `lote-descartar-${lote.id}`, utilizadorId: ctx.user?.id }, tx as any);
           movimentoId = movimento.movimentoId;
         }
-        await tx.update(lotes).set({ estado: 'descartado', quantidadeRestante: '0.000', notas: (lote.notas ?? '') + ` | Descartado: ${input.motivo ?? 'Sem motivo'}` } as any).where(eq(lotes.id, lote.id));
+        await tx.update(lotes).set({ estado: 'descartado', quantidadeRestante: '0.000', notas: (lote.notas ?? '') + ` | Descartado: ${input.motivo}` } as any).where(eq(lotes.id, lote.id));
         return { success: true, duplicado: false, movimentoId };
       });
     }),

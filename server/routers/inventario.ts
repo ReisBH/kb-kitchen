@@ -2,8 +2,12 @@ import { z } from "zod";
 import { eq, and, isNull, sql } from "drizzle-orm";
 import { protectedProcedure, router, roleProcedure } from "../_core/trpc";
 import { getDb } from "../db";
-import { inventarios, inventarioLinhas, artigos } from "../../drizzle/schema";
+import { inventarios, inventarioLinhas, artigos, aprovacoesOperacionais } from "../../drizzle/schema";
 import { calcularStock, calcularStockMultiplos, registarMovimento } from "../engine/stock";
+
+export function requerAprovacaoInventario(linhas: Array<{ desvioPct: string | null; desvioQtd: string | null }>) {
+  return linhas.some((linha) => Math.abs(parseFloat(linha.desvioPct ?? "0")) > 5 && Math.abs(parseFloat(linha.desvioQtd ?? "0")) > 0.001);
+}
 
 export const inventarioRouter = router({
   listar: protectedProcedure.query(async () => {
@@ -96,6 +100,20 @@ export const inventarioRouter = router({
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new Error("Base de dados não disponível");
+      const [inventarioAtual] = await db.select().from(inventarios).where(eq(inventarios.id, input.inventarioId)).limit(1);
+      if (!inventarioAtual) throw new Error("Inventário não encontrado");
+      if (inventarioAtual.estado === "fechado") return { success: true, duplicado: true, pendenteAprovacao: false };
+      if (inventarioAtual.estado === "pendente_aprovacao") return { success: true, duplicado: true, pendenteAprovacao: true };
+      const contagens = await db.select().from(inventarioLinhas).where(and(eq(inventarioLinhas.inventarioId, input.inventarioId), sql`${inventarioLinhas.stockReal} IS NOT NULL`));
+      const temDesvioCritico = requerAprovacaoInventario(contagens);
+      if (temDesvioCritico) {
+        await db.transaction(async (tx) => {
+          await tx.update(inventarios).set({ estado: "pendente_aprovacao" }).where(eq(inventarios.id, input.inventarioId));
+          await tx.insert(aprovacoesOperacionais).values({ tipo: "inventario", entidadeId: input.inventarioId, estado: "pendente", solicitadoPor: ctx.user!.id, motivo: "Inventário com desvio superior a 5%; requer segunda aprovação antes de ajustar stock." } as any)
+            .onDuplicateKeyUpdate({ set: { estado: "pendente", solicitadoPor: ctx.user!.id, motivo: "Inventário reenviado com desvio crítico para aprovação.", decididoPor: null, decisaoMotivo: null, decididoEm: null } });
+        });
+        return { success: true, duplicado: false, pendenteAprovacao: true };
+      }
       return db.transaction(async (tx) => {
         const [inventario] = await tx.select().from(inventarios).where(eq(inventarios.id, input.inventarioId)).limit(1);
         if (!inventario) throw new Error("Inventário não encontrado");
@@ -111,7 +129,48 @@ export const inventarioRouter = router({
           await tx.update(inventarioLinhas).set({ ajusteMovimentoId: movimentoId }).where(eq(inventarioLinhas.id, linha.id));
         }
         await tx.update(inventarios).set({ estado: "fechado", fechadoEm: new Date() }).where(eq(inventarios.id, input.inventarioId));
-        return { success: true, duplicado: false };
+        return { success: true, duplicado: false, pendenteAprovacao: false };
+      });
+    }),
+
+  listarAprovacoesPendentes: roleProcedure(["head_chef"])
+    .query(async () => {
+      const db = await getDb();
+      if (!db) return [];
+      return db.select({ aprovacao: aprovacoesOperacionais, inventario: inventarios })
+        .from(aprovacoesOperacionais)
+        .innerJoin(inventarios, and(eq(aprovacoesOperacionais.tipo, "inventario"), eq(aprovacoesOperacionais.entidadeId, inventarios.id)))
+        .where(eq(aprovacoesOperacionais.estado, "pendente"));
+    }),
+
+  decidirAprovacao: roleProcedure(["head_chef"])
+    .input(z.object({ inventarioId: z.number(), aprovar: z.boolean(), motivo: z.string().max(1000).optional() }))
+    .mutation(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      return db.transaction(async (tx) => {
+        const [aprovacao] = await tx.select().from(aprovacoesOperacionais).where(and(eq(aprovacoesOperacionais.tipo, "inventario"), eq(aprovacoesOperacionais.entidadeId, input.inventarioId))).limit(1);
+        if (!aprovacao || aprovacao.estado !== "pendente") throw new Error("Este inventário não tem aprovação pendente.");
+        if (aprovacao.solicitadoPor === ctx.user!.id) throw new Error("O solicitante não pode aprovar o próprio inventário.");
+        const [inventario] = await tx.select().from(inventarios).where(eq(inventarios.id, input.inventarioId)).limit(1);
+        if (!inventario || inventario.estado !== "pendente_aprovacao") throw new Error("O inventário já não está pendente de aprovação.");
+        if (!input.aprovar) {
+          if (!input.motivo?.trim()) throw new Error("Indica o motivo da rejeição.");
+          await tx.update(inventarios).set({ estado: "em_curso" }).where(eq(inventarios.id, inventario.id));
+          await tx.update(aprovacoesOperacionais).set({ estado: "rejeitada", decididoPor: ctx.user!.id, decisaoMotivo: input.motivo, decididoEm: new Date() }).where(eq(aprovacoesOperacionais.id, aprovacao.id));
+          return { success: true, estado: "rejeitada" as const };
+        }
+        const linhas = await tx.select({ linha: inventarioLinhas, artigo: artigos }).from(inventarioLinhas).leftJoin(artigos, eq(inventarioLinhas.artigoId, artigos.id)).where(and(eq(inventarioLinhas.inventarioId, inventario.id), sql`${inventarioLinhas.stockReal} IS NOT NULL`, isNull(inventarioLinhas.ajusteMovimentoId)));
+        for (const { linha, artigo } of linhas) {
+          if (!artigo) continue;
+          const desvio = parseFloat(linha.desvioQtd ?? "0");
+          if (Math.abs(desvio) < 0.001) continue;
+          const { movimentoId } = await registarMovimento({ artigoId: artigo.id, tipo: "ajuste_inventario", quantidade: desvio, custoUnitario: parseFloat(artigo.custoMedioPonderado ?? "0"), documentoId: `inventario_${inventario.id}`, documentoTipo: "inventario", motivo: `Ajuste de inventário #${inventario.id} aprovado`, origem: "inventario", idCliente: `inventario-${inventario.id}:linha-${linha.id}`, utilizadorId: ctx.user!.id }, tx as any);
+          await tx.update(inventarioLinhas).set({ ajusteMovimentoId: movimentoId }).where(eq(inventarioLinhas.id, linha.id));
+        }
+        await tx.update(inventarios).set({ estado: "fechado", fechadoEm: new Date() }).where(eq(inventarios.id, inventario.id));
+        await tx.update(aprovacoesOperacionais).set({ estado: "aprovada", decididoPor: ctx.user!.id, decisaoMotivo: input.motivo ?? null, decididoEm: new Date() }).where(eq(aprovacoesOperacionais.id, aprovacao.id));
+        return { success: true, estado: "aprovada" as const };
       });
     }),
 

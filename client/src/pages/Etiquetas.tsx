@@ -53,6 +53,7 @@ function imprimirEtiquetasPrateleira(artigos: any[], baseUrl: string) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function Etiquetas() {
   const { user } = useAuth();
+  const utils = trpc.useUtils();
   const [tab, setTab] = useState<'prateleira' | 'lotes' | 'validade' | 'regras'>('prateleira');
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [filtroCategoria, setFiltroCategoria] = useState('');
@@ -66,6 +67,10 @@ export default function Etiquetas() {
   const gerarCodigo = trpc.qr.gerarCodigoCurto.useMutation();
   const criarLote = trpc.qr.criarLote.useMutation();
   const eliminarRegra = trpc.qr.eliminarRegraValidade.useMutation();
+  const descartarLote = trpc.qr.descartarLote.useMutation({
+    onSuccess: () => { toast.success('Lote descartado e quebra registada no livro de movimentos.'); utils.qr.alertasValidade.invalidate(); utils.qr.listarLotes.invalidate(); },
+    onError: (erro) => toast.error(erro.message),
+  });
   const criarRegra = trpc.qr.criarRegraValidade.useMutation();
 
   const [novaRegra, setNovaRegra] = useState({ artigoId: '', metodo: 'refrigerado' as const, dias: '' });
@@ -125,6 +130,11 @@ export default function Etiquetas() {
   };
 
   const diasCor = (d: number | null) => d === null ? '#9ca3af' : d < 0 ? '#ef4444' : d <= 1 ? '#f59e0b' : '#22c55e';
+  const solicitarDescarte = (codigoLote: string, nomeProduto: string) => {
+    const motivo = window.prompt(`Motivo do descarte de ${nomeProduto} (${codigoLote}):`, 'Validade expirada');
+    if (motivo?.trim()) descartarLote.mutate({ codigoLote, motivo: motivo.trim() });
+    else if (motivo !== null) toast.error('Indica um motivo com pelo menos 3 caracteres.');
+  };
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -299,7 +309,7 @@ export default function Etiquetas() {
                     </div>
                     <div className="text-right">
                       <p className="text-red-400 font-bold text-sm">{l.dataValidade ? new Date(l.dataValidade).toLocaleDateString('pt-PT') : '—'}</p>
-                      <a href={`/l/${l.codigoLote}`} className="text-xs underline text-red-400">Descartar</a>
+                      <div className="flex justify-end gap-3 mt-1"><a href={`/l/${l.codigoLote}`} className="text-xs underline text-red-400">Ver lote</a>{(user?.role === 'admin' || user?.role === 'head_chef') && <button disabled={descartarLote.isPending} onClick={() => solicitarDescarte(l.codigoLote, l.nomeProduto)} className="text-xs underline text-red-400">Descartar</button>}</div>
                     </div>
                   </div>
                 ))}
@@ -319,7 +329,7 @@ export default function Etiquetas() {
                     </div>
                     <div className="text-right">
                       <p className="text-amber-400 font-bold text-sm">{l.diasRestantes}d</p>
-                      <p className="text-xs text-gray-400">{l.dataValidade ? new Date(l.dataValidade).toLocaleDateString('pt-PT') : '—'}</p>
+                      <p className="text-xs text-gray-400">{l.dataValidade ? new Date(l.dataValidade).toLocaleDateString('pt-PT') : '—'}</p><div className="flex justify-end gap-3 mt-1"><a href={`/l/${l.codigoLote}`} className="text-xs underline" style={{ color: '#D4AF37' }}>Ver lote</a><button onClick={() => imprimirEtiquetaProducao(l, l.nomeProduto)} className="text-xs underline" style={{ color: '#D4AF37' }}>Imprimir etiqueta</button></div>
                     </div>
                   </div>
                 ))}
