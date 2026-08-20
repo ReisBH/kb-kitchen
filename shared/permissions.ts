@@ -26,6 +26,7 @@ export const ROUTE_PERMISSIONS: Record<string, AppRole[]> = {
   "/ocr/faturas": ["admin", "head_chef"],
   "/ocr/fecho-caixa": ["admin", "head_chef", "sub_chefe"],
   "/mapa-pos": ["admin", "head_chef", "sub_chefe"],
+  "/aprovacoes": ["admin", "head_chef"],
   "/utilizadores": ["admin", "head_chef"],
   "/etiquetas": ["admin", "head_chef"],
 };
@@ -45,6 +46,7 @@ export const NAV_PERMISSIONS: Record<string, AppRole[]> = {
   "/ocr/faturas": ["admin", "head_chef"],
   "/ocr/fecho-caixa": ["admin", "head_chef", "sub_chefe"],
   "/mapa-pos": ["admin", "head_chef", "sub_chefe"],
+  "/aprovacoes": ["admin", "head_chef"],
   "/utilizadores": ["admin", "head_chef"],
   "/etiquetas": ["admin", "head_chef"],
 };

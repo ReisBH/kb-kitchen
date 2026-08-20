@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { SeletorComponentePesquisavel } from "@/components/SeletorComponentePesquisavel";
 import { correspondePesquisaAproximada } from "@/lib/pesquisaAproximada";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 const FAMILIAS = ["Cozinha Quente", "Sushi", "Pastelaria"] as const;
 type Familia = (typeof FAMILIAS)[number];
@@ -22,9 +23,15 @@ function fmt(n: number | string | null | undefined, d = 2) {
 
 function ProducaoDialog({ receitaId, receitaNome, onClose }: { receitaId: number; receitaNome: string; onClose: () => void }) {
   const [qtd, setQtd] = useState("1");
+  const [metodoConservacao, setMetodoConservacao] = useState<"vacuo" | "refrigerado" | "congelado" | "ambiente">("refrigerado");
+  const [notas, setNotas] = useState("");
+  const [idCliente, setIdCliente] = useState(() => crypto.randomUUID());
   const utils = trpc.useUtils();
-  const produzir = trpc.receitas.registarProducao.useMutation({ onSuccess: (dados) => { toast.success(`Produção registada — Custo: ${fmt(dados.custoLote, 2)} € · Desvio: ${fmt(dados.desvioPct, 1)}%`); utils.artigos.listar.invalidate(); onClose(); }, onError: (erro) => toast.error(erro.message) });
-  return <div className="space-y-4"><p className="text-sm text-muted-foreground">Registar produção de <strong>{receitaNome}</strong></p><div><label className="text-xs text-muted-foreground mb-1 block">Quantidade produzida (unidade base)</label><Input value={qtd} onChange={(e) => setQtd(e.target.value)} type="number" step="0.001" className="bg-input border-border" /></div><Button className="w-full bg-primary text-primary-foreground" disabled={produzir.isPending} onClick={() => produzir.mutate({ receitaId, quantidadeProduzida: parseFloat(qtd) })}>{produzir.isPending ? "A produzir…" : "Registar Produção"}</Button></div>;
+  const produzir = trpc.receitas.registarProducao.useMutation({
+    onSuccess: (dados) => { toast.success(dados.idempotente ? "Pedido de produção já registado." : `Pedido enviado para aprovação — custo previsto: ${fmt(dados.custoLote, 2)} €.`); utils.receitas.historicoProducoes.invalidate({ receitaId }); setIdCliente(crypto.randomUUID()); onClose(); },
+    onError: (erro) => toast.error(erro.message),
+  });
+  return <div className="space-y-4"><p className="text-sm text-muted-foreground">A produção de <strong>{receitaNome}</strong> cria um pedido rastreável e requer aprovação de outro gestor antes de movimentar stock.</p><div><label className="text-xs text-muted-foreground mb-1 block">Quantidade produzida (unidade base)</label><Input value={qtd} onChange={(e) => setQtd(e.target.value)} type="number" min="0.001" step="0.001" className="bg-input border-border" /></div><div><label className="text-xs text-muted-foreground mb-1 block">Conservação do lote</label><select value={metodoConservacao} onChange={(e) => setMetodoConservacao(e.target.value as typeof metodoConservacao)} className="w-full h-9 rounded-md bg-input border border-border px-3 text-sm"><option value="refrigerado">Refrigerado</option><option value="congelado">Congelado</option><option value="vacuo">Vácuo</option><option value="ambiente">Ambiente</option></select></div><div><label className="text-xs text-muted-foreground mb-1 block">Notas para aprovação</label><Input value={notas} onChange={(e) => setNotas(e.target.value)} placeholder="Opcional" className="bg-input border-border" /></div><Button className="w-full bg-primary text-primary-foreground" disabled={produzir.isPending || Number(qtd) <= 0} onClick={() => produzir.mutate({ receitaId, quantidadeProduzida: parseFloat(qtd), metodoConservacao, notas: notas || undefined, idCliente })}>{produzir.isPending ? "A enviar…" : "Enviar para aprovação"}</Button></div>;
 }
 
 function FormReceita({ receitaId, onClose }: { receitaId?: number; onClose: () => void }) {

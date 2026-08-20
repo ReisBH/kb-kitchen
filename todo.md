@@ -189,3 +189,7 @@
 - [x] Estabilização 2: ligar lotes aos movimentos e apresentar rastreabilidade no livro de stock
 - [x] Estabilização 2: criar ciclo de publicação controlada para fichas técnicas e validação de mapeamentos POS
 - [x] Estabilização 2: validar, documentar e publicar o segundo marco
+- [x] Estabilização 3: mapear o fluxo atual de produção, criação de lotes e operações que exigem dupla aprovação
+- [x] Estabilização 3: criar produções por lote com movimentos de saída de componentes e entrada do produto produzido
+- [x] Estabilização 3: implementar pedidos, decisão e auditoria de aprovação em dois níveis para operações sensíveis
+- [x] Estabilização 3: validar, documentar e publicar o terceiro marco

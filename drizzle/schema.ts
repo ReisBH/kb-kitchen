@@ -219,18 +219,48 @@ export type InsertReceitaBaseComponente = typeof receitasBaseComponentes.$inferI
 export const producoes = mysqlTable("producoes", {
   id: int("id").autoincrement().primaryKey(),
   receitaId: int("receitaId").notNull(),
+  estado: mysqlEnum("estado", ["pendente_aprovacao", "aprovada", "rejeitada"]).default("pendente_aprovacao").notNull(),
+  // Chave de submissão do operador: impede pedidos duplicados por rede móvel.
+  idCliente: varchar("idCliente", { length: 64 }).unique(),
   quantidadeProduzida: decimal("quantidadeProduzida", { precision: 12, scale: 3 }).notNull(),
   rendimentoReal: decimal("rendimentoReal", { precision: 12, scale: 3 }),
   rendimentoEsperado: decimal("rendimentoEsperado", { precision: 12, scale: 3 }),
   desvioPct: decimal("desvioPct", { precision: 6, scale: 3 }),
   custoLote: decimal("custoLote", { precision: 12, scale: 4 }),
+  loteId: int("loteId"),
+  metodoConservacao: mysqlEnum("metodoConservacao", ["vacuo", "refrigerado", "congelado", "ambiente"]),
+  dataValidade: date("dataValidade"),
+  notas: text("notas"),
   utilizadorId: int("utilizadorId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (t) => [
   index("producoes_receita_idx").on(t.receitaId),
+  index("producoes_estado_idx").on(t.estado),
 ]);
 export type Producao = typeof producoes.$inferSelect;
 export type InsertProducao = typeof producoes.$inferInsert;
+
+// ─── APROVAÇÕES OPERACIONAIS (segregação de funções) ──────────────────────────
+// O solicitante nunca pode decidir o próprio pedido. A primeira utilização é
+// produção por lote, mantendo o modelo extensível para outros fluxos sensíveis.
+export const aprovacoesOperacionais = mysqlTable("aprovacoes_operacionais", {
+  id: int("id").autoincrement().primaryKey(),
+  tipo: mysqlEnum("tipo", ["producao", "inventario", "estorno_movimento", "descarte_lote"]).notNull(),
+  entidadeId: int("entidadeId").notNull(),
+  estado: mysqlEnum("estado", ["pendente", "aprovada", "rejeitada", "cancelada"]).default("pendente").notNull(),
+  solicitadoPor: int("solicitadoPor").notNull(),
+  decididoPor: int("decididoPor"),
+  motivo: text("motivo"),
+  decisaoMotivo: text("decisaoMotivo"),
+  decididoEm: timestamp("decididoEm"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (t) => [
+  uniqueIndex("aprovacao_entidade_unica_idx").on(t.tipo, t.entidadeId),
+  index("aprovacao_estado_idx").on(t.estado),
+  index("aprovacao_solicitante_idx").on(t.solicitadoPor),
+]);
+export type AprovacaoOperacional = typeof aprovacoesOperacionais.$inferSelect;
+export type InsertAprovacaoOperacional = typeof aprovacoesOperacionais.$inferInsert;
 
 // ─── FICHAS TÉCNICAS ──────────────────────────────────────────────────────────
 export const fichasTecnicas = mysqlTable("fichas_tecnicas", {
