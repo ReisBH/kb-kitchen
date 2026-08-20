@@ -126,6 +126,20 @@
 - [x] Custos: tentar correspondências inequívocas de componentes existentes para as 20 receitas base sem custo
 - [x] Custos: aplicar as novas ligações sem ambiguidade e documentar as restantes para revisão
 - [x] Unidades: extrair e entregar a lista de todos os componentes de receitas e fichas técnicas registados como `un`
+- [x] Componentes: permitir pesquisa por nome de ingredientes, receitas base e fichas técnicas nos formulários de edição
+- [x] Componentes: validar o seletor pesquisável em ecrã móvel e desktop
+- [x] Componentes: validar o seletor pesquisável nos formulários de edição de receitas e fichas em desktop e móvel
+ - [x] Componentes: comprovar por teste a pesquisa por nome de ingrediente, receita base e ficha técnica dentro do seletor
+- [x] Componentes: validar em browser desktop o seletor pesquisável nos formulários de receita e ficha
+- [x] Componentes: validar em browser móvel a disponibilidade dos formulários com seletor pesquisável
+ - [x] Componentes: adicionar teste específico do seletor cobrindo pesquisa e seleção/cópia de ficha técnica
+- [x] Componentes: abrir em browser desktop o formulário de edição de uma receita e de uma ficha técnica e validar visualmente o seletor pesquisável aberto
+- [x] Componentes: abrir em browser móvel o formulário de edição de uma receita e de uma ficha técnica e validar visualmente o seletor pesquisável aberto
+ - [x] Componentes: guardar evidência verificável da pesquisa por nome a devolver ingrediente, receita base e ficha técnica dentro do seletor
+ - [x] Componentes: permitir abrir um formulário de edição por parâmetro de URL para validar e partilhar a pesquisa de componentes
+ - [x] Componentes: permitir pré-abrir o seletor pesquisável por parâmetro de URL para validação visual
+- [x] Componentes: validar com evidência DOM o seletor aberto e os resultados visíveis em formulário de receita e de ficha
+- [x] Componentes: registar uma matriz verificável de validação do seletor em desktop e móvel
 - [x] Unidades: converter componentes de receitas e fichas de `un` para `g`, mantendo apenas Folhas de bambu e ovos de codorniz em `un`
 - [x] Unidades: impedir que referências convertidas de g para artigos nativos em un multipliquem custos pelo fator de conversão
 - [x] Unidades: apresentar nas fichas técnicas a unidade de referência registada (`g`), mesmo quando o artigo tem stock nativo em `un`

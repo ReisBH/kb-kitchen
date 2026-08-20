@@ -22,4 +22,18 @@ describe("funcionalidades pendentes da interface", () => {
     expect(page("FichaDetalhe.tsx")).toContain('["admin", "head_chef", "sub_chefe"]');
     expect(page("FichaDetalhe.tsx")).toContain("custoUnitario");
   });
+
+  it("usa um seletor pesquisável de ingredientes e receitas base nos dois formulários", () => {
+    const receitas = page("ReceitasBase.tsx");
+    const fichas = page("FichasTecnicas.tsx");
+    const seletor = fs.readFileSync(path.resolve(import.meta.dirname, "..", "client", "src", "components", "SeletorComponentePesquisavel.tsx"), "utf8");
+
+    expect(receitas).toContain("SeletorComponentePesquisavel");
+    expect(fichas).toContain("SeletorComponentePesquisavel");
+    expect(receitas).toContain("onSelecionarFicha={setFichaFonteId}");
+    expect(fichas).toContain("onSelecionarFicha={setFichaFonteId}");
+    expect(seletor).toContain("Pesquisar ingrediente ou receita");
+    expect(seletor).toContain("Ficha · copiar componentes");
+    expect(seletor).toContain("filtrarOpcoesComponentes");
+  });
 });
