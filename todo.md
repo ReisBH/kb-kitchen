@@ -245,3 +245,4 @@
 - [x] Detalhes: aplicar o mesmo comportamento expansível às receitas base
 - [x] Detalhes: testar e publicar a composição condensada em fichas e receitas
 - [x] Ingredientes: normalizar o campo Stock máximo no formulário para evitar erro de validação ao criar artigo
+- [x] Fichas: permitir expandir receitas base aninhadas no editor de composição

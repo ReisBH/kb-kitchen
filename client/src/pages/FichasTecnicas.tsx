@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { Plus, BookOpen, Trash2, Calculator, Pencil, Search, ChevronDown, ChevronRight, PackageSearch } from "lucide-react";
+import { Plus, BookOpen, ChefHat, Trash2, Calculator, Pencil, Search, ChevronDown, ChevronRight, PackageSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,11 +23,28 @@ function fmt(n: number | string | null | undefined, d = 2) {
   return parseFloat(String(n)).toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 
+export function LinhaComponenteFichaExpandida({ componente, depth = 0 }: { componente: any; depth?: number }) {
+  const [aberto, setAberto] = useState(false);
+  const eReceita = componente.tipoComponente === "receita_base";
+  const { data: receita, isLoading } = trpc.receitas.obter.useQuery({ id: Number(componente.componenteId) }, { enabled: eReceita && aberto });
+  const filhos = receita?.componentes ?? [];
+
+  return <div className={depth > 0 ? "ml-4 border-l border-gold/20 pl-3" : ""}>
+    <div className="flex items-center gap-2 py-1 text-muted-foreground">
+      {eReceita ? <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0 -ml-1 text-gold hover:text-gold" title={aberto ? "Ocultar ingredientes da receita" : "Mostrar ingredientes da receita"} onClick={() => setAberto((estado) => !estado)}>{aberto ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}</Button> : <span className="w-4 shrink-0" />}
+      {eReceita ? <ChefHat className="h-3.5 w-3.5 shrink-0 text-gold/70" /> : <PackageSearch className="h-3.5 w-3.5 shrink-0 text-gold/70" />}
+      <span className="flex-1 text-foreground/85">{componente.nomeComponente}</span>
+      <span>{Number(componente.quantidade).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} {componente.unidade}</span>
+    </div>
+    {aberto && eReceita && <div className="py-1">{isLoading ? <div className="ml-4 py-1 text-xs text-muted-foreground">A carregar ingredientes da receita…</div> : filhos.length === 0 ? <div className="ml-4 py-1 text-xs text-muted-foreground">Esta receita ainda não tem ingredientes.</div> : filhos.map((filho: any) => <LinhaComponenteFichaExpandida key={filho.id} componente={filho} depth={depth + 1} />)}</div>}
+  </div>;
+}
+
 function ConteudoFichaExpandido({ fichaId }: { fichaId: number }) {
   const { data: ficha } = trpc.fichas.obter.useQuery({ id: fichaId });
   if (!ficha) return <div className="ml-3 border-l border-gold/30 bg-secondary/30 px-3 py-2 text-xs text-muted-foreground">A carregar ingredientes…</div>;
   if (!ficha.componentes.length) return <div className="ml-3 border-l border-gold/30 bg-secondary/30 px-3 py-2 text-xs text-muted-foreground">Esta ficha ainda não tem componentes.</div>;
-  return <div className="ml-3 border-l border-gold/30 bg-secondary/30 px-3 py-2 text-xs">{ficha.componentes.map((componente: any) => <div key={componente.id} className="flex items-center gap-2 py-1 text-muted-foreground"><PackageSearch className="h-3.5 w-3.5 text-gold/70" /><span className="flex-1 text-foreground/85">{componente.nomeComponente}</span><span>{Number(componente.quantidade).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} {componente.unidade}</span></div>)}</div>;
+  return <div className="ml-3 border-l border-gold/30 bg-secondary/30 px-3 py-2 text-xs">{ficha.componentes.map((componente: any) => <LinhaComponenteFichaExpandida key={componente.id} componente={componente} />)}</div>;
 }
 
 function FormFicha({ fichaId, onClose }: { fichaId?: number; onClose: () => void }) {
