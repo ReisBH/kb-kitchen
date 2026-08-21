@@ -244,3 +244,4 @@
 - [x] Detalhes: expandir ingredientes, receitas e fichas aninhadas apenas ao clicar na seta do componente
 - [x] Detalhes: aplicar o mesmo comportamento expansível às receitas base
 - [x] Detalhes: testar e publicar a composição condensada em fichas e receitas
+- [x] Ingredientes: normalizar o campo Stock máximo no formulário para evitar erro de validação ao criar artigo
