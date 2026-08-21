@@ -1,0 +1,2786 @@
+[
+  {
+    "nomeMenu": "Menu Degustação Kabuki",
+    "preco": 125,
+    "unidadePreco": "pessoa",
+    "melhor": {
+      "id": 30125,
+      "nome": "Menu Kabuki",
+      "precoVenda": null,
+      "estadoPublicacao": "rascunho",
+      "ativo": 1,
+      "score": 0.667
+    },
+    "candidatos": [
+      {
+        "id": 30125,
+        "nome": "Menu Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.667
+      },
+      {
+        "id": 30015,
+        "nome": "Bento Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30081,
+        "nome": "Kabuki Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30062,
+        "nome": "Menu Extendido",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30069,
+        "nome": "Sashimi Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Menu Kabuki Ampliado",
+    "preco": 150,
+    "unidadePreco": "pessoa",
+    "melhor": {
+      "id": 30125,
+      "nome": "Menu Kabuki",
+      "precoVenda": null,
+      "estadoPublicacao": "rascunho",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30125,
+        "nome": "Menu Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30015,
+        "nome": "Bento Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30081,
+        "nome": "Kabuki Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30062,
+        "nome": "Menu Extendido",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30069,
+        "nome": "Sashimi Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Menu Degustação Vegan",
+    "preco": 100,
+    "unidadePreco": "pessoa",
+    "melhor": {
+      "id": 30062,
+      "nome": "Menu Extendido",
+      "precoVenda": null,
+      "estadoPublicacao": "rascunho",
+      "ativo": 1,
+      "score": 0.25
+    },
+    "candidatos": [
+      {
+        "id": 30062,
+        "nome": "Menu Extendido",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30125,
+        "nome": "Menu Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Menu Vegan Ampliado",
+    "preco": 120,
+    "unidadePreco": "pessoa",
+    "melhor": {
+      "id": 30062,
+      "nome": "Menu Extendido",
+      "precoVenda": null,
+      "estadoPublicacao": "rascunho",
+      "ativo": 1,
+      "score": 0.25
+    },
+    "candidatos": [
+      {
+        "id": 30062,
+        "nome": "Menu Extendido",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30125,
+        "nome": "Menu Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Ostra Natural",
+    "preco": 5,
+    "unidadePreco": "un",
+    "melhor": null,
+    "candidatos": [],
+    "seguro": null
+  },
+  {
+    "nomeMenu": "Miso Shiru",
+    "preco": 8,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30065,
+      "nome": "Miso Shiru",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30065,
+        "nome": "Miso Shiru",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30029,
+        "nome": "Guindara no Miso",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30064,
+        "nome": "Nasu no Miso",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30004,
+        "nome": "Nasu no miso Aper",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Wakame Kyuri Su",
+    "preco": 8,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30063,
+      "nome": "Wakame Kyuri Su",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30063,
+        "nome": "Wakame Kyuri Su",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Nasu no Miso",
+    "preco": 19,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30064,
+      "nome": "Nasu no Miso",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30064,
+        "nome": "Nasu no Miso",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30004,
+        "nome": "Nasu no miso Aper",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30029,
+        "nome": "Guindara no Miso",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30065,
+        "nome": "Miso Shiru",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Gyoza Kabuki",
+    "preco": 16,
+    "unidadePreco": "4 un",
+    "melhor": {
+      "id": 30015,
+      "nome": "Bento Kabuki",
+      "precoVenda": null,
+      "estadoPublicacao": "rascunho",
+      "ativo": 1,
+      "score": 0.333
+    },
+    "candidatos": [
+      {
+        "id": 30015,
+        "nome": "Bento Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30081,
+        "nome": "Kabuki Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30125,
+        "nome": "Menu Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30069,
+        "nome": "Sashimi Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30002,
+        "nome": "Gyoza Buta Aper",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Gyoza Carabineiro",
+    "preco": 36,
+    "unidadePreco": "4 un",
+    "melhor": {
+      "id": 30088,
+      "nome": "N Carabineiro",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.5
+    },
+    "candidatos": [
+      {
+        "id": 30088,
+        "nome": "N Carabineiro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30007,
+        "nome": "1/4 Usuzukuri Carabineiro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30078,
+        "nome": "Usuzukuri Carabineiro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30002,
+        "nome": "Gyoza Buta Aper",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Peixe Branco",
+    "preco": 36,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30027,
+      "nome": "Sashimi Peixe Branco",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30027,
+        "nome": "Sashimi Peixe Branco",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Sake",
+    "preco": 34,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30106,
+      "nome": "N Sake",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30106,
+        "nome": "N Sake",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30035,
+        "nome": "N Sake Kimuchi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30122,
+        "nome": "Sake Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30066,
+        "nome": "Sashimi Sake",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30071,
+        "nome": "Tártaro Sake Estrellado",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Akami",
+    "preco": 44,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30103,
+      "nome": "N Akami",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30103,
+        "nome": "N Akami",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30068,
+        "nome": "Sashimi Akami",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30046,
+        "nome": "Usuzukuri Akami Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Degustação de Atum",
+    "preco": 52,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30070,
+      "nome": "Sashimi Degustação de Atum",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30070,
+        "nome": "Sashimi Degustação de Atum",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Moriawase",
+    "preco": 48,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30025,
+      "nome": "Sashimi Moriawase",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30025,
+        "nome": "Sashimi Moriawase",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Kabuki Sashimi",
+    "preco": 120,
+    "unidadePreco": "2 pessoas",
+    "melhor": {
+      "id": 30069,
+      "nome": "Sashimi Kabuki",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30069,
+        "nome": "Sashimi Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30015,
+        "nome": "Bento Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30081,
+        "nome": "Kabuki Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30125,
+        "nome": "Menu Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30068,
+        "nome": "Sashimi Akami",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Kaisendon",
+    "preco": 42,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30044,
+      "nome": "Kaisendon",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30044,
+        "nome": "Kaisendon",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Unadon",
+    "preco": 36,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30045,
+      "nome": "Unadon",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30045,
+        "nome": "Unadon",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Sake Estrelado",
+    "preco": 34,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30106,
+      "nome": "N Sake",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.5
+    },
+    "candidatos": [
+      {
+        "id": 30106,
+        "nome": "N Sake",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30020,
+        "nome": "Maguro Estrelado",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30035,
+        "nome": "N Sake Kimuchi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30122,
+        "nome": "Sake Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30066,
+        "nome": "Sashimi Sake",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Maguro Estrelado",
+    "preco": 38,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30020,
+      "nome": "Maguro Estrelado",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30020,
+        "nome": "Maguro Estrelado",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30056,
+        "nome": "Maguro Taco",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30096,
+        "nome": "Temaki Maguro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30008,
+        "nome": "1/4 Usuzukuri Maguro Tonnato",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30001,
+        "nome": "Maguro Korokke Aper",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Maguro Picante",
+    "preco": 36,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30072,
+      "nome": "Tártaro Maguro Picante",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30072,
+        "nome": "Tártaro Maguro Picante",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30020,
+        "nome": "Maguro Estrelado",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30056,
+        "nome": "Maguro Taco",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30096,
+        "nome": "Temaki Maguro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30008,
+        "nome": "1/4 Usuzukuri Maguro Tonnato",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Abacate Estrelado",
+    "preco": 26,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30119,
+      "nome": "N Abacate",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.5
+    },
+    "candidatos": [
+      {
+        "id": 30119,
+        "nome": "N Abacate",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30123,
+        "nome": "Abacate Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30020,
+        "nome": "Maguro Estrelado",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30021,
+        "nome": "Tartaro Abacate Picante",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Toro",
+    "preco": 52,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30105,
+      "nome": "N Toro",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30105,
+        "nome": "N Toro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30067,
+        "nome": "Sashimi de Toro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 60001,
+        "nome": "Tártaro Toro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30024,
+        "nome": "Sashimi de Chu-Toro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30036,
+        "nome": "Sashimi Toro Delivery",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Bulhão Pato",
+    "preco": 28,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30026,
+      "nome": "Usuzukuri Bulhao Pato",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30026,
+        "nome": "Usuzukuri Bulhao Pato",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Ponzu",
+    "preco": 34,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30012,
+      "nome": "1/4 Usuzukuri Ponzu",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30012,
+        "nome": "1/4 Usuzukuri Ponzu",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30074,
+        "nome": "Usuzukuri Ponzu",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Akami Caviar",
+    "preco": 36,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30046,
+      "nome": "Usuzukuri Akami Caviar",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30046,
+        "nome": "Usuzukuri Akami Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30103,
+        "nome": "N Akami",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30086,
+        "nome": "N Ovo Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30068,
+        "nome": "Sashimi Akami",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30018,
+        "nome": "Tartaro Toro Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Pa Amb Tomaquet",
+    "preco": 42,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30006,
+      "nome": "1/4 Usuzukuri Pa Amb Tomaquet",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30006,
+        "nome": "1/4 Usuzukuri Pa Amb Tomaquet",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30079,
+        "nome": "Usuzukuri Pa Amb Tomaquet",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Hotate",
+    "preco": 38,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30009,
+      "nome": "1/4 Usuzukuri Hotate",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30009,
+        "nome": "1/4 Usuzukuri Hotate",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30109,
+        "nome": "N Hotate",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30037,
+        "nome": "Sashimi Hotate Delivery",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30076,
+        "nome": "Usuzukuri Hotate",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Maguro Tonnato",
+    "preco": 37,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30008,
+      "nome": "1/4 Usuzukuri Maguro Tonnato",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30008,
+        "nome": "1/4 Usuzukuri Maguro Tonnato",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30077,
+        "nome": "Usuzukuri Maguro Tonnato",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30020,
+        "nome": "Maguro Estrelado",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30056,
+        "nome": "Maguro Taco",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30096,
+        "nome": "Temaki Maguro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Carabineiro",
+    "preco": 44,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30007,
+      "nome": "1/4 Usuzukuri Carabineiro",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30007,
+        "nome": "1/4 Usuzukuri Carabineiro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30088,
+        "nome": "N Carabineiro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30078,
+        "nome": "Usuzukuri Carabineiro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Yasai Sushi",
+    "preco": 41,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30080,
+      "nome": "Edomae Sushi",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.333
+    },
+    "candidatos": [
+      {
+        "id": 30080,
+        "nome": "Edomae Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30081,
+        "nome": "Kabuki Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30043,
+        "nome": "Yasai Nabe",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30057,
+        "nome": "Edomae Sushi Bar",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30041,
+        "nome": "Kabuki Sushi Exp",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Edomae Sushi",
+    "preco": 72,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30080,
+      "nome": "Edomae Sushi",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30080,
+        "nome": "Edomae Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30057,
+        "nome": "Edomae Sushi Bar",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30081,
+        "nome": "Kabuki Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30041,
+        "nome": "Kabuki Sushi Exp",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30051,
+        "nome": "Menu Sushi To Sashimi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Kabuki Sushi",
+    "preco": 80,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30081,
+      "nome": "Kabuki Sushi",
+      "precoVenda": null,
+      "estadoPublicacao": "rascunho",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30081,
+        "nome": "Kabuki Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30041,
+        "nome": "Kabuki Sushi Exp",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30015,
+        "nome": "Bento Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30080,
+        "nome": "Edomae Sushi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30125,
+        "nome": "Menu Kabuki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Ovo Trufa",
+    "preco": 8,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30082,
+      "nome": "N Ovo Trufa",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30082,
+        "nome": "N Ovo Trufa",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30011,
+        "nome": "1/4 Usuzukuri Trufa",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30086,
+        "nome": "N Ovo Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30075,
+        "nome": "Usuzukuri Trufa",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Ovo Caviar",
+    "preco": 16,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30086,
+      "nome": "N Ovo Caviar",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30086,
+        "nome": "N Ovo Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30082,
+        "nome": "N Ovo Trufa",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30018,
+        "nome": "Tartaro Toro Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30046,
+        "nome": "Usuzukuri Akami Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Belota",
+    "preco": 8,
+    "unidadePreco": "un",
+    "melhor": null,
+    "candidatos": [],
+    "seguro": null
+  },
+  {
+    "nomeMenu": "Unagi Kabayaki",
+    "preco": 8,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30118,
+      "nome": "N Unagi",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.5
+    },
+    "candidatos": [
+      {
+        "id": 30118,
+        "nome": "N Unagi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30095,
+        "nome": "Temaki Unagi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30091,
+        "nome": "Unagi Futomaki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Chutoro Dijon",
+    "preco": 8,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30084,
+      "nome": "N Chutoro Dijon",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30084,
+        "nome": "N Chutoro Dijon",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30104,
+        "nome": "N Chutoro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30058,
+        "nome": "Tataki Chutoro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Toro Flambé",
+    "preco": 9,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30105,
+      "nome": "N Toro",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.5
+    },
+    "candidatos": [
+      {
+        "id": 30105,
+        "nome": "N Toro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30067,
+        "nome": "Sashimi de Toro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 60001,
+        "nome": "Tártaro Toro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30024,
+        "nome": "Sashimi de Chu-Toro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30036,
+        "nome": "Sashimi Toro Delivery",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Gunkan Negitoro Caviar",
+    "preco": 18,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30087,
+      "nome": "Gunkan Negitoro com Caviar",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.75
+    },
+    "candidatos": [
+      {
+        "id": 30087,
+        "nome": "Gunkan Negitoro com Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.75
+      },
+      {
+        "id": 30086,
+        "nome": "N Ovo Caviar",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30090,
+        "nome": "Negitoro Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Hambúrguer",
+    "preco": 8,
+    "unidadePreco": "un",
+    "melhor": null,
+    "candidatos": [],
+    "seguro": null
+  },
+  {
+    "nomeMenu": "Bife Tártaro",
+    "preco": 8,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30089,
+      "nome": "N Bife Tártaro",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30089,
+        "nome": "N Bife Tártaro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 60001,
+        "nome": "Tártaro Toro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30021,
+        "nome": "Tartaro Abacate Picante",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30072,
+        "nome": "Tártaro Maguro Picante",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30071,
+        "nome": "Tártaro Sake Estrellado",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Gyutataki Chimichurri",
+    "preco": 8,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30073,
+      "nome": "Gyutataki",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30073,
+        "nome": "Gyutataki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30085,
+        "nome": "N Gyutataki Chimichurri",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30013,
+        "nome": "1/4 Gyutataki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30116,
+        "nome": "N Gyutataki",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.5
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Kagoshima Nigiri",
+    "preco": 18,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30098,
+      "nome": "Kagoshima",
+      "precoVenda": null,
+      "estadoPublicacao": "rascunho",
+      "ativo": 1,
+      "score": 0.99
+    },
+    "candidatos": [
+      {
+        "id": 30098,
+        "nome": "Kagoshima",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.99
+      },
+      {
+        "id": 30028,
+        "nome": "N Kagoshima A5",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Carabineiro Nigiri",
+    "preco": 32,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30088,
+      "nome": "N Carabineiro",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.5
+    },
+    "candidatos": [
+      {
+        "id": 30088,
+        "nome": "N Carabineiro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30007,
+        "nome": "1/4 Usuzukuri Carabineiro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30078,
+        "nome": "Usuzukuri Carabineiro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Negitoro Maki",
+    "preco": 14,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30090,
+      "nome": "Negitoro Maki",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30090,
+        "nome": "Negitoro Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30123,
+        "nome": "Abacate Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30120,
+        "nome": "Kappa Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30124,
+        "nome": "Maki Vegetariano",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30122,
+        "nome": "Sake Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Unagi Futomaki",
+    "preco": 18,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30091,
+      "nome": "Unagi Futomaki",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30091,
+        "nome": "Unagi Futomaki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30118,
+        "nome": "N Unagi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30095,
+        "nome": "Temaki Unagi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30093,
+        "nome": "Futomaki Tempura Ebi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Soft-Shell Crab",
+    "preco": 23,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30092,
+      "nome": "Soft-Shell Crab Futomaki",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.9
+    },
+    "candidatos": [
+      {
+        "id": 30092,
+        "nome": "Soft-Shell Crab Futomaki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      },
+      {
+        "id": 30055,
+        "nome": "Soft Shell Bao",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Tempura Ebi Futomaki",
+    "preco": 23,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30093,
+      "nome": "Futomaki Tempura Ebi",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30093,
+        "nome": "Futomaki Tempura Ebi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30112,
+        "nome": "N Ebi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30091,
+        "nome": "Unagi Futomaki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Yasai Maki",
+    "preco": 14,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30123,
+      "nome": "Abacate Maki",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.333
+    },
+    "candidatos": [
+      {
+        "id": 30123,
+        "nome": "Abacate Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30120,
+        "nome": "Kappa Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30124,
+        "nome": "Maki Vegetariano",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30090,
+        "nome": "Negitoro Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30122,
+        "nome": "Sake Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Ikura Temaki",
+    "preco": 14,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30094,
+      "nome": "Temaki Ikura",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30094,
+        "nome": "Temaki Ikura",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30114,
+        "nome": "N Ikura",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30096,
+        "nome": "Temaki Maguro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30023,
+        "nome": "Temaki Salmão",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30095,
+        "nome": "Temaki Unagi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Sake Temaki",
+    "preco": 14,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30106,
+      "nome": "N Sake",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.5
+    },
+    "candidatos": [
+      {
+        "id": 30106,
+        "nome": "N Sake",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30035,
+        "nome": "N Sake Kimuchi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30122,
+        "nome": "Sake Maki",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30066,
+        "nome": "Sashimi Sake",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30094,
+        "nome": "Temaki Ikura",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Bochecha Temaki",
+    "preco": 14,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30094,
+      "nome": "Temaki Ikura",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.333
+    },
+    "candidatos": [
+      {
+        "id": 30094,
+        "nome": "Temaki Ikura",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30096,
+        "nome": "Temaki Maguro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30023,
+        "nome": "Temaki Salmão",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30095,
+        "nome": "Temaki Unagi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Unagi Temaki",
+    "preco": 14,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30095,
+      "nome": "Temaki Unagi",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30095,
+        "nome": "Temaki Unagi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30118,
+        "nome": "N Unagi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30094,
+        "nome": "Temaki Ikura",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30096,
+        "nome": "Temaki Maguro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30023,
+        "nome": "Temaki Salmão",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Maguro Picante Temaki",
+    "preco": 14,
+    "unidadePreco": "un",
+    "melhor": {
+      "id": 30096,
+      "nome": "Temaki Maguro",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.667
+    },
+    "candidatos": [
+      {
+        "id": 30096,
+        "nome": "Temaki Maguro",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.667
+      },
+      {
+        "id": 30072,
+        "nome": "Tártaro Maguro Picante",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      },
+      {
+        "id": 30020,
+        "nome": "Maguro Estrelado",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30056,
+        "nome": "Maguro Taco",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      },
+      {
+        "id": 30094,
+        "nome": "Temaki Ikura",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Yasai Tempura",
+    "preco": 28,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30043,
+      "nome": "Yasai Nabe",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.333
+    },
+    "candidatos": [
+      {
+        "id": 30043,
+        "nome": "Yasai Nabe",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30093,
+        "nome": "Futomaki Tempura Ebi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Moriawase Tempura",
+    "preco": 32,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30025,
+      "nome": "Sashimi Moriawase",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.333
+    },
+    "candidatos": [
+      {
+        "id": 30025,
+        "nome": "Sashimi Moriawase",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30093,
+        "nome": "Futomaki Tempura Ebi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Ebi Tempura",
+    "preco": 36,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30093,
+      "nome": "Futomaki Tempura Ebi",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.667
+    },
+    "candidatos": [
+      {
+        "id": 30093,
+        "nome": "Futomaki Tempura Ebi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.667
+      },
+      {
+        "id": 30112,
+        "nome": "N Ebi",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.5
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Tori no Shoga",
+    "preco": 30,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30097,
+      "nome": "Tori no Shoga",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30097,
+        "nome": "Tori no Shoga",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Sakana Yaki",
+    "preco": 34,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30107,
+      "nome": "N Sakana",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.5
+    },
+    "candidatos": [
+      {
+        "id": 30107,
+        "nome": "N Sakana",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.5
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Gindara no Miso",
+    "preco": 42,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30029,
+      "nome": "Guindara no Miso",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 0.333
+    },
+    "candidatos": [
+      {
+        "id": 30029,
+        "nome": "Guindara no Miso",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30065,
+        "nome": "Miso Shiru",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30064,
+        "nome": "Nasu no Miso",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30004,
+        "nome": "Nasu no miso Aper",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": false
+  },
+  {
+    "nomeMenu": "Minhota Vazia",
+    "preco": 0.5,
+    "unidadePreco": "g",
+    "melhor": null,
+    "candidatos": [],
+    "seguro": null
+  },
+  {
+    "nomeMenu": "Costela Wagyu",
+    "preco": 42,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30017,
+      "nome": "Costela de Wagyu",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30017,
+        "nome": "Costela de Wagyu",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30053,
+        "nome": "Wagyu Burger",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.333
+      },
+      {
+        "id": 30042,
+        "nome": "Prego Wagyu Kikubari",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Niku-Take Nabe",
+    "preco": 52,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30047,
+      "nome": "Niku-Take Nabe",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30047,
+        "nome": "Niku-Take Nabe",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30043,
+        "nome": "Yasai Nabe",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.25
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Kagoshima",
+    "preco": 1.1,
+    "unidadePreco": "g",
+    "melhor": {
+      "id": 30098,
+      "nome": "Kagoshima",
+      "precoVenda": null,
+      "estadoPublicacao": "rascunho",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30098,
+        "nome": "Kagoshima",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 1
+      },
+      {
+        "id": 30028,
+        "nome": "N Kagoshima A5",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 0.9
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Gohan",
+    "preco": 6,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30099,
+      "nome": "Gohan",
+      "precoVenda": null,
+      "estadoPublicacao": "rascunho",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30099,
+        "nome": "Gohan",
+        "precoVenda": null,
+        "estadoPublicacao": "rascunho",
+        "ativo": 1,
+        "score": 1
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Shari",
+    "preco": 6,
+    "unidadePreco": "dose",
+    "melhor": null,
+    "candidatos": [],
+    "seguro": null
+  },
+  {
+    "nomeMenu": "Edamame",
+    "preco": 8,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30100,
+      "nome": "Edamame",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30100,
+        "nome": "Edamame",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Kimchi",
+    "preco": 10,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30101,
+      "nome": "Kimchi",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30101,
+        "nome": "Kimchi",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      }
+    ],
+    "seguro": true
+  },
+  {
+    "nomeMenu": "Takenabe",
+    "preco": 18,
+    "unidadePreco": "dose",
+    "melhor": {
+      "id": 30102,
+      "nome": "Takenabe",
+      "precoVenda": null,
+      "estadoPublicacao": "publicada",
+      "ativo": 1,
+      "score": 1
+    },
+    "candidatos": [
+      {
+        "id": 30102,
+        "nome": "Takenabe",
+        "precoVenda": null,
+        "estadoPublicacao": "publicada",
+        "ativo": 1,
+        "score": 1
+      }
+    ],
+    "seguro": true
+  }
+]

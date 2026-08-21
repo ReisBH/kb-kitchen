@@ -211,3 +211,15 @@
 - [x] Supervisão: configurar Brevo com remetente temporário, chave API e destinatários de chefia
 - [x] Supervisão: substituir o envio Resend pelo Brevo após a validação de entrega
 - [x] Supervisão: registar e validar a chave API Brevo fornecida pelo utilizador
+- [x] Auditoria sénior: avaliar arquitectura, dados mestres e fluxos críticos de stock, inventário e food cost
+- [x] Auditoria sénior: avaliar segurança, RBAC, dados sensíveis, integrações e continuidade operacional
+- [x] Auditoria sénior: avaliar testes, desempenho e experiência de gestão diária do restaurante
+- [x] Auditoria sénior: entregar relatório priorizado com forças, fragilidades e plano de evolução
+- [ ] Menu: extrair pratos e preços do PDF de degustação e à la carte
+- [ ] Menu: cruzar nomes normalizados com fichas técnicas existentes e separar ambiguidades
+- [ ] Menu: atualizar preços de venda apenas nas fichas com correspondência segura
+- [ ] Menu: apresentar pratos sem ficha técnica para decisão de criação vazia
+- [ ] Menu: validar, documentar e publicar a reconciliação de preços
+- [x] Fichas: validar dependências operacionais antes de permitir a eliminação rápida
+- [x] Fichas: acrescentar eliminação rápida com confirmação junto à ação de editar
+- [x] Fichas: testar permissões, bloqueios de dependência e eliminação segura

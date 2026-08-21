@@ -4,8 +4,9 @@ import { eq, and, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, roleProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { fichasTecnicas, fichasTecnicasComponentes, artigos, vendas, vendaLinhas, movimentos } from "../../drizzle/schema";
+import { fichasTecnicas, fichasTecnicasComponentes, artigos, vendas, vendaLinhas, movimentos, mapaPos } from "../../drizzle/schema";
 import { detetarCiclo, explodirFicha, calcularCustoFicha, executarExplosaoVenda } from "../engine/explosao";
+import { mensagemBloqueioEliminacaoFicha } from "../eliminacao_fichas";
 
 function removerCustosDaArvore(no: any): any {
   return {
@@ -162,6 +163,28 @@ export const fichasRouter = router({
         }
       }
       return { success: true };
+    }),
+
+  eliminar: roleProcedure(["admin", "head_chef"])
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, input.id)).limit(1);
+      if (!ficha) throw new TRPCError({ code: "NOT_FOUND", message: "Ficha técnica não encontrada." });
+      if (!ficha.ativo) return { success: true, mensagem: "A ficha técnica já se encontrava inativa." };
+
+      const [vendasLigadas] = await db.select({ total: sql<number>`COUNT(*)` }).from(vendaLinhas).where(eq(vendaLinhas.fichaId, input.id));
+      const [posLigados] = await db.select({ total: sql<number>`COUNT(*)` }).from(mapaPos).where(eq(mapaPos.fichaId, input.id));
+      const bloqueio = mensagemBloqueioEliminacaoFicha({
+        linhasVenda: Number(vendasLigadas?.total ?? 0),
+        mapeamentosPos: Number(posLigados?.total ?? 0),
+      });
+      if (bloqueio) throw new TRPCError({ code: "CONFLICT", message: bloqueio });
+
+      // Desativação é preferida à remoção física para preservar auditoria e permitir recuperação controlada.
+      await db.update(fichasTecnicas).set({ ativo: false, estadoPublicacao: "rascunho" }).where(eq(fichasTecnicas.id, input.id));
+      return { success: true, mensagem: "Ficha técnica desativada e removida da lista ativa." };
     }),
 
   validarPublicacao: protectedProcedure
