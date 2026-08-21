@@ -240,3 +240,7 @@
 - [x] Fichas: adicionar controlo de expansão à esquerda para revelar componentes aninhados por pedido
 - [x] Bento Box: validar custo, composição expandida e publicação do novo layout
 - [x] Bento Box: associar Gyoza Porco como Gyoza Aper, com uma dose na composição confirmada
+- [x] Detalhes: apresentar a árvore de fichas técnicas inicialmente condensada por componentes de primeiro nível
+- [x] Detalhes: expandir ingredientes, receitas e fichas aninhadas apenas ao clicar na seta do componente
+- [x] Detalhes: aplicar o mesmo comportamento expansível às receitas base
+- [x] Detalhes: testar e publicar a composição condensada em fichas e receitas

@@ -1,6 +1,7 @@
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight } from "lucide-react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,6 +11,24 @@ import { useAuth } from "@/_core/hooks/useAuth";
 function fmt(n: number | string | null | undefined, d = 4) {
   if (n == null) return "—";
   return parseFloat(String(n)).toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+
+export function LinhaComponenteReceita({ componente, depth = 0, mostrarCustos }: { componente: any; depth?: number; mostrarCustos: boolean }) {
+  const [aberto, setAberto] = useState(false);
+  const eReceita = componente.tipoComponente === "receita_base";
+  const { data: receitaFilha, isLoading } = trpc.receitas.obter.useQuery({ id: Number(componente.componenteId) }, { enabled: eReceita && aberto });
+  const filhos = receitaFilha?.componentes ?? [];
+  return <div className={depth > 0 ? "ml-6 border-l border-border pl-3" : ""}>
+    <div className="flex items-center justify-between gap-3 py-1.5 border-b border-border last:border-0 text-sm">
+      <div className="flex items-center gap-2">
+        {eReceita ? <Button variant="ghost" size="icon" className="h-6 w-6 -ml-1 text-gold hover:text-gold" title={aberto ? "Ocultar componentes" : "Expandir componentes"} onClick={() => setAberto((estado) => !estado)}>{aberto ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}</Button> : <span className="w-5" />}
+        <span className={`w-1.5 h-1.5 rounded-full ${eReceita ? "bg-info" : "bg-muted-foreground"}`} />
+        <div><span>{componente.nomeComponente}</span>{mostrarCustos && <p className="text-[11px] text-muted-foreground">{fmt(componente.custoComponente, 6)} €/ {componente.unidadeBase ?? componente.unidade}</p>}</div>
+      </div>
+      <div className="flex items-center gap-4 shrink-0"><span className="text-muted-foreground tabular-nums">{fmtQtd(componente.quantidade, componente.unidade)}</span>{mostrarCustos && <span className="text-gold tabular-nums font-mono text-xs w-24 text-right">{fmt(Number(componente.custoTotal ?? 0), 4)} €</span>}</div>
+    </div>
+    {aberto && eReceita && <div className="py-1">{isLoading ? <p className="ml-6 py-2 text-xs text-muted-foreground">A carregar componentes…</p> : filhos.length === 0 ? <p className="ml-6 py-2 text-xs text-muted-foreground">Esta receita não tem componentes.</p> : filhos.map((filho: any) => <LinhaComponenteReceita key={filho.id} componente={filho} depth={depth + 1} mostrarCustos={mostrarCustos} />)}</div>}
+  </div>;
 }
 
 export default function ReceitaDetalhe() {
@@ -52,15 +71,7 @@ export default function ReceitaDetalhe() {
         <CardContent>
           {(data.componentes?.length ?? 0) === 0 ? <p className="text-sm text-muted-foreground">Sem componentes definidos.</p> : (
             <div className="space-y-1">
-              {data.componentes!.map(c => (
-                <div key={c.id} className="flex items-center justify-between gap-3 py-1.5 border-b border-border last:border-0 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-1.5 h-1.5 rounded-full ${c.tipoComponente === "receita_base" ? "bg-info" : "bg-muted-foreground"}`} />
-                    <div><span>{c.nomeComponente}</span>{mostrarCustos && <p className="text-[11px] text-muted-foreground">{fmt(c.custoComponente, 6)} €/ {c.unidadeBase ?? c.unidade}</p>}</div>
-                  </div>
-                  <div className="flex items-center gap-4 shrink-0"><span className="text-muted-foreground tabular-nums">{fmtQtd(c.quantidade, c.unidade)}</span>{mostrarCustos && <span className="text-gold tabular-nums font-mono text-xs w-24 text-right">{fmt(Number(c.custoTotal ?? 0), 4)} €</span>}</div>
-                </div>
-              ))}
+              {data.componentes!.map(c => <LinhaComponenteReceita key={c.id} componente={c} mostrarCustos={mostrarCustos} />)}
             </div>
           )}
         </CardContent>

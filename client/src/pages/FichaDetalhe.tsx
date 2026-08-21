@@ -1,6 +1,7 @@
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight } from "lucide-react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,18 +15,21 @@ function fmt(n: number | string | null | undefined, d = 2) {
   return parseFloat(String(n)).toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 
-function ArvoreNo({ no, depth = 0, mostrarCustos }: { no: any; depth?: number; mostrarCustos: boolean }) {
+export function ArvoreNo({ no, depth = 0, mostrarCustos }: { no: any; depth?: number; mostrarCustos: boolean }) {
+  const [aberto, setAberto] = useState(false);
+  const temFilhos = (no.filhos?.length ?? 0) > 0;
   return (
     <div className={`${depth > 0 ? "ml-6 border-l border-border pl-3" : ""}`}>
       <div className="flex items-center justify-between py-1.5 text-sm">
         <div className="flex items-center gap-2">
+          {temFilhos ? <Button variant="ghost" size="icon" className="h-6 w-6 -ml-1 text-gold hover:text-gold" title={aberto ? "Ocultar componentes" : "Expandir componentes"} onClick={() => setAberto((estado) => !estado)}>{aberto ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}</Button> : <span className="w-5" />}
           <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${no.tipo === "receita_base" ? "bg-info" : no.tipo === "proteina_limpa" ? "bg-warning" : "bg-muted-foreground"}`} />
           <span className={depth === 0 ? "font-medium" : "text-muted-foreground"}>{no.nome}</span>
           <span className="text-xs text-muted-foreground tabular-nums">{fmtQtd(no.quantidadeReferencia ?? no.quantidade, no.unidade)}</span>
         </div>
         {mostrarCustos && <div className="text-right shrink-0"><span className="text-[11px] text-muted-foreground font-mono">{fmt(no.custoUnitario, 6)} €/ {no.unidadeCusto ?? no.unidade}</span><span className="block text-gold tabular-nums font-mono text-xs">{fmt(no.custoTotal, 4)} €</span></div>}
       </div>
-      {no.filhos?.map((f: any, i: number) => <ArvoreNo key={i} no={f} depth={depth + 1} mostrarCustos={mostrarCustos} />)}
+      {aberto && temFilhos && no.filhos.map((f: any, i: number) => <ArvoreNo key={i} no={f} depth={depth + 1} mostrarCustos={mostrarCustos} />)}
     </div>
   );
 }
