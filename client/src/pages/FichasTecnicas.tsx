@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { Plus, BookOpen, Trash2, Calculator, Pencil, Search } from "lucide-react";
+import { Plus, BookOpen, Trash2, Calculator, Pencil, Search, ChevronDown, ChevronRight, PackageSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,11 +16,18 @@ import { toast } from "sonner";
 
 const FAMILIAS = ["Cozinha Quente", "Sushi", "Pastelaria"] as const;
 type Familia = (typeof FAMILIAS)[number];
-type LinhaComponente = { componenteId: string; quantidade: string };
+type LinhaComponente = { componenteId: string; quantidade: string; tipoComponente: "artigo" | "ficha" };
 
 function fmt(n: number | string | null | undefined, d = 2) {
   if (n == null) return "—";
   return parseFloat(String(n)).toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+
+function ConteudoFichaExpandido({ fichaId }: { fichaId: number }) {
+  const { data: ficha } = trpc.fichas.obter.useQuery({ id: fichaId });
+  if (!ficha) return <div className="ml-3 border-l border-gold/30 bg-secondary/30 px-3 py-2 text-xs text-muted-foreground">A carregar ingredientes…</div>;
+  if (!ficha.componentes.length) return <div className="ml-3 border-l border-gold/30 bg-secondary/30 px-3 py-2 text-xs text-muted-foreground">Esta ficha ainda não tem componentes.</div>;
+  return <div className="ml-3 border-l border-gold/30 bg-secondary/30 px-3 py-2 text-xs">{ficha.componentes.map((componente: any) => <div key={componente.id} className="flex items-center gap-2 py-1 text-muted-foreground"><PackageSearch className="h-3.5 w-3.5 text-gold/70" /><span className="flex-1 text-foreground/85">{componente.nomeComponente}</span><span>{Number(componente.quantidade).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} {componente.unidade}</span></div>)}</div>;
 }
 
 function FormFicha({ fichaId, onClose }: { fichaId?: number; onClose: () => void }) {
@@ -34,8 +41,9 @@ function FormFicha({ fichaId, onClose }: { fichaId?: number; onClose: () => void
   const [precoVenda, setPrecoVenda] = useState("");
   const [unidadePrecoVenda, setUnidadePrecoVenda] = useState<"dose" | "un" | "pessoa" | "g">("dose");
   const [quantidadeMinimaVenda, setQuantidadeMinimaVenda] = useState("");
-  const [linhas, setLinhas] = useState<LinhaComponente[]>([{ componenteId: "", quantidade: "" }]);
+  const [linhas, setLinhas] = useState<LinhaComponente[]>([{ componenteId: "", quantidade: "", tipoComponente: "artigo" }]);
   const [fichaFonteId, setFichaFonteId] = useState<number | null>(null);
+  const [linhasExpandidas, setLinhasExpandidas] = useState<Set<number>>(new Set());
   const { data: fichaFonte } = trpc.fichas.obter.useQuery({ id: fichaFonteId ?? 0 }, { enabled: fichaFonteId !== null });
   const criar = trpc.fichas.criar.useMutation({ onSuccess: () => concluir("Ficha técnica criada com sucesso."), onError: (erro) => toast.error(erro.message) });
   const atualizar = trpc.fichas.atualizar.useMutation({ onSuccess: () => concluir("Ficha técnica atualizada."), onError: (erro) => toast.error(erro.message) });
@@ -51,24 +59,29 @@ function FormFicha({ fichaId, onClose }: { fichaId?: number; onClose: () => void
     setPrecoVenda(detalhe.precoVenda ?? "");
     setUnidadePrecoVenda(detalhe.unidadePrecoVenda ?? "dose");
     setQuantidadeMinimaVenda(detalhe.quantidadeMinimaVenda ?? "");
-    setLinhas(detalhe.componentes.length ? detalhe.componentes.map((linha) => ({ componenteId: String(linha.componenteId), quantidade: String(linha.quantidade) })) : [{ componenteId: "", quantidade: "" }]);
+    setLinhas(detalhe.componentes.length ? detalhe.componentes.map((linha) => ({ componenteId: String(linha.componenteId), quantidade: String(linha.quantidade), tipoComponente: linha.tipoReferencia === "ficha" ? "ficha" : "artigo" })) : [{ componenteId: "", quantidade: "", tipoComponente: "artigo" }]);
   }, [detalhe, fichaId]);
 
   useEffect(() => {
     if (!fichaFonte || fichaFonteId === null) return;
-    const importados = fichaFonte.componentes.map((linha) => ({ componenteId: String(linha.componenteId), quantidade: String(linha.quantidade) }));
+    const importados = fichaFonte.componentes.map((linha) => ({ componenteId: String(linha.componenteId), quantidade: String(linha.quantidade), tipoComponente: linha.tipoReferencia === "ficha" ? "ficha" as const : "artigo" as const }));
     if (!importados.length) toast.error("A ficha selecionada não tem componentes para copiar.");
     else { setLinhas((atuais) => [...atuais.filter((linha) => linha.componenteId || linha.quantidade), ...importados]); toast.success(`${importados.length} componentes copiados de ${fichaFonte.nome}.`); }
     setFichaFonteId(null);
   }, [fichaFonte, fichaFonteId]);
 
   const alterarLinha = (indice: number, patch: Partial<LinhaComponente>) => setLinhas((atuais) => atuais.map((linha, i) => i === indice ? { ...linha, ...patch } : linha));
-  const custoEstimado = useMemo(() => linhas.reduce((total, linha) => total + Number(linha.quantidade || 0) * Number(opcoes.find((artigo) => artigo.id === Number(linha.componenteId))?.custoMedioPonderado ?? 0), 0), [linhas, opcoes]);
+  const custoEstimado = useMemo(() => linhas.reduce((total, linha) => {
+    const custoUnitario = linha.tipoComponente === "ficha"
+      ? Number((fichas ?? []).find((ficha) => ficha.id === Number(linha.componenteId))?.custoCalculado ?? 0)
+      : Number(opcoes.find((artigo) => artigo.id === Number(linha.componenteId))?.custoMedioPonderado ?? 0);
+    return total + Number(linha.quantidade || 0) * custoUnitario;
+  }, 0), [linhas, opcoes, fichas]);
   const preco = Number(precoVenda || 0);
   const foodCost = preco > 0 ? (custoEstimado / preco) * 100 : null;
   const submeter = () => {
     if (!nome.trim()) return toast.error("Indica o nome da ficha técnica.");
-    const componentes = linhas.filter((linha) => linha.componenteId && Number(linha.quantidade) > 0).map((linha, ordem) => ({ componenteId: Number(linha.componenteId), quantidade: Number(linha.quantidade), unidade: opcoes.find((artigo) => artigo.id === Number(linha.componenteId))?.unidadeBase ?? "g", ordem }));
+    const componentes = linhas.filter((linha) => linha.componenteId && Number(linha.quantidade) > 0).map((linha, ordem) => ({ tipoComponente: linha.tipoComponente, componenteId: Number(linha.componenteId), quantidade: Number(linha.quantidade), unidade: linha.tipoComponente === "ficha" ? "dose" : opcoes.find((artigo) => artigo.id === Number(linha.componenteId))?.unidadeBase ?? "g", ordem }));
     if (!componentes.length) return toast.error("Adiciona pelo menos um componente com quantidade.");
     const minimo = quantidadeMinimaVenda ? Number(quantidadeMinimaVenda) : undefined;
     if (unidadePrecoVenda === "g" && (!minimo || minimo <= 0)) return toast.error("Indica o pedido mínimo em gramas para preço por peso.");
@@ -76,7 +89,7 @@ function FormFicha({ fichaId, onClose }: { fichaId?: number; onClose: () => void
     if (fichaId) atualizar.mutate({ id: fichaId, ...dados }); else criar.mutate(dados);
   };
   const aGuardar = criar.isPending || atualizar.isPending;
-  return <div className="space-y-4"><div className="grid grid-cols-1 sm:grid-cols-2 gap-3"><div className="sm:col-span-2"><label className="text-xs text-muted-foreground mb-1 block">Nome <span className="text-danger">*</span></label><Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex.: Nigiri de salmão" className="bg-input border-border" /></div><div><label className="text-xs text-muted-foreground mb-1 block">Família <span className="text-danger">*</span></label><select value={familia} onChange={(e) => setFamilia(e.target.value as Familia)} className="w-full h-9 rounded-md bg-input border border-border px-3 text-sm">{FAMILIAS.map((item) => <option key={item} value={item}>{item}</option>)}</select></div><div><label className="text-xs text-muted-foreground mb-1 block">Secção de menu</label><Input value={secaoMenu} onChange={(e) => setSecaoMenu(e.target.value)} placeholder="Ex.: SUSHI" className="bg-input border-border" /></div><div><label className="text-xs text-muted-foreground mb-1 block">Preço de venda (€)</label><Input type="number" min="0" step="0.01" value={precoVenda} onChange={(e) => setPrecoVenda(e.target.value)} placeholder="0,00" className="bg-input border-border" /></div><div><label className="text-xs text-muted-foreground mb-1 block">Unidade comercial</label><select value={unidadePrecoVenda} onChange={(e) => setUnidadePrecoVenda(e.target.value as typeof unidadePrecoVenda)} className="w-full h-9 rounded-md bg-input border border-border px-3 text-sm"><option value="dose">Por dose</option><option value="un">Por unidade</option><option value="pessoa">Por pessoa</option><option value="g">Por grama</option></select></div>{unidadePrecoVenda === "g" && <div><label className="text-xs text-muted-foreground mb-1 block">Pedido mínimo (g) <span className="text-danger">*</span></label><Input type="number" min="1" step="1" value={quantidadeMinimaVenda} onChange={(e) => setQuantidadeMinimaVenda(e.target.value)} placeholder="Ex.: 150" className="bg-input border-border" /></div>}</div><Card className="bg-primary/5 border-primary/20"><CardContent className="p-3 flex items-center gap-3"><Calculator className="w-5 h-5 text-gold" /><div className="flex-1"><p className="text-xs text-muted-foreground">Simulador de preço</p><p className="font-medium">Custo estimado: <span className="text-gold">{fmt(custoEstimado, 2)} €</span></p></div><div className="text-right"><p className="text-xs text-muted-foreground">Food Cost</p><p className={cn("font-medium", foodCost != null && foodCost > 30 ? "text-danger" : "text-success")}>{foodCost == null ? "—" : `${fmt(foodCost, 1)}%`}</p></div></CardContent></Card><div className="space-y-2"><div className="flex items-center justify-between"><div><p className="text-xs text-muted-foreground uppercase tracking-wide">Componentes</p><p className="text-[11px] text-muted-foreground">Pesquise ingredientes, receitas base ou fichas técnicas pelo nome. Ao selecionar uma ficha, os seus componentes são copiados.</p></div><Button type="button" size="sm" variant="outline" className="border-border h-7 text-xs" onClick={() => setLinhas((atuais) => [...atuais, { componenteId: "", quantidade: "" }])}><Plus className="w-3 h-3 mr-1" />Adicionar</Button></div>{linhas.map((linha, indice) => <div key={indice} className="flex gap-2"><SeletorComponentePesquisavel value={linha.componenteId} onChange={(componenteId) => alterarLinha(indice, { componenteId })} onSelecionarFicha={setFichaFonteId} opcoes={opcoesPesquisa} /><Input type="number" min="0.001" step="0.001" value={linha.quantidade} onChange={(e) => alterarLinha(indice, { quantidade: e.target.value })} placeholder="Qtd." className="w-24 bg-input border-border" /><Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-danger" disabled={linhas.length === 1} onClick={() => setLinhas((atuais) => atuais.filter((_, i) => i !== indice))}><Trash2 className="w-4 h-4" /></Button></div>)}</div><div className="flex justify-end gap-2 pt-2"><Button variant="outline" className="border-border" onClick={onClose}>Cancelar</Button><Button className="bg-primary text-primary-foreground" disabled={aGuardar} onClick={submeter}>{aGuardar ? "A guardar…" : fichaId ? "Guardar Alterações" : "Criar Ficha"}</Button></div></div>;
+  return <div className="space-y-4"><div className="grid grid-cols-1 sm:grid-cols-2 gap-3"><div className="sm:col-span-2"><label className="text-xs text-muted-foreground mb-1 block">Nome <span className="text-danger">*</span></label><Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex.: Nigiri de salmão" className="bg-input border-border" /></div><div><label className="text-xs text-muted-foreground mb-1 block">Família <span className="text-danger">*</span></label><select value={familia} onChange={(e) => setFamilia(e.target.value as Familia)} className="w-full h-9 rounded-md bg-input border border-border px-3 text-sm">{FAMILIAS.map((item) => <option key={item} value={item}>{item}</option>)}</select></div><div><label className="text-xs text-muted-foreground mb-1 block">Secção de menu</label><Input value={secaoMenu} onChange={(e) => setSecaoMenu(e.target.value)} placeholder="Ex.: SUSHI" className="bg-input border-border" /></div><div><label className="text-xs text-muted-foreground mb-1 block">Preço de venda (€)</label><Input type="number" min="0" step="0.01" value={precoVenda} onChange={(e) => setPrecoVenda(e.target.value)} placeholder="0,00" className="bg-input border-border" /></div><div><label className="text-xs text-muted-foreground mb-1 block">Unidade comercial</label><select value={unidadePrecoVenda} onChange={(e) => setUnidadePrecoVenda(e.target.value as typeof unidadePrecoVenda)} className="w-full h-9 rounded-md bg-input border border-border px-3 text-sm"><option value="dose">Por dose</option><option value="un">Por unidade</option><option value="pessoa">Por pessoa</option><option value="g">Por grama</option></select></div>{unidadePrecoVenda === "g" && <div><label className="text-xs text-muted-foreground mb-1 block">Pedido mínimo (g) <span className="text-danger">*</span></label><Input type="number" min="1" step="1" value={quantidadeMinimaVenda} onChange={(e) => setQuantidadeMinimaVenda(e.target.value)} placeholder="Ex.: 150" className="bg-input border-border" /></div>}</div><Card className="bg-primary/5 border-primary/20"><CardContent className="p-3 flex items-center gap-3"><Calculator className="w-5 h-5 text-gold" /><div className="flex-1"><p className="text-xs text-muted-foreground">Simulador de preço</p><p className="font-medium">Custo estimado: <span className="text-gold">{fmt(custoEstimado, 2)} €</span></p></div><div className="text-right"><p className="text-xs text-muted-foreground">Food Cost</p><p className={cn("font-medium", foodCost != null && foodCost > 30 ? "text-danger" : "text-success")}>{foodCost == null ? "—" : `${fmt(foodCost, 1)}%`}</p></div></CardContent></Card><div className="space-y-2"><div className="flex items-center justify-between"><div><p className="text-xs text-muted-foreground uppercase tracking-wide">Componentes</p><p className="text-[11px] text-muted-foreground">Pesquise ingredientes, receitas base ou fichas técnicas pelo nome. As fichas mantêm-se como componentes e podem ser expandidas.</p></div><Button type="button" size="sm" variant="outline" className="border-border h-7 text-xs" onClick={() => setLinhas((atuais) => [...atuais, { componenteId: "", quantidade: "", tipoComponente: "artigo" }])}><Plus className="w-3 h-3 mr-1" />Adicionar</Button></div>{linhas.map((linha, indice) => <div key={indice} className="flex gap-2"><SeletorComponentePesquisavel value={linha.componenteId} tipoSelecionado={linha.tipoComponente} onChange={(componenteId, tipoComponente = "artigo") => alterarLinha(indice, { componenteId, tipoComponente })} onSelecionarFicha={setFichaFonteId} permitirReferenciaFicha permitirExpansaoFicha fichaExpandida={linhasExpandidas.has(indice)} onAlternarFichaExpandida={() => setLinhasExpandidas((atuais) => { const proximo = new Set(atuais); if (proximo.has(indice)) proximo.delete(indice); else proximo.add(indice); return proximo; })} conteudoFichaExpandida={linha.tipoComponente === "ficha" && linha.componenteId ? <ConteudoFichaExpandido fichaId={Number(linha.componenteId)} /> : null} opcoes={opcoesPesquisa} /><Input type="number" min="0.001" step="0.001" value={linha.quantidade} onChange={(e) => alterarLinha(indice, { quantidade: e.target.value })} placeholder="Qtd." className="w-24 bg-input border-border" /><Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-danger" disabled={linhas.length === 1} onClick={() => setLinhas((atuais) => atuais.filter((_, i) => i !== indice))}><Trash2 className="w-4 h-4" /></Button></div>)}</div><div className="flex justify-end gap-2 pt-2"><Button variant="outline" className="border-border" onClick={onClose}>Cancelar</Button><Button className="bg-primary text-primary-foreground" disabled={aGuardar} onClick={submeter}>{aGuardar ? "A guardar…" : fichaId ? "Guardar Alterações" : "Criar Ficha"}</Button></div></div>;
 }
 
 export default function FichasTecnicas() {

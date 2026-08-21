@@ -16,6 +16,7 @@ export interface NoExplosao {
   artigoId: number;
   nome: string;
   tipo: string;
+  tipoReferencia?: "artigo" | "ficha";
   /** Quantidade nativa, usada em custos e movimentos de stock. */
   quantidade: number;
   /** Quantidade declarada na referência culinária, usada na interface. */
@@ -49,6 +50,25 @@ export async function detetarCiclo(
   return false;
 }
 
+/** Deteta referências circulares entre fichas técnicas aninhadas. */
+export async function detetarCicloFicha(
+  fichaId: number,
+  componenteFichaId: number,
+  visitados: Set<number> = new Set()
+): Promise<boolean> {
+  if (componenteFichaId === fichaId) return true;
+  if (visitados.has(componenteFichaId)) return false;
+  visitados.add(componenteFichaId);
+  const db = await getDb();
+  if (!db) return false;
+  const componentes = await db.select().from(fichasTecnicasComponentes)
+    .where(eq(fichasTecnicasComponentes.fichaId, componenteFichaId));
+  for (const componente of componentes) {
+    if (componente.tipoComponente === "ficha" && await detetarCicloFicha(fichaId, componente.componenteId, new Set(visitados))) return true;
+  }
+  return false;
+}
+
 /** Explode uma ficha técnica em árvore de componentes com custos */
 export async function explodirFicha(fichaId: number, doses: number = 1, nivel: number = 0): Promise<NoExplosao[]> {
   if (nivel > MAX_PROFUNDIDADE) throw new Error("Profundidade máxima de explosão atingida");
@@ -57,6 +77,28 @@ export async function explodirFicha(fichaId: number, doses: number = 1, nivel: n
   const componentes = await db.select().from(fichasTecnicasComponentes).where(eq(fichasTecnicasComponentes.fichaId, fichaId)).orderBy(fichasTecnicasComponentes.ordem);
   const nos: NoExplosao[] = [];
   for (const comp of componentes) {
+    if (comp.tipoComponente === "ficha") {
+      const [fichaComponente] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, comp.componenteId)).limit(1);
+      if (!fichaComponente) continue;
+      const quantidadeReferencia = parseFloat(comp.quantidade) * doses;
+      const filhos = await explodirFicha(fichaComponente.id, quantidadeReferencia, nivel + 1);
+      const custoTotal = calcularCustoNos(filhos);
+      nos.push({
+        artigoId: fichaComponente.id,
+        nome: fichaComponente.nome,
+        tipo: "ficha_tecnica",
+        tipoReferencia: "ficha",
+        quantidade: quantidadeReferencia,
+        quantidadeReferencia,
+        unidade: comp.unidade,
+        unidadeCusto: comp.unidade,
+        custoUnitario: quantidadeReferencia > 0 ? custoTotal / quantidadeReferencia : 0,
+        custoTotal,
+        filhos,
+        nivel,
+      });
+      continue;
+    }
     const [artigo] = await db.select().from(artigos).where(eq(artigos.id, comp.componenteId)).limit(1);
     if (!artigo) continue;
     const quantidadeReferencia = parseFloat(comp.quantidade) * doses;
@@ -148,6 +190,10 @@ export async function executarExplosaoVenda(input: {
   const proximaChave = () => input.idClienteBase ? `${input.idClienteBase}:mov:${sequenciaMovimento++}` : undefined;
 
   async function processarNo(no: NoExplosao): Promise<void> {
+    if (no.tipoReferencia === "ficha") {
+      for (const filho of no.filhos ?? []) await processarNo(filho);
+      return;
+    }
     const [artigo] = await db!.select().from(artigos).where(eq(artigos.id, no.artigoId)).limit(1);
     if (!artigo) return;
     if (artigo.tipo === "receita_base" && input.comportamento !== "sempre") {

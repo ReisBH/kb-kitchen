@@ -36,4 +36,18 @@ describe("fichas.listar após importação", () => {
     expect(publicadas.length).toBeGreaterThan(0);
     expect(publicadas.every((ficha) => ficha.estadoPublicacao === "publicada" && ficha.ativo)).toBe(true);
   }, 20_000);
+
+  it("mantém a Bento Kabuki composta por cinco fichas técnicas expansíveis", async () => {
+    const bento = await appRouter.createCaller(createAuthenticatedContext()).fichas.obter({ id: 30015 });
+    expect(bento).not.toBeNull();
+    expect(bento?.componentes.map((componente) => componente.nomeComponente)).toEqual([
+      "Tsukemono Aper",
+      "Maguro Korokke Aper",
+      "Gyoza Porco",
+      "Nasu no miso Aper",
+      "Mexilhão Aper",
+    ]);
+    expect(bento?.componentes.every((componente) => componente.tipoReferencia === "ficha")).toBe(true);
+    expect(bento?.arvore.every((no) => no.tipoReferencia === "ficha" && (no.filhos?.length ?? 0) > 0)).toBe(true);
+  }, 20_000);
 });

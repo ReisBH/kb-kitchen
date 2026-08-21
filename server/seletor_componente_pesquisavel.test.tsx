@@ -43,4 +43,14 @@ describe("SeletorComponentePesquisavel", () => {
     await user.click(screen.getByRole("button", { name: /kabuki sushi/i }));
     expect(onSelecionarFicha).toHaveBeenCalledWith(3);
   });
+
+  it("mostra o conteúdo aninhado quando a ficha técnica é expandida", async () => {
+    const user = userEvent.setup();
+    const alternar = vi.fn();
+    render(<SeletorComponentePesquisavel value="3" tipoSelecionado="ficha" onChange={vi.fn()} opcoes={opcoes} permitirReferenciaFicha permitirExpansaoFicha fichaExpandida={false} onAlternarFichaExpandida={alternar} conteudoFichaExpandida={<p>Ingredientes da ficha</p>} />);
+
+    await user.click(screen.getByTitle("Mostrar ingredientes"));
+    expect(alternar).toHaveBeenCalledOnce();
+    expect(screen.queryByText("Ingredientes da ficha")).toBeNull();
+  });
 });

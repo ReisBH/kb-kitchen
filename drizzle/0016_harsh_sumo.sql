@@ -1,0 +1,1 @@
+ALTER TABLE `fichas_tecnicas_componentes` ADD `tipoComponente` enum('artigo','ficha') DEFAULT 'artigo' NOT NULL;

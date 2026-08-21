@@ -340,7 +340,9 @@ export type InsertFichaTecnica = typeof fichasTecnicas.$inferInsert;
 export const fichasTecnicasComponentes = mysqlTable("fichas_tecnicas_componentes", {
   id: int("id").autoincrement().primaryKey(),
   fichaId: int("fichaId").notNull(),
-  componenteId: int("componenteId").notNull(), // artigo (qualquer tipo)
+  // Um componente pode ser um artigo (ingrediente/receita) ou outra ficha técnica.
+  tipoComponente: mysqlEnum("tipoComponente", ["artigo", "ficha"]).default("artigo").notNull(),
+  componenteId: int("componenteId").notNull(),
   quantidade: decimal("quantidade", { precision: 12, scale: 4 }).notNull(),
   unidade: varchar("unidade", { length: 20 }).notNull(),
   ordem: int("ordem").default(0),

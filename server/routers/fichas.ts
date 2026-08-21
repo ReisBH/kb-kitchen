@@ -5,7 +5,7 @@ import { TRPCError } from "@trpc/server";
 import { protectedProcedure, roleProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { fichasTecnicas, fichasTecnicasComponentes, artigos, vendas, vendaLinhas, movimentos, mapaPos } from "../../drizzle/schema";
-import { detetarCiclo, explodirFicha, calcularCustoFicha, executarExplosaoVenda } from "../engine/explosao";
+import { detetarCiclo, detetarCicloFicha, explodirFicha, calcularCustoFicha, executarExplosaoVenda } from "../engine/explosao";
 import { mensagemBloqueioEliminacaoFicha } from "../eliminacao_fichas";
 import { validarQuantidadeComercial } from "../regras_venda_fichas";
 
@@ -56,23 +56,25 @@ export const fichasRouter = router({
       const mostrarCustosDetalhados = ["admin", "head_chef", "sub_chefe"].includes(ctx.user.role);
       const [ficha] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, input.id)).limit(1);
       if (!ficha) return null;
-      const componentes = await db.select({
-        comp: fichasTecnicasComponentes,
-        nomeComponente: artigos.nome,
-        tipoComponente: artigos.tipo,
-        custoComponente: artigos.custoMedioPonderado,
-        unidadeBase: artigos.unidadeBase,
-      }).from(fichasTecnicasComponentes)
-        .leftJoin(artigos, eq(fichasTecnicasComponentes.componenteId, artigos.id))
+      const componentesRegistados = await db.select().from(fichasTecnicasComponentes)
         .where(eq(fichasTecnicasComponentes.fichaId, input.id))
         .orderBy(fichasTecnicasComponentes.ordem);
+      const componentes = await Promise.all(componentesRegistados.map(async (comp) => {
+        if (comp.tipoComponente === "ficha") {
+          const [fichaComponente] = await db.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, comp.componenteId)).limit(1);
+          const custoComponente = fichaComponente ? await calcularCustoFicha(fichaComponente.id) : null;
+          return { ...comp, nomeComponente: fichaComponente?.nome ?? "Ficha técnica indisponível", tipoComponente: "ficha_tecnica", tipoReferencia: "ficha" as const, custoComponente, unidadeBase: "dose" };
+        }
+        const [artigo] = await db.select().from(artigos).where(eq(artigos.id, comp.componenteId)).limit(1);
+        return { ...comp, nomeComponente: artigo?.nome ?? "Artigo indisponível", tipoComponente: artigo?.tipo ?? "ingrediente", tipoReferencia: "artigo" as const, custoComponente: artigo?.custoMedioPonderado ?? null, unidadeBase: artigo?.unidadeBase ?? comp.unidade };
+      }));
       const arvoreCompleta = await explodirFicha(input.id, 1);
       const custoCalculado = await calcularCustoFicha(input.id);
       const preco = parseFloat(ficha.precoVenda ?? "0");
       const foodCostPct = preco > 0 ? (custoCalculado / preco) * 100 : null;
       return {
         ...ficha,
-        componentes: componentes.map(c => ({ ...c.comp, nomeComponente: c.nomeComponente, tipoComponente: c.tipoComponente, custoComponente: mostrarCustosDetalhados ? c.custoComponente : null, unidadeBase: c.unidadeBase })),
+        componentes: componentes.map(c => ({ ...c, custoComponente: mostrarCustosDetalhados ? c.custoComponente : null })),
         arvore: mostrarCustosDetalhados ? arvoreCompleta : arvoreCompleta.map(removerCustosDaArvore),
         custoCalculado: mostrarCustosDetalhados ? custoCalculado : null,
         foodCostPct: mostrarCustosDetalhados ? foodCostPct : null,
@@ -95,6 +97,7 @@ export const fichasRouter = router({
       alergenios: z.number().default(0),
       explodir_receitas: z.enum(["auto", "sempre", "nunca"]).default("auto"),
       componentes: z.array(z.object({
+        tipoComponente: z.enum(["artigo", "ficha"]).default("artigo"),
         componenteId: z.number(),
         quantidade: z.number().positive(),
         unidade: z.string(),
@@ -144,6 +147,7 @@ export const fichasRouter = router({
       ativo: z.boolean().optional(),
       explodir_receitas: z.enum(["auto", "sempre", "nunca"]).optional(),
       componentes: z.array(z.object({
+        tipoComponente: z.enum(["artigo", "ficha"]).default("artigo"),
         componenteId: z.number(),
         quantidade: z.number().positive(),
         unidade: z.string(),
@@ -163,6 +167,11 @@ export const fichasRouter = router({
       }
       await db.update(fichasTecnicas).set(updateData).where(eq(fichasTecnicas.id, id));
       if (componentes !== undefined) {
+        for (const componente of componentes) {
+          if (componente.tipoComponente === "ficha" && await detetarCicloFicha(id, componente.componenteId)) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Não é permitido criar ciclos entre fichas técnicas." });
+          }
+        }
         await db.delete(fichasTecnicasComponentes).where(eq(fichasTecnicasComponentes.fichaId, id));
         if (componentes.length > 0) {
           await db.insert(fichasTecnicasComponentes).values(

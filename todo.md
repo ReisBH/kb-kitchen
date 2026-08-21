@@ -235,3 +235,8 @@
 - [x] Stock: definir comportamento seguro para artigos sem stock máximo configurado
 - [x] Stock: testar e publicar a regra de reposição até ao máximo
 - [x] Stock: inferir a conversão padrão kg→g e l→ml quando o fator de compra ainda está definido como 1
+- [x] Bento Box: auditar as fichas componentes e a composição atual antes da substituição
+- [x] Bento Box: substituir componentes diretos pelas fichas Tsukemono, Maguro Korokke, Gyoza, Nasu no Miso e Mexilhão Aper
+- [x] Fichas: adicionar controlo de expansão à esquerda para revelar componentes aninhados por pedido
+- [x] Bento Box: validar custo, composição expandida e publicação do novo layout
+- [x] Bento Box: associar Gyoza Porco como Gyoza Aper, com uma dose na composição confirmada
