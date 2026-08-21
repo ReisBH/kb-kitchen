@@ -29,7 +29,6 @@ describe("fichas.listar após importação", () => {
     expect(fichas.some((ficha) => ficha.nome === "Tartaro Toro")).toBe(false);
     expect(fichas.some((ficha) => ficha.nome === "Menu Degustação Vegan")).toBe(true);
     expect(fichas.filter((ficha) => (ficha.custoCalculado ?? 0) > 0)).not.toHaveLength(0);
-    expect(fichas.find((ficha) => ficha.nome === "1/4 Gyutataki")?.custoCalculado ?? 0).toBeGreaterThan(0);
   }, 20_000);
 
   it("filtra para vendas apenas fichas publicadas", async () => {

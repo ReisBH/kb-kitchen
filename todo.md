@@ -230,3 +230,8 @@
 - [x] Ingredientes: apresentar categorias existentes numa lista selecionável na criação de artigo
 - [x] Ingredientes: permitir criar uma categoria nova diretamente no seletor de categorias
 - [x] Ingredientes: validar a criação de artigos com e sem fornecedor e com categoria nova
+- [x] Stock: apresentar o stock máximo na tabela de ingredientes
+- [x] Stock: calcular pedidos de compra para repor artigos abaixo do mínimo até ao máximo definido
+- [x] Stock: definir comportamento seguro para artigos sem stock máximo configurado
+- [x] Stock: testar e publicar a regra de reposição até ao máximo
+- [x] Stock: inferir a conversão padrão kg→g e l→ml quando o fator de compra ainda está definido como 1

@@ -177,6 +177,10 @@ export default function IngredienteDetalhe() {
                 <Input type="number" step="0.001" value={editData.stockMinimo ?? 0} onChange={e => setEditData(p => ({ ...p, stockMinimo: parseFloat(e.target.value) }))} className="bg-input border-border" />
               </div>
               <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Stock máximo</label>
+                <Input type="number" min="0" step="0.001" value={editData.stockMaximo ?? ""} onChange={e => setEditData(p => ({ ...p, stockMaximo: e.target.value === "" ? undefined : parseFloat(e.target.value) }))} placeholder="Repor até este nível" className="bg-input border-border" />
+              </div>
+              <div>
                 <label className="text-xs text-muted-foreground mb-1 block">Fornecedor</label>
                 <Select value={editData.fornecedorId ? String(editData.fornecedorId) : "__none__"} onValueChange={v => setEditData(p => ({ ...p, fornecedorId: v === "__none__" ? null : parseInt(v) }))}>
                   <SelectTrigger className="bg-input border-border h-9"><SelectValue placeholder="— sem fornecedor —" /></SelectTrigger>
@@ -228,6 +232,7 @@ export default function IngredienteDetalhe() {
           {[
             { label: "Stock Actual", value: `${parseFloat(String(data.stockAtual)).toFixed(2)} ${data.unidadeBase}`, highlight: true },
             { label: "Stock Mínimo", value: `${fmt(parseFloat(data.stockMinimo ?? "0"), 2)} ${data.unidadeBase}` },
+            { label: "Stock Máximo", value: data.stockMaximo == null ? "—" : `${fmt(parseFloat(data.stockMaximo), 2)} ${data.unidadeBase}` },
             { label: "Custo Médio", value: `${fmt(parseFloat(data.custoMedioPonderado ?? "0") * 1000)} €/kg` },
             { label: "Valor em Stock", value: `${fmt(data.stockAtual * parseFloat(data.custoMedioPonderado ?? "0"), 2)} €` },
           ].map(({ label, value, highlight }) => (

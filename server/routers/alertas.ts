@@ -5,6 +5,7 @@ import { getDb } from "../db";
 import { artigos, fornecedores, notasEncomenda, notasEncomendaLinhas } from "../../drizzle/schema";
 import { calcularStockMultiplos } from "../engine/stock";
 import { notifyOwner } from "../_core/notification";
+import { calcularReposicaoAteMaximo } from "../regras_reposicao_stock";
 
 export const alertasRouter = router({
   verificar: protectedProcedure.query(async () => {
@@ -23,8 +24,16 @@ export const alertasRouter = router({
       const stock = stockMap.get(a.id) ?? 0;
       const minimo = parseFloat(a.stockMinimo ?? "0");
       const ponto = parseFloat(a.pontoEncomenda ?? "0");
+      const reposicao = calcularReposicaoAteMaximo({
+        stockAtual: stock,
+        stockMinimo: a.stockMinimo,
+        stockMaximo: a.stockMaximo,
+        fatorConversao: a.fatorConversao,
+        unidadeBase: a.unidadeBase,
+        unidadeCompra: a.unidadeCompra,
+      });
       if (stock < 0) stockNegativo.push({ ...a, stockAtual: stock });
-      else if (stock < minimo) abaixoMinimo.push({ ...a, stockAtual: stock });
+      else if (stock < minimo) abaixoMinimo.push({ ...a, stockAtual: stock, reposicao });
       else if (ponto > 0 && stock <= ponto) noPontoEncomenda.push({ ...a, stockAtual: stock });
     }
 
@@ -48,14 +57,21 @@ export const alertasRouter = router({
       const stockMap = await calcularStockMultiplos(ids);
 
       // Agrupar por fornecedor
-      const porFornecedor = new Map<number, typeof todosArtigos>();
+      const porFornecedor = new Map<number, Array<{ row: typeof todosArtigos[number]; reposicao: NonNullable<ReturnType<typeof calcularReposicaoAteMaximo>> }>>();
       for (const row of todosArtigos) {
         const stock = stockMap.get(row.artigo.id) ?? 0;
-        const minimo = parseFloat(row.artigo.stockMinimo ?? "0");
-        if (stock >= minimo) continue; // Não precisa de encomenda
+        const reposicao = calcularReposicaoAteMaximo({
+          stockAtual: stock,
+          stockMinimo: row.artigo.stockMinimo,
+          stockMaximo: row.artigo.stockMaximo,
+          fatorConversao: row.artigo.fatorConversao,
+          unidadeBase: row.artigo.unidadeBase,
+          unidadeCompra: row.artigo.unidadeCompra,
+        });
+        if (!reposicao) continue;
         const fId = row.artigo.fornecedorId!;
         if (!porFornecedor.has(fId)) porFornecedor.set(fId, []);
-        porFornecedor.get(fId)!.push(row);
+        porFornecedor.get(fId)!.push({ row, reposicao });
       }
 
       const notasCriadas: number[] = [];
@@ -68,17 +84,14 @@ export const alertasRouter = router({
         } as any);
         const notaId = (rn as any).insertId as number;
 
-        for (const { artigo } of linhas) {
-          const stock = stockMap.get(artigo.id) ?? 0;
-          const maximo = parseFloat(artigo.stockMaximo ?? "0");
-          const qtdSugerida = Math.max(0, maximo - stock);
-          if (qtdSugerida <= 0) continue;
+        for (const { row, reposicao } of linhas) {
+          const { artigo } = row;
           await db.insert(notasEncomendaLinhas).values({
             notaId,
             artigoId: artigo.id,
-            quantidade: qtdSugerida.toFixed(3),
-            unidade: artigo.unidadeBase,
-            precoEstimado: artigo.custoMedioPonderado,
+            quantidade: reposicao.quantidadeEncomenda.toFixed(3),
+            unidade: reposicao.unidadeEncomenda,
+            precoEstimado: (parseFloat(artigo.custoMedioPonderado ?? "0") * reposicao.fatorPrecoEstimado).toFixed(6),
           } as any);
         }
         notasCriadas.push(notaId);

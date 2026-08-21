@@ -68,6 +68,7 @@ export default function Alertas() {
                     <div className="text-right tabular-nums">
                       <span className="text-warning">{fmt(a.stockAtual)} {a.unidadeBase}</span>
                       <span className="text-muted-foreground text-xs ml-2">/ mín {fmt(parseFloat(a.stockMinimo ?? "0"))}</span>
+                      {a.reposicao && <span className="text-muted-foreground text-xs ml-2">→ pedir {fmt(a.reposicao.quantidadeEncomenda)} {a.reposicao.unidadeEncomenda} {a.reposicao.usaStockMaximo ? `até ${fmt(a.reposicao.alvoEmBase)} ${a.unidadeBase}` : "até ao mínimo"}</span>}
                     </div>
                   </div>
                 ))}
@@ -136,4 +137,3 @@ export default function Alertas() {
     </div>
   );
 }
-

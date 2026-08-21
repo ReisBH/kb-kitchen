@@ -116,6 +116,10 @@ function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
           <Input {...register("stockMinimo")} type="number" step="0.001" defaultValue="0" className="bg-input border-border" />
         </div>
         <div>
+          <label className="text-xs text-muted-foreground mb-1 block">Stock máximo</label>
+          <Input {...register("stockMaximo")} type="number" min="0" step="0.001" placeholder="Repor até este nível" className="bg-input border-border" />
+        </div>
+        <div>
           <label className="text-xs text-muted-foreground mb-1 block">Fornecedor</label>
           <select {...register("fornecedorId")} className="w-full h-9 rounded-md bg-input border border-border text-sm px-3">
             <option value="">— sem fornecedor —</option>
@@ -237,6 +241,7 @@ export default function Ingredientes() {
                 <th className="text-left px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Categoria</th>
                 <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Stock Actual</th>
                 <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Mínimo</th>
+                <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Máximo</th>
                 <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Unid.</th>
                 <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Custo Médio</th>
                 <th className="text-right px-4 py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium">Valor em Stock</th>
@@ -261,6 +266,9 @@ export default function Ingredientes() {
                     </td>
                     <td className="px-4 py-3 text-right text-muted-foreground font-mono">
                       {fmt(parseFloat(a.stockMinimo ?? "0"), 2)} {a.unidadeBase}
+                    </td>
+                    <td className="px-4 py-3 text-right text-muted-foreground font-mono">
+                      {a.stockMaximo == null ? "—" : `${fmt(parseFloat(a.stockMaximo), 2)} ${a.unidadeBase}`}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`text-xs font-mono px-1.5 py-0.5 rounded border ${a.unidadeBase === "ml" ? "border-info/40 text-info bg-info/10" : a.unidadeBase === "un" ? "border-muted-foreground/30 text-muted-foreground" : "border-success/40 text-success bg-success/10"}`}>
