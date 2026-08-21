@@ -1,5 +1,7 @@
 import { storageGetSignedUrl } from "./storage";
 
+export const MODELO_GEMINI_FATURAS = "gemini-3.6-flash";
+
 export type LinhaFaturaGemini = {
   descricao: string;
   quantidade: number;
@@ -155,7 +157,7 @@ export async function extrairFaturaComGemini(imagemKey: string, imagemUrl?: stri
   if (bytes.length === 0 || bytes.length > 20 * 1024 * 1024) throw new Error("A imagem da fatura deve ter entre 1 byte e 20 MB.");
   const mimeType = ficheiro.headers.get("content-type")?.split(";")[0] || mimeTypePorChave(chaveEfetiva);
 
-  const resposta = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
+  const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODELO_GEMINI_FATURAS}:generateContent`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": chaveApi },
     body: JSON.stringify({

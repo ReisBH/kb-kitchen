@@ -258,3 +258,5 @@
 - [x] Faturas: testar e publicar a correção de carregamento móvel
 - [x] Faturas: recuperar a imagem guardada no armazenamento antes da análise Gemini no ambiente publicado
 - [x] Faturas: testar e publicar a correção de acesso ao ficheiro móvel
+- [x] Faturas: selecionar um modelo Gemini disponível para substituir o endpoint que devolve 404
+- [x] Faturas: testar e publicar a correção de análise Gemini
