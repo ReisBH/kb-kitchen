@@ -246,3 +246,7 @@
 - [x] Detalhes: testar e publicar a composição condensada em fichas e receitas
 - [x] Ingredientes: normalizar o campo Stock máximo no formulário para evitar erro de validação ao criar artigo
 - [x] Fichas: permitir expandir receitas base aninhadas no editor de composição
+- [x] Faturas: substituir a extração OCR atual pela leitura estruturada através de Gemini
+- [x] Faturas: criar ficha de conferência editável com fornecedor, vencimento, total, IVA e linhas de produto
+- [x] Contas a pagar: criar lista de faturas pendentes e atrasadas calculadas pela data de vencimento
+- [x] Faturas: testar e publicar o novo fluxo de leitura e conferência

@@ -471,6 +471,31 @@ export const documentosOcr = mysqlTable("documentos_ocr", {
 export type DocumentoOcr = typeof documentosOcr.$inferSelect;
 export type InsertDocumentoOcr = typeof documentosOcr.$inferInsert;
 
+// ─── CONTAS A PAGAR (faturas de fornecedor confirmadas) ───────────────────────
+export const contasPagar = mysqlTable("contas_pagar", {
+  id: int("id").autoincrement().primaryKey(),
+  documentoOcrId: int("documentoOcrId").notNull().unique(),
+  fornecedorId: int("fornecedorId"),
+  fornecedorNome: varchar("fornecedorNome", { length: 255 }).notNull(),
+  nifFornecedor: varchar("nifFornecedor", { length: 32 }),
+  numeroFatura: varchar("numeroFatura", { length: 100 }),
+  dataEmissao: date("dataEmissao"),
+  dataVencimento: date("dataVencimento"),
+  condicoesPagamento: varchar("condicoesPagamento", { length: 255 }),
+  valorTotal: decimal("valorTotal", { precision: 12, scale: 2 }).notNull(),
+  estadoPagamento: mysqlEnum("estadoPagamento", ["pendente", "paga"]).default("pendente").notNull(),
+  pagoEm: timestamp("pagoEm"),
+  utilizadorId: int("utilizadorId"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (t) => [
+  index("cp_vencimento_idx").on(t.dataVencimento),
+  index("cp_estado_idx").on(t.estadoPagamento),
+  index("cp_fornecedor_idx").on(t.fornecedorId),
+]);
+export type ContaPagar = typeof contasPagar.$inferSelect;
+export type InsertContaPagar = typeof contasPagar.$inferInsert;
+
 // ─── ALIASES DE FORNECEDOR (emparelhamento OCR → artigo) ──────────────────────
 export const aliasesFornecedor = mysqlTable("aliases_fornecedor", {
   id: int("id").autoincrement().primaryKey(),

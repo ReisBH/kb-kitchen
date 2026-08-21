@@ -24,7 +24,7 @@ const ALL_NAV_ITEMS = [
   { href: "/movimentos", label: "Livro de Movimentos", icon: ClipboardList },
   { href: "/inventario", label: "Inventário", icon: TrendingDown },
   { href: "/alertas", label: "Alertas e Encomendas", icon: Bell },
-  { href: "/ocr/faturas", label: "OCR — Faturas", icon: FileImage },
+  { href: "/ocr/faturas", label: "Leitor de Faturas", icon: FileImage },
   { href: "/ocr/fecho-caixa", label: "OCR — Fecho de Caixa", icon: Receipt },
   { href: "/mapa-pos", label: "Mapa POS", icon: Link2, roles: ["admin", "head_chef", "sub_chefe"] },
   { href: "/aprovacoes", label: "Aprovações", icon: ShieldCheck, roles: ["admin", "head_chef"] },

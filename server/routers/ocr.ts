@@ -3,10 +3,12 @@ import { eq, and, like, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, roleProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { documentosOcr, aliasesFornecedor, mapaPos, artigos, fichasTecnicas, fornecedores, vendas, vendaLinhas } from "../../drizzle/schema";
+import { documentosOcr, contasPagar, aliasesFornecedor, mapaPos, artigos, fichasTecnicas, fornecedores, vendas, vendaLinhas } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
-import { registarMovimento } from "../engine/stock";
+import { converterParaUnidadeBase, registarMovimento } from "../engine/stock";
 import { calcularCustoFicha, executarExplosaoVenda } from "../engine/explosao";
+import { extrairFaturaComGemini } from "../faturasGemini";
+import { calcularEstadoContaPagar } from "../contasPagar";
 
 export const ocrRouter = router({
   processarFatura: protectedProcedure
@@ -30,55 +32,28 @@ export const ocrRouter = router({
       const docId = (r as any).insertId as number;
 
       try {
-        const response = await invokeLLM({
-          messages: [
-            {
-              role: "system",
-              content: `És um assistente especializado em extração de dados de faturas de fornecedores portugueses. Extrai os dados em JSON estrito, sem preâmbulo nem blocos de código markdown. Responde APENAS com o JSON.`,
-            },
-            {
-              role: "user",
-              content: [
-                {
-                  type: "image_url",
-                  image_url: { url: input.imagemUrl, detail: "high" },
-                },
-                {
-                  type: "text",
-                  text: `Extrai desta fatura os seguintes dados em JSON:\n{\n  "fornecedor": "nome do fornecedor",\n  "nif": "NIF do fornecedor",\n  "numero": "número do documento",\n  "data": "YYYY-MM-DD",\n  "linhas": [\n    {\n      "descricao": "descrição do artigo",\n      "quantidade": 0.0,\n      "unidade": "kg/un/l/etc",\n      "precoUnitario": 0.00,\n      "totalSemIva": 0.00,\n      "totalComIva": 0.00,\n      "confianca": "alta/media/baixa"\n    }\n  ]\n}`,
-                },
-              ],
-            },
-          ],
-        });
-
-        const rawContent = response.choices[0]?.message?.content ?? "{}";
-        const content = typeof rawContent === "string" ? rawContent : JSON.stringify(rawContent);
-        let dadosExtraidos: any;
-        try {
-          dadosExtraidos = JSON.parse(content);
-        } catch {
-          const match = content.match(/\{[\s\S]*\}/);
-          dadosExtraidos = match ? JSON.parse(match[0]) : {};
-        }
+        const dadosExtraidos = await extrairFaturaComGemini(input.imagemKey);
+        const fornecedorEmparelhado = input.fornecedorId ? null : await emparelharFornecedor(dadosExtraidos.fornecedor, dadosExtraidos.nif);
+        const fornecedorId = input.fornecedorId ?? fornecedorEmparelhado?.id;
 
         // Tentar emparelhar linhas com artigos via aliases
         const linhasComEmparelhamento = await Promise.all(
           (dadosExtraidos.linhas ?? []).map(async (linha: any) => {
-            const artigoEmparelhado = await emparelharArtigo(linha.descricao, input.fornecedorId);
+            const artigoEmparelhado = await emparelharArtigo(linha.descricao, fornecedorId);
             return { ...linha, artigoEmparelhado };
           })
         );
-        dadosExtraidos.linhas = linhasComEmparelhamento;
+        const dadosComEmparelhamentos = { ...dadosExtraidos, fornecedorEmparelhado, linhas: linhasComEmparelhamento };
 
         await db.update(documentosOcr).set({
           estado: "em_revisao",
-          dadosExtraidos: JSON.stringify(dadosExtraidos),
-          dataDocumento: dadosExtraidos.data ? new Date(dadosExtraidos.data) : null,
+          dadosExtraidos: JSON.stringify(dadosComEmparelhamentos),
+          fornecedorId,
+          dataDocumento: dadosExtraidos.dataEmissao ? new Date(`${dadosExtraidos.dataEmissao}T12:00:00Z`) : null,
           numeroDocumento: dadosExtraidos.numero,
         }).where(eq(documentosOcr.id, docId));
 
-        return { docId, dadosExtraidos };
+        return { docId, dadosExtraidos: dadosComEmparelhamentos };
       } catch (err: any) {
         await db.update(documentosOcr).set({ estado: "erro", erroMsg: err.message })
           .where(eq(documentosOcr.id, docId));
@@ -160,12 +135,26 @@ export const ocrRouter = router({
   confirmarFatura: protectedProcedure
     .input(z.object({
       docId: z.number(),
+      fornecedorId: z.number().optional(),
+      fornecedorNome: z.string().min(1),
+      nifFornecedor: z.string().optional(),
+      numeroFatura: z.string().optional(),
+      dataEmissao: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      dataVencimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      condicoesPagamento: z.string().optional(),
+      valorTotal: z.number().nonnegative(),
       linhas: z.array(z.object({
         descricao: z.string(),
-        artigoId: z.number(),
-        quantidade: z.number().positive(),
+        artigoId: z.number().optional(),
+        quantidade: z.number().nonnegative(),
         unidade: z.string(),
-        precoUnitario: z.number().nonnegative(),
+        pesoOuUnidade: z.string().optional(),
+        precoPorUnidade: z.number().nonnegative(),
+        taxaIva: z.number().nonnegative(),
+        valorIva: z.number().nonnegative(),
+        valorLinha: z.number().nonnegative(),
+        confianca: z.enum(["alta", "media", "baixa"]).default("media"),
+        incluir: z.boolean().default(true),
         guardarAlias: z.boolean().default(true),
       })),
     }))
@@ -180,28 +169,57 @@ export const ocrRouter = router({
 
         for (let indice = 0; indice < input.linhas.length; indice++) {
           const linha = input.linhas[indice];
+          if (!linha.incluir || !linha.artigoId || linha.quantidade <= 0) continue;
           const [artigo] = await tx.select().from(artigos).where(eq(artigos.id, linha.artigoId)).limit(1);
           if (!artigo) throw new Error(`Artigo ${linha.artigoId} não encontrado`);
+          const quantidadeBase = converterParaUnidadeBase(linha.quantidade, linha.unidade, artigo.unidadeBase, parseFloat(artigo.fatorConversao ?? "1"), artigo.densidade ? parseFloat(artigo.densidade) : null);
+          if (!Number.isFinite(quantidadeBase) || quantidadeBase <= 0) throw new Error(`Quantidade inválida para “${linha.descricao}”.`);
+          const custoUnitarioBase = (linha.precoPorUnidade * linha.quantidade) / quantidadeBase;
           await registarMovimento({
             artigoId: linha.artigoId,
             tipo: "entrada_compra",
-            quantidade: linha.quantidade,
-            custoUnitario: linha.precoUnitario,
+            quantidade: quantidadeBase,
+            custoUnitario: custoUnitarioBase,
             documentoId: `ocr_${input.docId}`,
             documentoTipo: "fatura",
             origem: "fatura",
             idCliente: `ocr-fatura-${input.docId}:${indice}`,
             utilizadorId: ctx.user?.id,
+            dataMovimento: input.dataEmissao ? new Date(`${input.dataEmissao}T12:00:00Z`) : undefined,
           }, tx as any);
 
           if (linha.guardarAlias) {
-            await tx.insert(aliasesFornecedor).values({ fornecedorId: doc.fornecedorId, alias: linha.descricao.toUpperCase().trim(), artigoId: linha.artigoId } as any)
+            await tx.insert(aliasesFornecedor).values({ fornecedorId: input.fornecedorId ?? doc.fornecedorId, alias: linha.descricao.toUpperCase().trim(), artigoId: linha.artigoId } as any)
               .onDuplicateKeyUpdate({ set: { artigoId: linha.artigoId } });
           }
         }
-        await tx.update(documentosOcr).set({ estado: "confirmado" }).where(eq(documentosOcr.id, input.docId));
+        const dadosConfirmados = { fornecedor: input.fornecedorNome, nif: input.nifFornecedor, numero: input.numeroFatura, dataEmissao: input.dataEmissao, dataVencimento: input.dataVencimento, condicoesPagamento: input.condicoesPagamento, valorTotal: input.valorTotal, linhas: input.linhas };
+        await tx.update(documentosOcr).set({ estado: "confirmado", fornecedorId: input.fornecedorId ?? doc.fornecedorId, dataDocumento: input.dataEmissao ? new Date(`${input.dataEmissao}T12:00:00Z`) : doc.dataDocumento, numeroDocumento: input.numeroFatura ?? doc.numeroDocumento, dadosExtraidos: JSON.stringify(dadosConfirmados) }).where(eq(documentosOcr.id, input.docId));
+        await tx.insert(contasPagar).values({ documentoOcrId: input.docId, fornecedorId: input.fornecedorId ?? doc.fornecedorId, fornecedorNome: input.fornecedorNome.trim(), nifFornecedor: input.nifFornecedor?.trim() || null, numeroFatura: input.numeroFatura?.trim() || null, dataEmissao: input.dataEmissao ?? null, dataVencimento: input.dataVencimento ?? null, condicoesPagamento: input.condicoesPagamento?.trim() || null, valorTotal: input.valorTotal.toFixed(2), utilizadorId: ctx.user?.id } as any);
         return { success: true, duplicado: false };
       });
+    }),
+
+  listarContasPagar: protectedProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) return [];
+    const contas = await db.select({ conta: contasPagar, fornecedorNomeRegistado: fornecedores.nome }).from(contasPagar)
+      .leftJoin(fornecedores, eq(contasPagar.fornecedorId, fornecedores.id))
+      .orderBy(contasPagar.dataVencimento);
+    return contas.map(({ conta, fornecedorNomeRegistado }) => ({
+      ...conta,
+      fornecedorNomeApresentacao: fornecedorNomeRegistado ?? conta.fornecedorNome,
+      estado: calcularEstadoContaPagar(conta.estadoPagamento, conta.dataVencimento),
+    }));
+  }),
+
+  marcarContaPaga: roleProcedure(["admin", "head_chef"])
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Base de dados não disponível");
+      await db.update(contasPagar).set({ estadoPagamento: "paga", pagoEm: new Date() }).where(eq(contasPagar.id, input.id));
+      return { success: true };
     }),
 
   listar: protectedProcedure.query(async () => {
@@ -320,6 +338,20 @@ async function emparelharArtigo(descricao: string, fornecedorId?: number): Promi
     if (a) return { id: a.id, nome: a.nome };
   }
   return null;
+}
+
+async function emparelharFornecedor(nome: string, nif: string): Promise<{ id: number; nome: string } | null> {
+  const db = await getDb();
+  if (!db) return null;
+  const nifNormalizado = nif.replace(/\D/g, "");
+  if (nifNormalizado) {
+    const [porNif] = await db.select().from(fornecedores).where(eq(fornecedores.nif, nifNormalizado)).limit(1);
+    if (porNif) return { id: porNif.id, nome: porNif.nome };
+  }
+  const termo = nome.trim().split(/\s+/).find((palavra) => palavra.length > 2);
+  if (!termo) return null;
+  const [porNome] = await db.select().from(fornecedores).where(like(fornecedores.nome, `%${termo}%`)).limit(1);
+  return porNome ? { id: porNome.id, nome: porNome.nome } : null;
 }
 
 async function emparelharFicha(nomePos: string): Promise<{ id: number; nome: string } | null> {
