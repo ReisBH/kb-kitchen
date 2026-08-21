@@ -226,3 +226,7 @@
 - [x] Fichas: validar dependências operacionais antes de permitir a eliminação rápida
 - [x] Fichas: acrescentar eliminação rápida com confirmação junto à ação de editar
 - [x] Fichas: testar permissões, bloqueios de dependência e eliminação segura
+- [x] Ingredientes: corrigir a conversão do fornecedor vazio para valor nulo antes da validação do servidor
+- [x] Ingredientes: apresentar categorias existentes numa lista selecionável na criação de artigo
+- [x] Ingredientes: permitir criar uma categoria nova diretamente no seletor de categorias
+- [x] Ingredientes: validar a criação de artigos com e sem fornecedor e com categoria nova

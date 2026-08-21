@@ -12,6 +12,7 @@ import { Controller } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { prepararNovoArtigo } from "@/lib/novoArtigo";
 
 function fmt(n: number | string, d = 2) {
   return parseFloat(String(n)).toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -26,8 +27,9 @@ function stockStatus(stock: number, minimo: number, ponto: number, maximo: numbe
 }
 
 function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
-  const { register, handleSubmit, reset, control, watch } = useForm<any>({ defaultValues: { unidadeBase: "g", requerLimpeza: false } });
+  const { register, handleSubmit, reset, control, watch, setValue } = useForm<any>({ defaultValues: { unidadeBase: "g", requerLimpeza: false } });
   const categoriaWatch = watch("categoria") ?? "";
+  const [aCriarCategoria, setACriarCategoria] = useState(false);
   const isProteina = ["Peixe", "Carnes e Aves"].includes(categoriaWatch);
   const nomeWatch = watch("nome") ?? "";
   const { data: todosArtigos } = trpc.artigos.listar.useQuery({ apenasAtivos: false });
@@ -45,9 +47,10 @@ function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
     onError: (e) => toast.error(e.message),
   });
   const { data: fornecedores } = trpc.fornecedores.listar.useQuery();
+  const { data: categorias } = trpc.artigos.categorias.useQuery();
 
   return (
-    <form onSubmit={handleSubmit((d) => criar.mutate({ ...d, tipo: "ingrediente", fatorConversao: parseFloat(d.fatorConversao ?? "1"), stockMinimo: parseFloat(d.stockMinimo ?? "0") }))} className="space-y-4">
+    <form onSubmit={handleSubmit((d) => criar.mutate({ ...prepararNovoArtigo(d), tipo: "ingrediente" } as any))} className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
           <label className="text-xs text-muted-foreground mb-1 block">Nome *</label>
@@ -62,7 +65,23 @@ function NovoArtigoForm({ onSuccess }: { onSuccess: () => void }) {
         </div>
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">Categoria</label>
-          <Input {...register("categoria")} placeholder="ex: Legumes" className="bg-input border-border" />
+          <Select value={aCriarCategoria ? "__nova__" : categoriaWatch || "__sem_categoria__"} onValueChange={(valor) => {
+            if (valor === "__nova__") {
+              setACriarCategoria(true);
+              setValue("categoria", "");
+              return;
+            }
+            setACriarCategoria(false);
+            setValue("categoria", valor === "__sem_categoria__" ? "" : valor);
+          }}>
+            <SelectTrigger className="bg-input border-border h-9"><SelectValue placeholder="Selecionar categoria" /></SelectTrigger>
+            <SelectContent className="bg-popover border-border">
+              <SelectItem value="__sem_categoria__">— sem categoria —</SelectItem>
+              {(categorias ?? []).map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}
+              <SelectItem value="__nova__">+ Criar nova categoria</SelectItem>
+            </SelectContent>
+          </Select>
+          {aCriarCategoria && <Input {...register("categoria")} autoFocus placeholder="Nome da nova categoria" className="mt-2 bg-input border-border" />}
         </div>
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">Unidade base *</label>

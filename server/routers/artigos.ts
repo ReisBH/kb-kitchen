@@ -186,7 +186,7 @@ export const artigosRouter = router({
   categorias: protectedProcedure.query(async () => {
     const db = await getDb();
     if (!db) return [];
-    const rows = await db.selectDistinct({ categoria: artigos.categoria }).from(artigos).where(sql`${artigos.categoria} IS NOT NULL`);
+    const rows = await db.selectDistinct({ categoria: artigos.categoria }).from(artigos).where(sql`${artigos.categoria} IS NOT NULL`).orderBy(artigos.categoria);
     return rows.map(r => r.categoria).filter(Boolean) as string[];
   }),
 
