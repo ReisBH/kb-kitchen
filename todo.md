@@ -260,3 +260,6 @@
 - [x] Faturas: testar e publicar a correção de acesso ao ficheiro móvel
 - [x] Faturas: selecionar um modelo Gemini disponível para substituir o endpoint que devolve 404
 - [x] Faturas: testar e publicar a correção de análise Gemini
+- [x] Faturas: repetir automaticamente análises Gemini que falhem temporariamente com 429/500/503
+- [x] Faturas: usar modelo Gemini alternativo quando o modelo principal estiver indisponível
+- [x] Faturas: testar e publicar a recuperação de indisponibilidade temporária

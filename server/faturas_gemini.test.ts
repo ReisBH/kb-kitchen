@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calcularDataVencimento, chaveArmazenadaDaUrl, normalizarFaturaGemini, numeroFatura } from "./faturasGemini";
+import { calcularDataVencimento, chaveArmazenadaDaUrl, erroGeminiTransitorio, MODELO_GEMINI_FATURAS_ALTERNATIVO, normalizarFaturaGemini, numeroFatura, pedirGeminiComContingencia } from "./faturasGemini";
 
 describe("Normalização de fatura Gemini", () => {
   it("normaliza valores portugueses, IVA por linha e vencimento calculado", () => {
@@ -22,5 +22,23 @@ describe("Normalização de fatura Gemini", () => {
     expect(chaveArmazenadaDaUrl("/manus-storage/ocr/1/fatura_abc123.jpeg")).toBe("ocr/1/fatura_abc123.jpeg");
     expect(chaveArmazenadaDaUrl("/manus-storage/ocr/1/fatura_abc123.jpeg?versao=1")).toBe("ocr/1/fatura_abc123.jpeg");
     expect(chaveArmazenadaDaUrl("https://externo.exemplo/fatura.jpeg")).toBeUndefined();
+  });
+
+  it("repete uma indisponibilidade temporária e usa o modelo alternativo", async () => {
+    const urls: string[] = [];
+    const esperar: number[] = [];
+    const fetcher = async (url: string | URL | Request) => {
+      urls.push(String(url));
+      if (urls.length < 3) return new Response("indisponível", { status: 503 });
+      return new Response(JSON.stringify({ candidates: [] }), { status: 200 });
+    };
+
+    const resultado = await pedirGeminiComContingencia("chave-de-teste", { contents: [] }, fetcher as typeof fetch, async (ms) => { esperar.push(ms); });
+    expect(resultado.resposta.ok).toBe(true);
+    expect(urls).toHaveLength(3);
+    expect(urls[2]).toContain(MODELO_GEMINI_FATURAS_ALTERNATIVO);
+    expect(esperar).toHaveLength(1);
+    expect(erroGeminiTransitorio(503)).toBe(true);
+    expect(erroGeminiTransitorio(400)).toBe(false);
   });
 });

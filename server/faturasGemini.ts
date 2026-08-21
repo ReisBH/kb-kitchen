@@ -1,6 +1,9 @@
 import { storageGetSignedUrl } from "./storage";
 
 export const MODELO_GEMINI_FATURAS = "gemini-3.6-flash";
+export const MODELO_GEMINI_FATURAS_ALTERNATIVO = "gemini-3.5-flash";
+export const MODELOS_GEMINI_FATURAS = [MODELO_GEMINI_FATURAS, MODELO_GEMINI_FATURAS_ALTERNATIVO] as const;
+const TENTATIVAS_POR_MODELO = 2;
 
 export type LinhaFaturaGemini = {
   descricao: string;
@@ -145,6 +148,44 @@ export function chaveArmazenadaDaUrl(imagemUrl?: string): string | undefined {
   return chave;
 }
 
+export function erroGeminiTransitorio(status: number) {
+  return [408, 429, 500, 502, 503, 504].includes(status);
+}
+
+export function atrasoTentativaGemini(tentativa: number, retryAfter?: string | null) {
+  const segundosIndicados = Number(retryAfter);
+  if (Number.isFinite(segundosIndicados) && segundosIndicados > 0) return Math.min(segundosIndicados * 1000, 5_000);
+  return Math.min(750 * (tentativa + 1), 2_000);
+}
+
+async function aguardar(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function pedirGeminiComContingencia(
+  chaveApi: string,
+  pedido: unknown,
+  fetcher: typeof fetch = fetch,
+  esperar: (ms: number) => Promise<void> = aguardar,
+) {
+  let ultimoStatus: number | undefined;
+  for (const modelo of MODELOS_GEMINI_FATURAS) {
+    for (let tentativa = 0; tentativa < TENTATIVAS_POR_MODELO; tentativa++) {
+      const resposta = await fetcher(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": chaveApi },
+        body: JSON.stringify(pedido),
+      });
+      if (resposta.ok) return { resposta, modelo };
+      ultimoStatus = resposta.status;
+      if (!erroGeminiTransitorio(resposta.status)) break;
+      if (tentativa < TENTATIVAS_POR_MODELO - 1) await esperar(atrasoTentativaGemini(tentativa, resposta.headers.get("retry-after")));
+    }
+  }
+  if (ultimoStatus && erroGeminiTransitorio(ultimoStatus)) throw new Error("A Gemini está temporariamente indisponível. Foram feitas tentativas automáticas nos modelos disponíveis; tenta novamente dentro de instantes.");
+  throw new Error(`A Gemini não conseguiu ler a fatura (${ultimoStatus ?? "sem resposta"}).`);
+}
+
 export async function extrairFaturaComGemini(imagemKey: string, imagemUrl?: string): Promise<FaturaGemini> {
   const chaveApi = process.env.GEMINI_API_KEY;
   if (!chaveApi) throw new Error("A chave Gemini não está configurada.");
@@ -157,21 +198,16 @@ export async function extrairFaturaComGemini(imagemKey: string, imagemUrl?: stri
   if (bytes.length === 0 || bytes.length > 20 * 1024 * 1024) throw new Error("A imagem da fatura deve ter entre 1 byte e 20 MB.");
   const mimeType = ficheiro.headers.get("content-type")?.split(";")[0] || mimeTypePorChave(chaveEfetiva);
 
-  const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODELO_GEMINI_FATURAS}:generateContent`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": chaveApi },
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          { text: "Lê esta fatura de fornecedor de restauração em Portugal. Extrai exclusivamente os dados factualmente visíveis. Identifica fornecedor, NIF, número, data de emissão, data de vencimento, condições de pagamento e valor total com IVA. Para cada produto, extrai descrição, peso ou unidade, quantidade, preço por kg/unidade, taxa de IVA, valor de IVA e valor da linha. Datas usam YYYY-MM-DD. Se a data de vencimento não estiver impressa e existir condição em dias, calcula-a a partir da emissão e assinala dataVencimentoCalculada. Nunca inventes dados: usa vazio ou 0 quando não for possível ler." },
-          { inlineData: { mimeType, data: bytes.toString("base64") } },
-        ],
-      }],
-      generationConfig: { responseMimeType: "application/json", responseSchema: GEMINI_FATURA_SCHEMA, temperature: 0 },
-    }),
-  });
-
-  if (!resposta.ok) throw new Error(`A Gemini não conseguiu ler a fatura (${resposta.status}).`);
+  const pedido = {
+    contents: [{
+      parts: [
+        { text: "Lê esta fatura de fornecedor de restauração em Portugal. Extrai exclusivamente os dados factualmente visíveis. Identifica fornecedor, NIF, número, data de emissão, data de vencimento, condições de pagamento e valor total com IVA. Para cada produto, extrai descrição, peso ou unidade, quantidade, preço por kg/unidade, taxa de IVA, valor de IVA e valor da linha. Datas usam YYYY-MM-DD. Se a data de vencimento não estiver impressa e existir condição em dias, calcula-a a partir da emissão e assinala dataVencimentoCalculada. Nunca inventes dados: usa vazio ou 0 quando não for possível ler." },
+        { inlineData: { mimeType, data: bytes.toString("base64") } },
+      ],
+    }],
+    generationConfig: { responseMimeType: "application/json", responseSchema: GEMINI_FATURA_SCHEMA, temperature: 0 },
+  };
+  const { resposta } = await pedirGeminiComContingencia(chaveApi, pedido);
   const corpo = await resposta.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
   const textoResposta = corpo.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!textoResposta) throw new Error("A Gemini devolveu uma resposta vazia.");
