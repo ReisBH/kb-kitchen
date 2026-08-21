@@ -254,3 +254,5 @@
 - [x] Navegação: persistir a última secção aberta e manter o contexto ativo visível
 - [x] Navegação: apresentar indicadores de pendências em Alertas e Aprovações
 - [x] Navegação: testar responsividade e publicar a atualização de UI sem alterar funcionalidades
+- [x] Faturas: aceitar a URL relativa do armazenamento ao processar fotografia de fatura no telemóvel
+- [x] Faturas: testar e publicar a correção de carregamento móvel

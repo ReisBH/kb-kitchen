@@ -9,11 +9,12 @@ import { converterParaUnidadeBase, registarMovimento } from "../engine/stock";
 import { calcularCustoFicha, executarExplosaoVenda } from "../engine/explosao";
 import { extrairFaturaComGemini } from "../faturasGemini";
 import { calcularEstadoContaPagar } from "../contasPagar";
+import { imagemArmazenamentoSchema } from "../ocrInput";
 
 export const ocrRouter = router({
   processarFatura: protectedProcedure
     .input(z.object({
-      imagemUrl: z.string().url(),
+      imagemUrl: imagemArmazenamentoSchema,
       imagemKey: z.string(),
       fornecedorId: z.number().optional(),
     }))
@@ -63,7 +64,7 @@ export const ocrRouter = router({
 
   processarFechoCaixa: protectedProcedure
     .input(z.object({
-      imagemUrl: z.string().url(),
+      imagemUrl: imagemArmazenamentoSchema,
       imagemKey: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
