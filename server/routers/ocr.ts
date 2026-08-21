@@ -33,7 +33,7 @@ export const ocrRouter = router({
       const docId = (r as any).insertId as number;
 
       try {
-        const dadosExtraidos = await extrairFaturaComGemini(input.imagemKey);
+        const dadosExtraidos = await extrairFaturaComGemini(input.imagemKey, input.imagemUrl);
         const fornecedorEmparelhado = input.fornecedorId ? null : await emparelharFornecedor(dadosExtraidos.fornecedor, dadosExtraidos.nif);
         const fornecedorId = input.fornecedorId ?? fornecedorEmparelhado?.id;
 

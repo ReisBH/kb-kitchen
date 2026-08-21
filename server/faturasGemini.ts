@@ -136,16 +136,24 @@ function mimeTypePorChave(chave: string): string {
   return "image/jpeg";
 }
 
-export async function extrairFaturaComGemini(imagemKey: string): Promise<FaturaGemini> {
+export function chaveArmazenadaDaUrl(imagemUrl?: string): string | undefined {
+  if (!imagemUrl?.startsWith("/manus-storage/")) return undefined;
+  const chave = imagemUrl.slice("/manus-storage/".length).split(/[?#]/)[0];
+  if (!chave || chave.includes("..")) return undefined;
+  return chave;
+}
+
+export async function extrairFaturaComGemini(imagemKey: string, imagemUrl?: string): Promise<FaturaGemini> {
   const chaveApi = process.env.GEMINI_API_KEY;
   if (!chaveApi) throw new Error("A chave Gemini não está configurada.");
 
-  const urlAssinada = await storageGetSignedUrl(imagemKey);
+  const chaveEfetiva = chaveArmazenadaDaUrl(imagemUrl) ?? imagemKey;
+  const urlAssinada = await storageGetSignedUrl(chaveEfetiva);
   const ficheiro = await fetch(urlAssinada);
   if (!ficheiro.ok) throw new Error("Não foi possível obter a imagem da fatura para análise.");
   const bytes = Buffer.from(await ficheiro.arrayBuffer());
   if (bytes.length === 0 || bytes.length > 20 * 1024 * 1024) throw new Error("A imagem da fatura deve ter entre 1 byte e 20 MB.");
-  const mimeType = ficheiro.headers.get("content-type")?.split(";")[0] || mimeTypePorChave(imagemKey);
+  const mimeType = ficheiro.headers.get("content-type")?.split(";")[0] || mimeTypePorChave(chaveEfetiva);
 
   const resposta = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
     method: "POST",

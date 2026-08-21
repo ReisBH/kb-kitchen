@@ -16,11 +16,10 @@ export const uploadRouter = router({
         const buffer = Buffer.from(input.base64, "base64");
         const ext = input.mimeType.split("/")[1] ?? "jpg";
         const key = `ocr/${ctx.user?.id ?? "anon"}/${Date.now()}.${ext}`;
-        const { url } = await storagePut(key, buffer, input.mimeType);
-        return { url, key };
+        const guardado = await storagePut(key, buffer, input.mimeType);
+        return guardado;
       } catch (err: any) {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Erro ao guardar imagem: ${err.message}` });
       }
     }),
 });
-

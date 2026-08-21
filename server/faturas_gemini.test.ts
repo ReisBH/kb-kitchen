@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calcularDataVencimento, normalizarFaturaGemini, numeroFatura } from "./faturasGemini";
+import { calcularDataVencimento, chaveArmazenadaDaUrl, normalizarFaturaGemini, numeroFatura } from "./faturasGemini";
 
 describe("Normalização de fatura Gemini", () => {
   it("normaliza valores portugueses, IVA por linha e vencimento calculado", () => {
@@ -16,5 +16,11 @@ describe("Normalização de fatura Gemini", () => {
     expect(fatura.dataVencimento).toBe("2026-09-09");
     expect(fatura.dataVencimentoCalculada).toBe(true);
     expect(fatura.linhas[0]).toMatchObject({ precoPorUnidade: 12.3, taxaIva: 6, valorLinha: 61.5 });
+  });
+
+  it("usa a chave física devolvida pelo armazenamento quando a URL recebe sufixo único", () => {
+    expect(chaveArmazenadaDaUrl("/manus-storage/ocr/1/fatura_abc123.jpeg")).toBe("ocr/1/fatura_abc123.jpeg");
+    expect(chaveArmazenadaDaUrl("/manus-storage/ocr/1/fatura_abc123.jpeg?versao=1")).toBe("ocr/1/fatura_abc123.jpeg");
+    expect(chaveArmazenadaDaUrl("https://externo.exemplo/fatura.jpeg")).toBeUndefined();
   });
 });

@@ -256,3 +256,5 @@
 - [x] Navegação: testar responsividade e publicar a atualização de UI sem alterar funcionalidades
 - [x] Faturas: aceitar a URL relativa do armazenamento ao processar fotografia de fatura no telemóvel
 - [x] Faturas: testar e publicar a correção de carregamento móvel
+- [x] Faturas: recuperar a imagem guardada no armazenamento antes da análise Gemini no ambiente publicado
+- [x] Faturas: testar e publicar a correção de acesso ao ficheiro móvel
