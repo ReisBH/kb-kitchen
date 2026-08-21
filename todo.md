@@ -250,3 +250,7 @@
 - [x] Faturas: criar ficha de conferência editável com fornecedor, vencimento, total, IVA e linhas de produto
 - [x] Contas a pagar: criar lista de faturas pendentes e atrasadas calculadas pela data de vencimento
 - [x] Faturas: testar e publicar o novo fluxo de leitura e conferência
+- [x] Navegação: agrupar o menu lateral em Dashboard e cinco secções colapsáveis
+- [x] Navegação: persistir a última secção aberta e manter o contexto ativo visível
+- [x] Navegação: apresentar indicadores de pendências em Alertas e Aprovações
+- [x] Navegação: testar responsividade e publicar a atualização de UI sem alterar funcionalidades
