@@ -2,7 +2,7 @@
 
 **Fonte:** `Menu_Degustacao_-_A_La_Carte_2026.pdf`  
 **Ação efetuada:** atualização de preço de venda nas fichas com correspondência de nome e produto considerada segura.  
-**Ação não efetuada:** criação de fichas vazias ou atualização de preços por grama sem confirmação explícita.
+**Decisões posteriores:** aplicadas após confirmação explícita do utilizador; as novas fichas mantêm-se em rascunho até receberem componentes e passarem pela publicação controlada.
 
 ## Atualizações aplicadas
 
@@ -17,26 +17,26 @@ Foram atualizadas **50 fichas técnicas**. As correspondências incluem nomes ig
 
 > As fichas `Edomae Sushi`, `Kabuki Sushi`, `N Burguer`, `Gohan` e algumas outras permanecem em **rascunho**; o preço foi preenchido, mas a publicação continua dependente da validação normal de componentes e preço.
 
-## Itens que requerem decisão antes de criar ou atualizar
+## Decisões confirmadas e aplicadas
 
-| Prato/preço no menu | Situação no banco | Decisão necessária |
+| Prato/preço no menu | Decisão aplicada | Resultado |
 |---|---|---|
-| Menu Kabuki Ampliado — 150 €/pessoa | Existe `Menu Extendido`, mas o nome não prova que seja o mesmo menu. | Confirmar associação ou criar ficha vazia. |
-| Menu Degustação Vegan — 100 €/pessoa | Não encontrada ficha correspondente. | Criar ficha vazia? |
-| Menu Vegan Ampliado — 120 €/pessoa | Não encontrada ficha correspondente. | Criar ficha vazia? |
-| Ostra Natural — 5 €/un | Existe `Trio de Ostras`, produto diferente. | Criar ficha vazia para unidade? |
-| Gyoza Kabuki — 16 € | Existe `Gyoza Buta Aper`, produto diferente. | Criar ficha vazia? |
-| Gyoza Carabineiro — 36 € | Não encontrada ficha correspondente. | Criar ficha vazia? |
-| Preparações vegan do menu | Não há fichas inequívocas para Agadashi Tofu, Abacate Picante, Kakiage, Couve Chinesa, Yasai Sushi e Mochi tradicional. | Confirmar quais devem ter ficha individual. |
-| Abacate Estrelado — 26 € | Existe `Tartaro Abacate Picante`; não foi assumida equivalência porque o menu indica ovo e batata. | Confirmar associação ou criar ficha vazia. |
-| Belota, Toro Flambé | Não encontradas fichas específicas. | Criar fichas vazias? |
-| Unagi Kabayaki (nigiri) — 8 € | Existe `N Unagi`, mas a designação não confirma a preparação kabayaki. | Confirmar associação ou criar ficha vazia. |
-| Yasai Maki — 14 € | Existe `Maki Vegetariano`, mas a equivalência não é comprovada. | Confirmar associação ou criar ficha vazia. |
-| Temaki Bochecha — 14 € | Não encontrada ficha correspondente. | Criar ficha vazia? |
-| Yasai/Moriawase/Ebi Tempura | Não encontradas fichas inequívocas; `N Ebi` é uma ficha de nigiri. | Criar fichas vazias? |
-| Minhota Vazia — 0,50 €/g | Não há ficha correspondente; o campo atual de preço não distingue claramente preço por grama. | Criar ficha com regra de preço por peso? |
-| Kagoshima — 1,10 €/g | Existe ficha `Kagoshima`, mas o preço no menu é por grama e não por dose. | Confirmar regra de preço por peso; não preencher como 1,10 €/dose. |
+| Menu Kabuki Ampliado — 150 €/pessoa | Associar a `Menu Extendido` | Preço de 150 € preenchido; permanece em rascunho. |
+| Menu Degustação Vegan — 100 €/pessoa | Criar ficha vazia | Ficha criada em rascunho. |
+| Menu Vegan Ampliado — 120 €/pessoa | Criar ficha vazia | Ficha criada em rascunho. |
+| Ostra Natural — 5 €/un | Criar ficha vazia | Ficha criada em rascunho. |
+| Gyoza Kabuki — 16 € | Não criar | Excluído da criação, conforme decisão. |
+| Gyoza Carabineiro — 36 € | Criar ficha vazia | Ficha criada em rascunho. |
+| Agadashi Tofu, Abacate Picante, Kakiage, Couve Chinesa, Yasai Sushi e Mochi Tradicional | Criar fichas individuais | Seis fichas criadas em rascunho; preço apenas quando o menu o especifica. |
+| Abacate Estrelado — 26 € | Criar ficha vazia | Ficha criada em rascunho. |
+| Belota — 8 €; Toro Flambé — 9 € | Criar fichas vazias | Duas fichas criadas em rascunho. |
+| Unagi Kabayaki (nigiri) — 8 € | Associar a `N Unagi` | Preço de 8 € preenchido na ficha existente. |
+| Yasai Maki — 14 € | Associar a `Maki Vegetariano` | Preço de 14 € preenchido na ficha existente. |
+| Temaki Bochecha — 14 € | Criar ficha vazia | Ficha criada em rascunho. |
+| Tempura Yasai — 28 €; Tempura Moriawase — 32 €; Tempura Ebi — 36 € | Criar fichas vazias | Três fichas criadas em rascunho. |
+| Minhota Vazia — 0,50 €/g | Criar regra por peso | Ficha criada com preço por grama e pedido mínimo de 200 g. |
+| Kagoshima — 1,10 €/g | Atualizar regra por peso | Ficha existente atualizada com pedido mínimo de 150 g. |
 
 ## Observação de controlo financeiro
 
-Os preços por pessoa e por unidade foram guardados como preço da ficha porque a unidade comercial é explícita no menu. Os preços por grama foram deliberadamente excluídos, pois gravá-los no campo `precoVenda` sem uma unidade comercial associada produziria margem e food cost incorretos.
+Os preços por pessoa, unidade e dose foram guardados como preço da ficha porque a unidade comercial é explícita no menu. Para Minhota Vazia e Kagoshima, foi acrescentada a unidade comercial `g` e o campo `quantidadeMinimaVenda`. O registo de vendas valida esse mínimo no servidor antes de aceitar uma venda, evitando tratar 0,50 € ou 1,10 € como preço por dose.

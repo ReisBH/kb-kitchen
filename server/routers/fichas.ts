@@ -7,6 +7,7 @@ import { getDb } from "../db";
 import { fichasTecnicas, fichasTecnicasComponentes, artigos, vendas, vendaLinhas, movimentos, mapaPos } from "../../drizzle/schema";
 import { detetarCiclo, explodirFicha, calcularCustoFicha, executarExplosaoVenda } from "../engine/explosao";
 import { mensagemBloqueioEliminacaoFicha } from "../eliminacao_fichas";
+import { validarQuantidadeComercial } from "../regras_venda_fichas";
 
 function removerCustosDaArvore(no: any): any {
   return {
@@ -86,6 +87,8 @@ export const fichasRouter = router({
       secaoMenu: z.string().optional(),
       familia: z.enum(["Cozinha Quente", "Sushi", "Pastelaria"]),
       precoVenda: z.number().optional(),
+      unidadePrecoVenda: z.enum(["dose", "un", "pessoa", "g"]).default("dose"),
+      quantidadeMinimaVenda: z.number().positive().optional(),
       foodCostAlvo: z.number().optional(),
       tempoPrepMin: z.number().optional(),
       modoPreparacao: z.string().optional(),
@@ -107,6 +110,8 @@ export const fichasRouter = router({
         secaoMenu: input.secaoMenu,
         familia: input.familia,
         precoVenda: input.precoVenda?.toFixed(2),
+        unidadePrecoVenda: input.unidadePrecoVenda,
+        quantidadeMinimaVenda: input.quantidadeMinimaVenda?.toFixed(3),
         foodCostAlvo: input.foodCostAlvo?.toFixed(2),
         tempoPrepMin: input.tempoPrepMin,
         modoPreparacao: input.modoPreparacao,
@@ -130,6 +135,8 @@ export const fichasRouter = router({
       secaoMenu: z.string().optional(),
       familia: z.enum(["Cozinha Quente", "Sushi", "Pastelaria"]).optional(),
       precoVenda: z.number().optional(),
+      unidadePrecoVenda: z.enum(["dose", "un", "pessoa", "g"]).optional(),
+      quantidadeMinimaVenda: z.number().positive().nullable().optional(),
       foodCostAlvo: z.number().optional(),
       tempoPrepMin: z.number().optional(),
       modoPreparacao: z.string().optional(),
@@ -149,8 +156,9 @@ export const fichasRouter = router({
       const { id, componentes, ...data } = input;
       const updateData: Record<string, any> = { ...data };
       if (data.precoVenda !== undefined) updateData.precoVenda = data.precoVenda.toFixed(2);
+      if (data.quantidadeMinimaVenda !== undefined && data.quantidadeMinimaVenda !== null) updateData.quantidadeMinimaVenda = data.quantidadeMinimaVenda.toFixed(3);
       if (data.foodCostAlvo !== undefined) updateData.foodCostAlvo = data.foodCostAlvo.toFixed(2);
-      if (componentes !== undefined || data.precoVenda !== undefined || data.modoPreparacao !== undefined) {
+      if (componentes !== undefined || data.precoVenda !== undefined || data.unidadePrecoVenda !== undefined || data.quantidadeMinimaVenda !== undefined || data.modoPreparacao !== undefined) {
         updateData.estadoPublicacao = "em_revisao";
       }
       await db.update(fichasTecnicas).set(updateData).where(eq(fichasTecnicas.id, id));
@@ -287,6 +295,11 @@ export const fichasRouter = router({
           const [ficha] = await tx.select().from(fichasTecnicas).where(eq(fichasTecnicas.id, linha.fichaId)).limit(1);
           if (!ficha) continue;
           if (!ficha.ativo || ficha.estadoPublicacao !== "publicada") throw new Error(`A ficha “${ficha.nome}” não está publicada para venda.`);
+          const erroQuantidade = validarQuantidadeComercial(linha.quantidade, {
+            unidadePrecoVenda: ficha.unidadePrecoVenda,
+            quantidadeMinimaVenda: ficha.quantidadeMinimaVenda,
+          });
+          if (erroQuantidade) throw new Error(`${ficha.nome}: ${erroQuantidade}`);
           const { stockNegativo } = await executarExplosaoVenda({ fichaId: linha.fichaId, doses: linha.quantidade, vendaId, utilizadorId: ctx.user?.id, comportamento: ficha.explodir_receitas ?? "auto", idClienteBase: `${idCliente}:linha:${indice}`, executor: tx });
           stockNegativoGlobal.push(...stockNegativo);
           const custoFicha = await calcularCustoFicha(linha.fichaId);

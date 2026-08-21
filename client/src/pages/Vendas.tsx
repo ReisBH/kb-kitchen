@@ -127,6 +127,9 @@ export default function Vendas() {
                 {lista.map(f => {
                   const qty = quantidades[f.id] ?? "";
                   const qtyNum = parseFloat(qty) || 0;
+                  const porPeso = f.unidadePrecoVenda === "g";
+                  const minimo = Number(f.quantidadeMinimaVenda ?? 0);
+                  const passo = porPeso ? 10 : 1;
                   return (
                     <div key={f.id} className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-colors ${qtyNum > 0 ? "bg-primary/10 border border-primary/30" : "hover:bg-secondary/30"}`}>
                       <div className="flex-1 min-w-0">
@@ -134,26 +137,27 @@ export default function Vendas() {
                         <p className="text-xs text-muted-foreground tabular-nums">
                           {f.custoCalculado > 0 ? `${fmt(f.custoCalculado, 4)} €/dose` : "sem custo definido"}
                           {f.precoVenda && parseFloat(f.precoVenda) > 0 && (
-                            <span className="ml-2 text-gold">{fmt(parseFloat(f.precoVenda))} €</span>
+                            <span className="ml-2 text-gold">{fmt(parseFloat(f.precoVenda))} €/{f.unidadePrecoVenda}</span>
                           )}
+                          {porPeso && minimo > 0 && <span className="ml-2">mín. {minimo} g</span>}
                         </p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <button
-                          onClick={() => setQuantidades(prev => ({ ...prev, [f.id]: String(Math.max(0, (parseFloat(prev[f.id] ?? "0") || 0) - 1) || "") }))}
+                          onClick={() => setQuantidades(prev => { const atual = parseFloat(prev[f.id] ?? "0") || 0; const proximo = atual <= minimo ? 0 : Math.max(0, atual - passo); return { ...prev, [f.id]: proximo ? String(proximo) : "" }; })}
                           className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-gold transition-colors text-lg leading-none"
                         >−</button>
                         <Input
                           type="number"
-                          min="0"
-                          step="1"
+                          min={porPeso ? minimo : "0"}
+                          step={passo}
                           value={qty}
                           onChange={e => setQuantidades(prev => ({ ...prev, [f.id]: e.target.value }))}
                           className="w-16 h-8 text-center bg-input border-border tabular-nums text-sm"
                           placeholder="0"
                         />
                         <button
-                          onClick={() => setQuantidades(prev => ({ ...prev, [f.id]: String((parseFloat(prev[f.id] ?? "0") || 0) + 1) }))}
+                          onClick={() => setQuantidades(prev => { const atual = parseFloat(prev[f.id] ?? "0") || 0; const proximo = porPeso ? Math.max(minimo, atual + passo) : atual + passo; return { ...prev, [f.id]: String(proximo) }; })}
                           className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-gold transition-colors text-lg leading-none"
                         >+</button>
                       </div>

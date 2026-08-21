@@ -315,6 +315,9 @@ export const fichasTecnicas = mysqlTable("fichas_tecnicas", {
   // Família culinária da ficha técnica (Cozinha Quente, Sushi ou Pastelaria)
   familia: varchar("familia", { length: 100 }),
   precoVenda: decimal("precoVenda", { precision: 10, scale: 2 }),
+  // Unidade comercial usada no menu; permite preços por grama sem distorcer o food cost.
+  unidadePrecoVenda: mysqlEnum("unidadePrecoVenda", ["dose", "un", "pessoa", "g"]).default("dose").notNull(),
+  quantidadeMinimaVenda: decimal("quantidadeMinimaVenda", { precision: 10, scale: 3 }),
   foodCostAlvo: decimal("foodCostAlvo", { precision: 5, scale: 2 }),
   tempoPrepMin: int("tempoPrepMin"),
   fotoUrl: text("fotoUrl"),
