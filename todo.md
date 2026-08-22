@@ -263,7 +263,7 @@
 - [x] Faturas: repetir automaticamente análises Gemini que falhem temporariamente com 429/500/503
 - [x] Faturas: usar modelo Gemini alternativo quando o modelo principal estiver indisponível
 - [x] Faturas: testar e publicar a recuperação de indisponibilidade temporária
-- [ ] Backup: exportar a estrutura e os dados atuais da base de dados para recuperação
-- [ ] Backup: criar documentação de recuperação e inventário de segredos sem expor valores
-- [ ] Backup: sincronizar código, migrações, exportação de dados e configuração não sensível num repositório GitHub privado
+- [x] Backup: exportar a estrutura e os dados atuais da base de dados para recuperação
+- [x] Backup: criar documentação de recuperação e inventário de segredos sem expor valores
+- [x] Backup: sincronizar código, migrações, exportação de dados e configuração não sensível num repositório GitHub privado
 - [ ] Backup: configurar segredos protegidos no GitHub quando aplicável e verificar o estado final do repositório
